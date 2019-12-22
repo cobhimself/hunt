@@ -1,0 +1,18 @@
+{
+    "name": "cbrooks/hunt",
+    "description": "Utility to hunt down code and report its usage.",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Collin Brooks",
+            "email": "cbrooks@sentryds.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "symfony/symfony": "^3.0",
+        "symfony/finder": "^3.4",
+        "symfony/console": "^3.4"
+    }
+}
