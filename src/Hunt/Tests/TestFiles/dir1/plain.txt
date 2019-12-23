@@ -1,0 +1,7 @@
+This is a plain text document.
+We will be checking to see if we can find text within.
+Some things we may look for are parts of strings showing up multiple times: PHPUnit_Framework_TestCase
+    - Again: PHPUnit_FrameworkTestCase
+    - Might not want: PHPUnit_Framework_TestCase_MockObjects_MockObject
+    - What if they are on the same line? PHPUnit_Framework_TestCase PHPUnit_Framework_TestCase_MockObjects_MockObject
+    - What if they swap order? PHPUnit_Framework_TestCase_MockObjects_MockObject PHPUnit_Framework_TestCase
