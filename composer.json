@@ -14,5 +14,15 @@
         "symfony/symfony": "^3.0",
         "symfony/finder": "^3.4",
         "symfony/console": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hunt\\Bundle\\": "src/Hunt/Bundle/",
+            "Hunt\\Component\\": "src/Hunt/Component/"
+        }
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "phpunit/phpunit": "^6.5"
     }
 }
