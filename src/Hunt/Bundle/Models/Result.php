@@ -4,6 +4,7 @@
 namespace Hunt\Bundle\Models;
 
 
+use SplFileObject;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -54,6 +55,11 @@ class Result
         $this->file = $file;
     }
 
+    /**
+     * Whether or not to trim the left spaces from the result lines.
+     *
+     * @param bool $trim
+     */
     public function setTrimResultSpacing(bool $trim = true)
     {
         $this->trimResults = $trim;
@@ -61,36 +67,81 @@ class Result
 
     /**
      * Opens our file and filters the content down to what we're hunting for.
+     * @param array|null $exclude If provided, contains an array of terms we do not want included, even if our main
+     *                            term matches.
+     *
+     * @return bool True if we still have matches, false otherwise.
      */
-    public function filter()
+    public function filter(array $exclude = null): bool
     {
         $file = $this->file->openFile();
-        $file->setFlags(\SplFileObject::SKIP_EMPTY);
+        $file->setFlags(SplFileObject::SKIP_EMPTY);
 
         foreach ($file as $num => $line) {
-           if (strpos($line, $this->term) !== false) {
-               $this->matchingLines[$num] = ($this->trimResults) ? ltrim($line) : $line;
-           }
+            $testLine = $line;
+            if ($exclude !== null && is_array($exclude)) {
+                foreach ($exclude as $excludeTerm) {
+                    $testLine = str_replace($excludeTerm, '', $testLine);
+                }
+            }
+
+            if (strpos($testLine, $this->term) !== false) {
+                $this->matchingLines[$num] = ($this->trimResults) ? ltrim($line) : $line;
+            }
         }
+
+        return count($this->matchingLines) > 0;
     }
 
+    /**
+     * Return the filename associated with this result.
+     *
+     * @return string
+     */
     public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    public function getMatches()
+    /**
+     * Return a list of matching lines within the Result's file.
+     *
+     * @return array
+     */
+    public function getMatches(): array
     {
         return $this->matchingLines;
     }
 
+    /**
+     * Get the number of matching lines we have.
+     *
+     * @return int The number of matches.
+     */
+    public function getNumMatches(): int
+    {
+        return count($this->matchingLines);
+    }
+
+    /**
+     * Return the search term associated with this Result.
+     *
+     * @return string
+     */
     public function getTerm(): string
     {
         return $this->term;
     }
 
-    public function getLongestLineNumLength()
+    /**
+     * Get the length of the longest line number in the result's matching lines.
+     *
+     * @return int
+     */
+    public function getLongestLineNumLength(): int
     {
-        return max(array_map('strlen', array_keys($this->matchingLines)));
+        return count($this->matchingLines) > 0
+            ? max(array_map('strlen', array_keys($this->matchingLines)))
+            : 0;
     }
 }
