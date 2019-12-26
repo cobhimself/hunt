@@ -5,15 +5,12 @@ namespace Hunt\Bundle\Command;
 
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Hunt\Component\Hunter;
-use Hunt\Component\Progress;
-use Hunt\Component\ProgressInterface;
 
 class HuntCommand extends Command
 {

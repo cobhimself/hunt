@@ -30,24 +30,30 @@ class ConsoleTemplate extends AbstractTemplate
     public function getResultOutput(Result $result)
     {
         static $filenameSeparator = ': ';
-        $output = "\n";
+        $output = '';
 
         //First, let's construct the filepath and pad it to the length of our longest filename
-        $output .= str_pad($result->getFileName(), $this->longestFilenameLength, " ", STR_PAD_LEFT);
+        $output .= str_pad(
+            $result->getFileName(),
+            $this->longestFilenameLength,
+            ' ',
+            STR_PAD_LEFT
+        );
 
         $output .= $filenameSeparator;
 
         $resultLines = $this->getTermResults($result);
 
+        //Add our first match in line with the file name. Others will follow below it.
         $output .= array_shift($resultLines);
 
         //Do we have any additional results?
         if (count($resultLines) > 0)
         {
-            foreach ($resultLines as $line)
-            {
-                //Pad our result filename
-                $output .= str_repeat(' ', $this->longestFilenameLength + strlen($filenameSeparator));
+            $leftPadding = $this->longestFilenameLength + strlen($filenameSeparator);
+            foreach ($resultLines as $line) {
+                //Pad our result filename so it lines up nicely with our first term result
+                $output .= str_repeat(' ', $leftPadding);
 
                 $output .= $line;
             }

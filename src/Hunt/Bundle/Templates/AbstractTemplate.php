@@ -153,7 +153,7 @@ abstract class AbstractTemplate
      *
      * @return string
      */
-    public function getHeader()
+    public function getHeader(): string
     {
         return '';
     }
@@ -163,21 +163,16 @@ abstract class AbstractTemplate
      *
      * @return string
      */
-    public function getFooter()
+    public function getFooter(): string
     {
         return '';
     }
 
     /**
-     * Generates the final output for the template.
+     * Renders a single result and adds it to the final output.
+     *
+     * @param Result $result
      */
-    public function renderAll()
-    {
-        foreach($this->resultCollection as $result) {
-            $this->finalOutput .= $this->getResultOutput($result);
-        }
-    }
-
     public function renderResult(Result $result) {
         $this->finalOutput .= $this->getResultOutput($result);
     }
@@ -189,13 +184,11 @@ abstract class AbstractTemplate
      *
      * @return string
      */
-    public function getOutput()
+    public function getOutput(): string
     {
-        if (null !== $this->output) {
-            $this->output->write($this->getHeader());
-            $this->output->write($this->finalOutput);
-            $this->output->write($this->getFooter());
-        }
+        return $this->getHeader()
+            . $this->finalOutput
+            . $this->getFooter();
     }
 
     /**

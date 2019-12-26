@@ -6,10 +6,8 @@ namespace Hunt\Component;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Bundle\Templates\ConsoleTemplate;
-use SebastianBergmann\Environment\Console;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 class Hunter
@@ -47,7 +45,12 @@ class Hunter
      */
     private $found;
 
-    public function __construct($output)
+    /**
+     * Hunter constructor.
+     *
+     * @param OutputInterface $output
+     */
+    public function __construct(OutputInterface $output)
     {
         $this->output = $output;
     }
@@ -127,21 +130,26 @@ class Hunter
             $finder->depth('== 0');
         }
 
-        echo "Searching for term: " . $this->term;
+        $this->output->writeln('Searching for term: ' . $this->term);
+
         $finder->contains($this->term);
 
         $progress = new ProgressBar($this->output);
         $progress->start();
 
         foreach ($finder as $file) {
+            /** @noinspection DisconnectedForeachInstructionInspection */
             $progress->advance();
             $path = $file->getRelativePath();
+
             $result = new Result($this->term, $path, $file);
             $result->setTrimResultSpacing();
+
             $found[$path] = $result;
         }
 
         $progress->finish();
+
         $this->output->writeln('');
 
         $this->found = new ResultCollection($found);
@@ -149,35 +157,53 @@ class Hunter
         $this->output->writeln(sprintf('Found %d files containing the term %s.', count($this->found), $this->term));
     }
 
+    /**
+     * Build the final result set.
+     *
+     * Goes through each result and finds the lines which match our options.
+     */
     private function buildData()
     {
         $this->output->writeln('Building Results');
+
+        //Sort our result collection
+        $this->found->sortByFilename();
 
         $progress = new ProgressBar($this->output, count($this->found));
         $progress->start();
 
         foreach ($this->found as $result) {
-            $result->filter();
+            /** @noinspection DisconnectedForeachInstructionInspection */
+            $progress->advance();
+            //Filter our result set. If no matches exist afterwards, we'll squash it.
+            $containsResults = $result->filter($this->excludeTerms);
+            if (!$containsResults) {
+                $filesToRemove[] = $result->getFileName();
+                $progress->advance(-1);
+            }
         }
+
+        //Remove any results from our list which are empty.
+        $this->found->squashEmptyResults();
 
         $progress->finish();
     }
 
     private function generateTemplate()
     {
+        $template = new ConsoleTemplate($this->found, $this->output);
+
         $progress = new ProgressBar($this->output, count($this->found));
         $progress->start();
 
-        $template = new ConsoleTemplate($this->found, $this->output);
-
         foreach ($this->found as $result) {
+            /** @noinspection DisconnectedForeachInstructionInspection */
             $progress->advance();
             $template->renderResult($result);
         }
-        $this->output->writeln('');
-        $template->getOutput();
-
         $progress->finish();
 
+        $this->output->writeln('');
+        $this->output->writeln($template->getOutput());
     }
 }
