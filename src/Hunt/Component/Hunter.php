@@ -29,7 +29,7 @@ class Hunter
     /**
      * @var OutputInterface
      */
-    private $output;
+     private $output;
 
     /**
      * @var string
@@ -45,12 +45,20 @@ class Hunter
      * @var ResultCollection A collection of Hunter Results.
      */
     private $found;
+
     /**
      * The gatherer this hunter uses.
      *
      * @var GathererInterface
      */
     private $gatherer;
+
+    /**
+     * Whether or not the trim whitespace from the matching lines.
+     *
+     * @var bool
+     */
+    private $trimMatches;
 
     /**
      * Hunter constructor.
@@ -154,7 +162,6 @@ class Hunter
             $path = $file->getRelativePath();
 
             $result = new Result($this->term, $path, $file);
-            $result->setTrimResultSpacing();
 
             $found[$path] = $result;
         }
@@ -229,6 +236,20 @@ class Hunter
     public function setGatherer(GathererInterface $gatherer): Hunter
     {
         $this->gatherer = $gatherer;
+
+        return $this;
+    }
+
+    /**
+     * Set whether or not we want to trim matching lines.
+     *
+     * @param bool $trimMatches
+     *
+     * @return Hunter
+     */
+    public function setTrimMatches(bool $trimMatches): Hunter
+    {
+        $this->trimMatches = $trimMatches;
 
         return $this;
     }

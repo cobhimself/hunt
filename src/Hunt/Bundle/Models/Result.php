@@ -3,6 +3,7 @@
 
 namespace Hunt\Bundle\Models;
 
+
 use SplFileObject;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -36,11 +37,6 @@ class Result
     private $matchingLines = [];
 
     /**
-     * @var bool
-     */
-    private $trimResults;
-
-    /**
      * Result constructor.
      *
      * @param string $term      The term which brought forth this result.
@@ -52,16 +48,6 @@ class Result
         $this->term = $term;
         $this->fileName = $fileName;
         $this->file = $file;
-    }
-
-    /**
-     * Whether or not to trim the left spaces from the result lines.
-     *
-     * @param bool $trim
-     */
-    public function setTrimResultSpacing(bool $trim = true)
-    {
-        $this->trimResults = $trim;
     }
 
     /**
