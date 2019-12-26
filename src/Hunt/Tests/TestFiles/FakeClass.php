@@ -16,11 +16,13 @@ class FakeClass
      *
      * @deprecated
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->blah = 'blah';
     }
 
-    public function doWerk() {
+    public function doWerk()
+    {
         $this->blah = 'werk';
     }
 }

@@ -3,7 +3,6 @@
 
 namespace Hunt\Bundle\Templates;
 
-
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -78,7 +77,7 @@ abstract class AbstractTemplate
         $lines = [];
         $term = $result->getTerm();
 
-        foreach ($result->getMatches() as $lineNum => $line) {
+        foreach ($result->getMatchingLines() as $lineNum => $line) {
             $lines[] = $this->getResultLine($lineNum, $line, $term);
         }
 
@@ -173,7 +172,8 @@ abstract class AbstractTemplate
      *
      * @param Result $result
      */
-    public function renderResult(Result $result) {
+    public function renderResult(Result $result)
+    {
         $this->finalOutput .= $this->getResultOutput($result);
     }
 

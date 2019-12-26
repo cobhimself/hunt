@@ -2,7 +2,6 @@
 
 namespace Hunt\Bundle\Models;
 
-
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -32,7 +31,8 @@ class ResultCollection extends ParameterBag
     public function getLongestLineNumInResults(): int
     {
         return max(
-            array_map(static function (Result $result) {
+            array_map(
+                static function (Result $result) {
                     return $result->getLongestLineNumLength();
                 },
                 $this->all()
@@ -47,7 +47,7 @@ class ResultCollection extends ParameterBag
      */
     public function sortByFilename($flags = SORT_DESC)
     {
-        ksort($this->parameters, $flags | SORT_FLAG_CASE | SORT_STRING );
+        ksort($this->parameters, $flags | SORT_FLAG_CASE | SORT_STRING);
     }
 
     /**

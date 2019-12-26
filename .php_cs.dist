@@ -1,0 +1,17 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->exclude('src/Hunt/Tests/TestFiles')
+    ->in(__DIR__);
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR1' => true,
+        '@PSR2' => true,
+        '@Symfony' => true,
+        'strict_param' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'align_multiline_comment' => ['comment_type' => 'phpdocs_like'],
+        'array_indentation' => true,
+    ])
+    ->setFinder($finder);

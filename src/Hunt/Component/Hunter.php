@@ -6,6 +6,7 @@ namespace Hunt\Component;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Bundle\Templates\ConsoleTemplate;
+use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
@@ -28,7 +29,7 @@ class Hunter
     /**
      * @var OutputInterface
      */
-     private $output;
+    private $output;
 
     /**
      * @var string
@@ -44,6 +45,12 @@ class Hunter
      * @var ResultCollection A collection of Hunter Results.
      */
     private $found;
+    /**
+     * The gatherer this hunter uses.
+     *
+     * @var GathererInterface
+     */
+    private $gatherer;
 
     /**
      * Hunter constructor.
@@ -105,16 +112,20 @@ class Hunter
         $this->output->writeln('Starting the hunt for ' . $this->term);
 
         $this->getFileList();
-        $this->buildData();
+        $this->gatherData();
         $this->generateTemplate();
     }
 
     /**
      * @param array[string] $excludeTerms An array of terms to exclude.
+     *
+     * @return Hunter
      */
-    public function setExclude(array $excludeTerms)
+    public function setExclude(array $excludeTerms): Hunter
     {
         $this->excludeTerms = $excludeTerms;
+
+        return $this;
     }
 
     /**
@@ -162,7 +173,7 @@ class Hunter
      *
      * Goes through each result and finds the lines which match our options.
      */
-    private function buildData()
+    private function gatherData()
     {
         $this->output->writeln('Building Results');
 
@@ -175,10 +186,11 @@ class Hunter
         foreach ($this->found as $result) {
             /** @noinspection DisconnectedForeachInstructionInspection */
             $progress->advance();
+
             //Filter our result set. If no matches exist afterwards, we'll squash it.
-            $containsResults = $result->filter($this->excludeTerms);
+            $containsResults = $this->gatherer->gather($result);
+
             if (!$containsResults) {
-                $filesToRemove[] = $result->getFileName();
                 $progress->advance(-1);
             }
         }
@@ -205,5 +217,19 @@ class Hunter
 
         $this->output->writeln('');
         $this->output->writeln($template->getOutput());
+    }
+
+    /**
+     * Set the Gatherer this Hunt is going to use to find the search term within the files.
+     *
+     * @param GathererInterface $gatherer
+     *
+     * @return Hunter
+     */
+    public function setGatherer(GathererInterface $gatherer): Hunter
+    {
+        $this->gatherer = $gatherer;
+
+        return $this;
     }
 }
