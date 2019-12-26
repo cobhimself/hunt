@@ -2,6 +2,7 @@
 
 namespace Hunt\Component\Gatherer;
 
+
 use Hunt\Bundle\Models\Result;
 
 class StringGatherer extends AbstractGatherer
@@ -27,7 +28,7 @@ class StringGatherer extends AbstractGatherer
             }
 
             if (strpos($testLine, $this->term) !== false) {
-                $matchingLines[$num] = $line;
+                $matchingLines[$num] =  $this->getTrimMatchingLines() ? ltrim($line) : $line;
             }
         }
 

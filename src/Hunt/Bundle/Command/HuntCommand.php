@@ -2,6 +2,7 @@
 
 namespace Hunt\Bundle\Command;
 
+
 use Hunt\Component\Gatherer\StringGatherer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,6 +22,7 @@ class HuntCommand extends Command
     const TERM = 'term';
     const RECURSIVE = 'recursive';
     const EXCLUDE = 'exclude';
+    const TRIM_MATCHES = 'trim-matches';
 
     /**
      * @var string|null The default command name
@@ -54,6 +56,12 @@ class HuntCommand extends Command
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'A space separated list of search terms to exclude. Helpful when your term will return partial matches.',
                 []
+            )
+            ->addOption(
+                self::TRIM_MATCHES,
+                '-t',
+                null,
+                'If given, matching lines will have whitespace removed from the beginning of the line.'
             );
     }
 
@@ -68,17 +76,19 @@ class HuntCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $hunter = new Hunter($output);
+        $gatherer = new StringGatherer(
+            $input->getArgument(self::TERM),
+            $input->getOption(self::EXCLUDE)
+        );
+
+        $gatherer->setTrimMatchingLines($input->getOption(self::TRIM_MATCHES));
 
         $hunter->setBaseDir($input->getArgument(self::DIR))
             ->setRecursive($input->getOption(self::RECURSIVE))
             ->setTerm($input->getArgument(self::TERM))
             ->setExclude($input->getOption(self::EXCLUDE))
-            ->setGatherer(
-                new StringGatherer(
-                    $input->getArgument(self::TERM),
-                    $input->getOption(self::EXCLUDE)
-                )
-            );
+            ->setTrimMatches($input->getOption(self::TRIM_MATCHES))
+            ->setGatherer($gatherer);
 
         $hunter->hunt();
     }
