@@ -3,7 +3,6 @@
 
 namespace Hunt\Bundle\Models;
 
-
 use SplFileObject;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -66,34 +65,6 @@ class Result
     }
 
     /**
-     * Opens our file and filters the content down to what we're hunting for.
-     * @param array|null $exclude If provided, contains an array of terms we do not want included, even if our main
-     *                            term matches.
-     *
-     * @return bool True if we still have matches, false otherwise.
-     */
-    public function filter(array $exclude = null): bool
-    {
-        $file = $this->file->openFile();
-        $file->setFlags(SplFileObject::SKIP_EMPTY);
-
-        foreach ($file as $num => $line) {
-            $testLine = $line;
-            if ($exclude !== null && is_array($exclude)) {
-                foreach ($exclude as $excludeTerm) {
-                    $testLine = str_replace($excludeTerm, '', $testLine);
-                }
-            }
-
-            if (strpos($testLine, $this->term) !== false) {
-                $this->matchingLines[$num] = ($this->trimResults) ? ltrim($line) : $line;
-            }
-        }
-
-        return count($this->matchingLines) > 0;
-    }
-
-    /**
      * Return the filename associated with this result.
      *
      * @return string
@@ -108,7 +79,7 @@ class Result
      *
      * @return array
      */
-    public function getMatches(): array
+    public function getMatchingLines(): array
     {
         return $this->matchingLines;
     }
@@ -143,5 +114,42 @@ class Result
         return count($this->matchingLines) > 0
             ? max(array_map('strlen', array_keys($this->matchingLines)))
             : 0;
+    }
+
+    /**
+     * Return the file associated with this result.
+     *
+     * @return SplFileInfo
+     */
+    public function getFile(): SplFileInfo
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set the matching lines for this result.
+     *
+     * @param array $matchingLines
+     *
+     * @return Result
+     */
+    public function setMatchingLines(array $matchingLines): Result
+    {
+        $this->matchingLines = $matchingLines;
+
+        return $this;
+    }
+
+    /**
+     * Return the Result's file for iteration after setting up the flags.
+     *
+     * @return SplFileObject
+     */
+    public function getFileIterator(): SplFileObject
+    {
+        $file = $this->getFile()->openFile();
+        $file->setFlags(SplFileObject::SKIP_EMPTY);
+
+        return $file;
     }
 }

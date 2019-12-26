@@ -1,14 +1,15 @@
 <?php
 
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-
     /**
      * Returns an array of bundles to register.
      *
-     * @return iterable|\Symfony\Component\HttpKernel\Bundle\BundleInterface An iterable of bundle instances
+     * @return iterable|BundleInterface An iterable of bundle instances
      */
     public function registerBundles()
     {
@@ -17,8 +18,12 @@ class AppKernel extends Kernel
 
     /**
      * Loads the container configuration.
+     *
+     * @param LoaderInterface $loader
+     *
+     * @return array
      */
-    public function registerContainerConfiguration(\Symfony\Component\Config\Loader\LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader)
     {
         return [];
     }

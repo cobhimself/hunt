@@ -1,9 +1,8 @@
 <?php
 
-
 namespace Hunt\Bundle\Command;
 
-
+use Hunt\Component\Gatherer\StringGatherer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,7 +72,13 @@ class HuntCommand extends Command
         $hunter->setBaseDir($input->getArgument(self::DIR))
             ->setRecursive($input->getOption(self::RECURSIVE))
             ->setTerm($input->getArgument(self::TERM))
-            ->setExclude($input->getOption(self::EXCLUDE));
+            ->setExclude($input->getOption(self::EXCLUDE))
+            ->setGatherer(
+                new StringGatherer(
+                    $input->getArgument(self::TERM),
+                    $input->getOption(self::EXCLUDE)
+                )
+            );
 
         $hunter->hunt();
     }

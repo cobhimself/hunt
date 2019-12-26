@@ -3,7 +3,6 @@
 
 namespace Hunt\Bundle\Templates;
 
-
 use Hunt\Bundle\Models\Result;
 
 class ConsoleTemplate extends AbstractTemplate
@@ -48,8 +47,7 @@ class ConsoleTemplate extends AbstractTemplate
         $output .= array_shift($resultLines);
 
         //Do we have any additional results?
-        if (count($resultLines) > 0)
-        {
+        if (count($resultLines) > 0) {
             $leftPadding = $this->longestFilenameLength + strlen($filenameSeparator);
             foreach ($resultLines as $line) {
                 //Pad our result filename so it lines up nicely with our first term result
