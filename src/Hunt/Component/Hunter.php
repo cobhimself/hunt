@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DisconnectedForeachInstructionInspection */
 
 
 namespace Hunt\Component;
@@ -16,7 +16,7 @@ class Hunter
     /**
      * The base directory we will be hunting within.
      *
-     * @var string
+     * @var array
      */
     private $baseDir;
 
@@ -61,13 +61,22 @@ class Hunter
     private $trimMatches;
 
     /**
+     * A progress bar we can use to update our progress.
+     *
+     * @var ProgressBar|null
+     */
+    private $progressBar;
+
+    /**
      * Hunter constructor.
      *
-     * @param OutputInterface $output
+     * @param OutputInterface  $output
+     * @param ProgressBar|null $progressBar
      */
-    public function __construct(OutputInterface $output)
+    public function __construct(OutputInterface $output, ProgressBar $progressBar = null)
     {
         $this->output = $output;
+        $this->progressBar = $progressBar;
     }
 
     /**
@@ -117,11 +126,15 @@ class Hunter
      */
     public function hunt()
     {
-        $this->output->writeln('Starting the hunt for ' . $this->term);
+        $this->output->writeln('<info>Starting the hunt for <bold>' . $this->term . '</bold></info>');
 
         $this->getFileList();
-        $this->gatherData();
-        $this->generateTemplate();
+
+        //No need to continue if we didn't find anything.
+        if (count($this->found) > 0) {
+            $this->gatherData();
+            $this->generateTemplate();
+        }
     }
 
     /**
@@ -142,87 +155,90 @@ class Hunter
     private function getFileList()
     {
         $found = [];
-        $finder = new Finder();
-        $finder->files()->in($this->baseDir);
 
-        if (!$this->recurse) {
-            $finder->depth('== 0');
+        $fileList = new HunterFileListTraversable($this->baseDir, $this->term, $this->recurse);
+
+        $this->progressBar->setMessage('Finding files with matches');
+        $this->progressBar->setMessage('...', 'filename');
+
+        $this->progressBar->start();
+
+        /** @var Result $result */
+        foreach ($fileList as $result) {
+            $this->progressBar->advance();
+            $this->progressBar->setMessage($result->getFileName(), 'filename');
+            $found[] = $result;
         }
 
-        $this->output->writeln('Searching for term: ' . $this->term);
-
-        $finder->contains($this->term);
-
-        $progress = new ProgressBar($this->output);
-        $progress->start();
-
-        foreach ($finder as $file) {
-            /** @noinspection DisconnectedForeachInstructionInspection */
-            $progress->advance();
-            $path = $file->getRelativePath();
-
-            $result = new Result($this->term, $path, $file);
-
-            $found[$path] = $result;
-        }
-
-        $progress->finish();
-
-        $this->output->writeln('');
+        $this->progressBar->finish();
+        $this->progressBar->clear();
 
         $this->found = new ResultCollection($found);
 
-        $this->output->writeln(sprintf('Found %d files containing the term %s.', count($this->found), $this->term));
+        //Did we even find anything?
+        if ($found > 0) {
+            $this->output->writeln(
+                sprintf(
+                    'Found <bold>%d</bold> files containing the term <bold>%s</bold>.',
+                    count($this->found),
+                    $this->term
+                )
+            );
+        } else {
+            $this->output->writeln(sprintf('No files found with the term <bold>%s</bold>', $this->term));
+        }
     }
 
     /**
      * Build the final result set.
      *
      * Goes through each result and finds the lines which match our options.
+     *
      */
     private function gatherData()
     {
-        $this->output->writeln('Building Results');
+        $this->progressBar->setMessage('Building Results');
+        $this->progressBar->start(count($this->found));
 
         //Sort our result collection
         $this->found->sortByFilename();
 
-        $progress = new ProgressBar($this->output, count($this->found));
-        $progress->start();
-
+        /** @var Result $result */
         foreach ($this->found as $result) {
-            /** @noinspection DisconnectedForeachInstructionInspection */
-            $progress->advance();
+            $this->progressBar->setMessage($result->getFilename(), 'filename');
+            $this->progressBar->advance();
 
             //Filter our result set. If no matches exist afterwards, we'll squash it.
             $containsResults = $this->gatherer->gather($result);
 
             if (!$containsResults) {
-                $progress->advance(-1);
+                $this->progressBar->advance(-1);
             }
         }
 
         //Remove any results from our list which are empty.
         $this->found->squashEmptyResults();
 
-        $progress->finish();
+        $this->progressBar->finish();
     }
 
     private function generateTemplate()
     {
         $template = new ConsoleTemplate($this->found, $this->output);
+        $template->setGatherer($this->gatherer);
 
-        $progress = new ProgressBar($this->output, count($this->found));
-        $progress->start();
+        $this->progressBar->start(count($this->found));
+        $this->progressBar->setMessage('Rendering template');
 
         foreach ($this->found as $result) {
-            /** @noinspection DisconnectedForeachInstructionInspection */
-            $progress->advance();
+            $this->progressBar->setMessage($result->getFilename(), 'filename');
+            $this->progressBar->advance();
             $template->renderResult($result);
         }
-        $progress->finish();
 
-        $this->output->writeln('');
+        $this->progressBar->finish();
+        $this->progressBar->clear();
+
         $this->output->writeln($template->getOutput());
     }
 

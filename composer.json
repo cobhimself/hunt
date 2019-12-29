@@ -18,7 +18,8 @@
     "autoload": {
         "psr-4": {
             "Hunt\\Bundle\\": "src/Hunt/Bundle/",
-            "Hunt\\Component\\": "src/Hunt/Component/"
+            "Hunt\\Component\\": "src/Hunt/Component/",
+            "Hunt\\Tests\\": "src/Hunt/Tests/"
         }
     },
     "require-dev": {
