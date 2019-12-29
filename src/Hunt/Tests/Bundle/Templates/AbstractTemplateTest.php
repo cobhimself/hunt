@@ -4,6 +4,9 @@ namespace Hunt\Tests\Bundle\Templates;
 
 use Hunt\Bundle\Templates\AbstractTemplate;
 
+/**
+ * @internal
+ */
 class AbstractTemplateTest extends TemplateTestCase
 {
     public function setUp()
@@ -12,7 +15,7 @@ class AbstractTemplateTest extends TemplateTestCase
             AbstractTemplate::class,
             [
                 $this->getResultCollection(),
-                $this->getOutputMock()
+                $this->getOutputMock(),
             ]
         );
 
@@ -34,7 +37,7 @@ class AbstractTemplateTest extends TemplateTestCase
             [
                 '1: this is line one',
                 '2: this is line two',
-                '3: line three has the ' . self::SEARCH_TERM
+                '3: line three has the ' . self::SEARCH_TERM,
             ],
             $this->template->getTermResults($result)
         );

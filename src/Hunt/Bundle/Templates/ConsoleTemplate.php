@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Hunt\Bundle\Templates;
 
 use Hunt\Bundle\Models\Result;
@@ -8,6 +7,7 @@ use Hunt\Bundle\Models\Result;
 class ConsoleTemplate extends AbstractTemplate
 {
     private $longestFilenameLength = 0;
+
     /**
      * Updated to contain the longest line number in a file's term result list.
      *
@@ -23,7 +23,6 @@ class ConsoleTemplate extends AbstractTemplate
      *  - getTermResults
      *  - getFilename
      *
-     * @param Result $result
      * @return mixed
      */
     public function getResultOutput(Result $result)
@@ -36,7 +35,7 @@ class ConsoleTemplate extends AbstractTemplate
             $result->getFileName(),
             $this->longestFilenameLength,
             ' ',
-            STR_PAD_LEFT
+            \STR_PAD_LEFT
         );
 
         $output .= $filenameSeparator;
@@ -44,7 +43,7 @@ class ConsoleTemplate extends AbstractTemplate
         $resultLines = $this->getTermResults($result);
 
         //Add our first match in line with the file name. Others will follow below it.
-        $output .= array_shift($resultLines) . PHP_EOL;
+        $output .= array_shift($resultLines) . \PHP_EOL;
 
         //Do we have any additional results?
         if (count($resultLines) > 0) {
@@ -53,7 +52,7 @@ class ConsoleTemplate extends AbstractTemplate
                 //Pad our result filename so it lines up nicely with our first term result
                 $output .= str_repeat(' ', $leftPadding);
 
-                $output .= $line . PHP_EOL;
+                $output .= $line . \PHP_EOL;
             }
         }
 
@@ -62,13 +61,10 @@ class ConsoleTemplate extends AbstractTemplate
 
     /**
      * Returns the formatted line number.
-     *
-     * @param string $lineNum
-     * @return string
      */
     public function getLineNumber(string $lineNum): string
     {
-        return str_pad($lineNum, $this->longestLineNum, ' ', STR_PAD_LEFT);
+        return str_pad($lineNum, $this->longestLineNum, ' ', \STR_PAD_LEFT);
     }
 
     /**

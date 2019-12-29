@@ -1,21 +1,17 @@
 <?php
 
-
 namespace Hunt\Bundle\Models;
-
 
 use SplFileObject;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Class Result
+ * Class Result.
  *
  * Represents a Hunter result
- * @package Hunt\Bundle\Models
  */
 class Result
 {
-
     /**
      * @var string
      */
@@ -39,9 +35,9 @@ class Result
     /**
      * Result constructor.
      *
-     * @param string $term      The term which brought forth this result.
-     * @param string $fileName  The filename where the term was found.
-     * @param SplFileInfo $file Symfony's SplFileInfo object of the file
+     * @param string      $term     the term which brought forth this result
+     * @param string      $fileName the filename where the term was found
+     * @param SplFileInfo $file     Symfony's SplFileInfo object of the file
      */
     public function __construct(string $term, string $fileName, SplFileInfo $file)
     {
@@ -52,8 +48,6 @@ class Result
 
     /**
      * Return the filename associated with this result.
-     *
-     * @return string
      */
     public function getFileName(): string
     {
@@ -62,8 +56,6 @@ class Result
 
     /**
      * Return a list of matching lines within the Result's file.
-     *
-     * @return array
      */
     public function getMatchingLines(): array
     {
@@ -73,7 +65,7 @@ class Result
     /**
      * Get the number of matching lines we have.
      *
-     * @return int The number of matches.
+     * @return int the number of matches
      */
     public function getNumMatches(): int
     {
@@ -82,8 +74,6 @@ class Result
 
     /**
      * Return the search term associated with this Result.
-     *
-     * @return string
      */
     public function getTerm(): string
     {
@@ -92,8 +82,6 @@ class Result
 
     /**
      * Get the length of the longest line number in the result's matching lines.
-     *
-     * @return int
      */
     public function getLongestLineNumLength(): int
     {
@@ -104,8 +92,6 @@ class Result
 
     /**
      * Return the file associated with this result.
-     *
-     * @return SplFileInfo
      */
     public function getFile(): SplFileInfo
     {
@@ -114,10 +100,6 @@ class Result
 
     /**
      * Set the matching lines for this result.
-     *
-     * @param array $matchingLines
-     *
-     * @return Result
      */
     public function setMatchingLines(array $matchingLines): Result
     {
@@ -128,8 +110,6 @@ class Result
 
     /**
      * Return the Result's file for iteration after setting up the flags.
-     *
-     * @return SplFileObject
      */
     public function getFileIterator(): SplFileObject
     {

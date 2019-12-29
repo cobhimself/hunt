@@ -2,7 +2,6 @@
 
 namespace Hunt\Component;
 
-
 use Generator;
 use Hunt\Bundle\Models\Result;
 use IteratorAggregate;
@@ -37,8 +36,9 @@ class HunterFileListTraversable implements IteratorAggregate
     }
 
     /**
-     * Retrieve an external iterator
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
+     * Retrieve an external iterator.
+     *
+     * @see https://php.net/manual/en/iteratoraggregate.getiterator.php
      *
      * @return Generator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
      */

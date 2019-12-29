@@ -5,11 +5,9 @@ namespace Hunt\Bundle\Models;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * Class ResultCollection
+ * Class ResultCollection.
  *
  * A collection of Hunter Results.
- *
- * @package Hunt\Bundle\Models
  */
 class ResultCollection extends ParameterBag
 {
@@ -25,8 +23,6 @@ class ResultCollection extends ParameterBag
 
     /**
      * Returns the number of digits in the line numbers for all results.
-     *
-     * @return int
      */
     public function getLongestLineNumInResults(): int
     {
@@ -45,15 +41,15 @@ class ResultCollection extends ParameterBag
      *
      * @param int $flags See sort flags https://www.php.net/manual/en/function.sort.php
      */
-    public function sortByFilename($flags = SORT_DESC)
+    public function sortByFilename($flags = \SORT_DESC)
     {
-        ksort($this->parameters, $flags | SORT_FLAG_CASE | SORT_STRING);
+        ksort($this->parameters, $flags | \SORT_FLAG_CASE | \SORT_STRING);
     }
 
     /**
      * Get rid of any results which no longer have matching lines.
      *
-     * @return int The number of results after the squash.
+     * @return int the number of results after the squash
      */
     public function squashEmptyResults(): int
     {

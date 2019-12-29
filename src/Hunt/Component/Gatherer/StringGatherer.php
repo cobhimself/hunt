@@ -2,18 +2,12 @@
 
 namespace Hunt\Component\Gatherer;
 
-
 use Hunt\Bundle\Models\Result;
 
 class StringGatherer extends AbstractGatherer
 {
-
     /**
      * Performs a string based comparison for our term/excluded terms and sets the matching lines within the result.
-     *
-     * @param Result $result
-     *
-     * @return bool
      */
     public function gather(Result $result): bool
     {
@@ -21,14 +15,14 @@ class StringGatherer extends AbstractGatherer
 
         foreach ($result->getFileIterator() as $num => $line) {
             $testLine = $line;
-            if ($this->exclude !== null && is_array($this->exclude)) {
+            if (null !== $this->exclude && is_array($this->exclude)) {
                 foreach ($this->exclude as $excludeTerm) {
                     $testLine = str_replace($excludeTerm, '', $testLine);
                 }
             }
 
-            if (strpos($testLine, $this->term) !== false) {
-                $matchingLines[$num] =  $this->getTrimMatchingLines() ? ltrim($line) : $line;
+            if (false !== strpos($testLine, $this->term)) {
+                $matchingLines[$num] = $this->getTrimMatchingLines() ? ltrim($line) : $line;
             }
         }
 
@@ -38,7 +32,7 @@ class StringGatherer extends AbstractGatherer
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string
     {
@@ -51,7 +45,7 @@ class StringGatherer extends AbstractGatherer
         //We need to build a translation between our exclude terms and the placeholders
         $translate = [];
         foreach ($this->exclude as $exclude) {
-            $counter++;
+            ++$counter;
             $translate[$exclude] = $placeholder . $counter;
         }
         $placeholderLine = strtr($line, $translate);

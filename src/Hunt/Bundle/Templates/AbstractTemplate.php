@@ -1,25 +1,25 @@
 <?php
 
-
 namespace Hunt\Bundle\Templates;
 
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
-use Hunt\Bundle\Templates\TemplateInterface;
 use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractTemplate implements TemplateInterface
 {
     const HIGHLIGHT_START = '*';
+
     const HIGHLIGHT_END = '*';
 
     protected $bodyOutput = '';
 
     /**
-     * @var ResultCollection $resultCollection
+     * @var ResultCollection
      */
     protected $resultCollection;
+
     /**
      * Whether or not to highlight the term in the rendered output.
      *
@@ -57,9 +57,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * AbstractTemplate constructor.
-     *
-     * @param ResultCollection $resultCollection
-     * @param OutputInterface|null $output
      */
     public function __construct(ResultCollection $resultCollection, OutputInterface $output = null)
     {
@@ -79,8 +76,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Whether or not to highlight the term within the results.
-     *
-     * @param bool $highlight
      */
     public function highlight(bool $highlight = true)
     {
@@ -91,10 +86,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * Get an array of rendered result lines.
      *
      * This method is useful when you want to change how the group of term results is rendered.
-     *
-     * @param Result $result
-     *
-     * @return array
      */
     public function getTermResults(Result $result): array
     {
@@ -116,6 +107,7 @@ abstract class AbstractTemplate implements TemplateInterface
      * @param $lineNum
      * @param $line
      * @param $term
+     *
      * @return mixed
      */
     public function getResultLine($lineNum, $line, $term)
@@ -136,8 +128,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Return whether or not we are going to highlight our search term.
-     *
-     * @return bool
      */
     public function doHighlight(): bool
     {
@@ -146,9 +136,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Return the line number formatted.
-     *
-     * @param string $lineNum
-     * @return string
      */
     public function getLineNumber(string $lineNum): string
     {
@@ -159,9 +146,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * Returns the rendered filename.
      *
      * Override this method if you'd like to style the filename differently.
-     *
-     * @param Result $result
-     * @return string
      */
     public function getFilename(Result $result): string
     {
@@ -176,7 +160,6 @@ abstract class AbstractTemplate implements TemplateInterface
      *  - getTermResults
      *  - getFilename
      *
-     * @param Result $result
      * @return mixed
      */
     abstract public function getResultOutput(Result $result);
@@ -185,8 +168,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * Set the header string to be output before the template.
      *
      * No new line is automatically added.
-     *
-     * @param string $header
      */
     public function setHeader(string $header)
     {
@@ -195,8 +176,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * If necessary, provide a header here.
-     *
-     * @return string
      */
     public function getHeader(): string
     {
@@ -207,8 +186,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * Set the header string to be output before the template.
      *
      * No new line is automatically added.
-     *
-     * @param string $footer
      */
     public function setFooter(string $footer)
     {
@@ -217,8 +194,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * If necessary, provide a footer here.
-     *
-     * @return string
      */
     public function getFooter(): string
     {
@@ -229,8 +204,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * Renders a single result and adds it to the body output.
      *
      * Useful for iterating through result collections and having the body output be compiled.
-     *
-     * @param Result $result
      */
     public function renderResult(Result $result)
     {
@@ -239,8 +212,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Return the currently rendered body output.
-     *
-     * @return string
      */
     public function getBodyOutput(): string
     {
@@ -251,8 +222,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * Returns the rendered template output.
      *
      * NOTE: You should render the body of the template using renderResult before attempting to get the output.
-     *
-     * @return string
      */
     public function getOutput(): string
     {
@@ -264,7 +233,6 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * Set the Gatherer we should use when highlighting our results.
      *
-     * @param GathererInterface $gatherer
      * @return AbstractTemplate
      */
     public function setGatherer(GathererInterface $gatherer): TemplateInterface

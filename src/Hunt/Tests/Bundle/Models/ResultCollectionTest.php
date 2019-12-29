@@ -8,10 +8,15 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * @internal
+ */
 class ResultCollectionTest extends TestCase
 {
     const FILENAME_ONE = 'this/is/a/file/name';
+
     const FILENAME_TWO = 'this/is/another/file/name';
+
     const FILENAME_THREE = 'this/is/a/really/long/file/name';
 
     /**
@@ -21,19 +26,18 @@ class ResultCollectionTest extends TestCase
 
     public function setUp()
     {
-
         $this->resultCollection = $this->getResultCollection(
             'searchTerm',
             [
                 self::FILENAME_ONE => [
-                    'longest_line' => 5
+                    'longest_line' => 5,
                 ],
                 self::FILENAME_TWO => [
-                    'longest_line' => 7
+                    'longest_line' => 7,
                 ],
                 self::FILENAME_THREE => [
-                    'longest_line' => 1
-                ]
+                    'longest_line' => 1,
+                ],
             ]
         );
     }
@@ -48,12 +52,6 @@ class ResultCollectionTest extends TestCase
         $this->assertEquals(7, $this->resultCollection->getLongestLineNumInResults());
     }
 
-    /**
-     * @param string $term
-     * @param array $fileOptions
-     *
-     * @return ResultCollection
-     */
     private function getResultCollection(string $term, array $fileOptions): ResultCollection
     {
         $results = [];
@@ -64,7 +62,7 @@ class ResultCollectionTest extends TestCase
                 ->setConstructorArgs([
                     $term,
                     $fileName,
-                    $this->createMock(SplFileInfo::class)
+                    $this->createMock(SplFileInfo::class),
                 ])
                 ->setMethods(['getLongestLineNumLength'])
                 ->getMock();

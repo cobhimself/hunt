@@ -19,8 +19,6 @@ class AppKernel extends Kernel
     /**
      * Loads the container configuration.
      *
-     * @param LoaderInterface $loader
-     *
      * @return array
      */
     public function registerContainerConfiguration(LoaderInterface $loader)

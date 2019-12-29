@@ -4,10 +4,8 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Hunt\Component\Progress;
-use Symfony\Component\Console\Application;
-
 use Hunt\Bundle\Command\HuntCommand;
+use Symfony\Component\Console\Application;
 
 $command = new HuntCommand();
 

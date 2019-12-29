@@ -3,8 +3,10 @@
 namespace Hunt\Tests\Component\Gatherer;
 
 use Hunt\Component\Gatherer\AbstractGatherer;
-use RuntimeException;
 
+/**
+ * @internal
+ */
 class AbstractGathererTest extends GathererTestCase
 {
     public function setUp()
@@ -22,7 +24,7 @@ class AbstractGathererTest extends GathererTestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testGather()
     {
@@ -32,7 +34,7 @@ class AbstractGathererTest extends GathererTestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testGetHighlightedLine()
     {
