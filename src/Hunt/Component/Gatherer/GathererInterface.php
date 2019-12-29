@@ -39,4 +39,17 @@ interface GathererInterface
      * @return AbstractGatherer
      */
     public function setTrimMatchingLines(bool $trim = true): GathererInterface;
+
+    /**
+     * Returns the given string with our search term highlighted.
+     *
+     * Excluded terms are ignored.
+     *
+     * @param string $line
+     * @param string $highlightStart
+     * @param string $highlightEnd
+     *
+     * @return mixed
+     */
+    public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = '');
 }

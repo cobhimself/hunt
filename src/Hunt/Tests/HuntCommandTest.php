@@ -62,7 +62,5 @@ class HuntCommandTest extends KernelTestCase
 
         // the output of the command in the console
         $output = $this->tester->getDisplay();
-
-        $this->assertEquals();
     }
 }

@@ -5,12 +5,15 @@ namespace Hunt\Bundle\Command;
 
 use Hunt\Component\Gatherer\StringGatherer;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Hunt\Component\Hunter;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class HuntCommand extends Command
 {
@@ -75,7 +78,18 @@ class HuntCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $hunter = new Hunter($output);
+        $this->setOutputStyles($output);
+
+        ProgressBar::setFormatDefinition('hunt', "%message% (%filename%)\n%current%/%max% [%bar%]");
+        $progressBar = new ProgressBar($output);
+        $progressBar->setFormat('hunt');
+
+        if($input->getOption('no-ansi')) {
+            $progressBar->setRedrawFrequency(500);
+        }
+
+        $hunter = new Hunter($output, $progressBar);
+
         $gatherer = new StringGatherer(
             $input->getArgument(self::TERM),
             $input->getOption(self::EXCLUDE)
@@ -91,5 +105,15 @@ class HuntCommand extends Command
             ->setGatherer($gatherer);
 
         $hunter->hunt();
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    private function setOutputStyles(OutputInterface $output)
+    {
+        $formatter = $output->getFormatter();
+        $formatter->setStyle('info', new OutputFormatterStyle('green'));
+        $formatter->setStyle('bold', new OutputFormatterStyle(null, null, ['bold']));
     }
 }

@@ -36,4 +36,36 @@ class StringGatherer extends AbstractGatherer
 
         return count($matchingLines) > 0;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string
+    {
+        //We could use regex but it's possible the complexity would cause the search to take a long time. Therefore,
+        //we are going to replace our exclude terms with placeholders, highlight our original term, and then put our
+        //exclude terms back.
+        static $placeholder = '$9#041x';
+        $counter = 0;
+
+        //We need to build a translation between our exclude terms and the placeholders
+        $translate = [];
+        foreach ($this->exclude as $exclude) {
+            $counter++;
+            $translate[$exclude] = $placeholder . $counter;
+        }
+        $placeholderLine = strtr($line, $translate);
+
+        //Perform our highlighting
+        $placeholderLine = str_replace(
+            $this->term,
+            $highlightStart . $this->term . $highlightEnd,
+            $placeholderLine
+        );
+
+        //Reverse our placeholder translation
+        $translate = array_flip($translate);
+
+        return strtr($placeholderLine, $translate);
+    }
 }

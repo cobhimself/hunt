@@ -1,13 +1,12 @@
 <?php
 
-
 namespace Hunt\Component\Gatherer;
 
 
-use Exception;
+use RuntimeException;
 use Hunt\Bundle\Models\Result;
 
-class AbstractGatherer implements GathererInterface
+abstract class AbstractGatherer implements GathererInterface
 {
     /**
      * The term we are searching for.
@@ -39,17 +38,33 @@ class AbstractGatherer implements GathererInterface
     /**
      * Gather a set of matching lines from the Result's file.
      *
+     * @throws RuntimeException
      * @param Result $result
      *
      * @return bool True if we still have matches, false otherwise.
      */
-     public function gather(Result $result): bool
-     {
-         //replace with custom gather functionality
-         new Exception('The gather method must be extended!');
+    public function gather(Result $result): bool
+    {
+        //replace with custom gather functionality
+        throw new RuntimeException('The gather method must be extended!');
+    }
 
-         return false;
-     }
+    /**
+     * Returns the given line with the term highlighted.
+     *
+     * Excluded terms are not highlighted.
+     *
+     * @throws RuntimeException
+     * @param string $line
+     * @param string $highlightStart
+     * @param string $highlightEnd
+     *
+     * @return string
+     */
+    public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string
+    {
+        throw new RuntimeException('The getHighlightedLine method must be extended!');
+    }
 
     /**
      * Set whether or not we want this gatherer to trim whitespace from the beginning of matching lines.
@@ -60,9 +75,9 @@ class AbstractGatherer implements GathererInterface
      */
     public function setTrimMatchingLines(bool $trim = true): GathererInterface
     {
-         $this->trimMatchingLines = $trim;
+        $this->trimMatchingLines = $trim;
 
-         return $this;
+        return $this;
     }
 
     /**
