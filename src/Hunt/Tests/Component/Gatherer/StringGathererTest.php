@@ -5,14 +5,16 @@ namespace Hunt\Tests\Component\Gatherer;
 use Hunt\Component\Gatherer\StringGatherer;
 
 /**
+ * @coversDefaultClass \Hunt\Component\Gatherer\StringGatherer
+ * @codeCoverageIgnore
+ * @uses \Hunt\Bundle\Models\Result
  * @internal
  */
 class StringGathererTest extends GathererTestCase
 {
-    public function setUp()
-    {
-    }
-
+    /**
+     * @covers ::gather
+     */
     public function testGather()
     {
         $this->gatherer = new StringGatherer(self::SEARCH_TERM, [self::EXCLUDE_TERM]);
@@ -26,7 +28,13 @@ class StringGathererTest extends GathererTestCase
      * NOTE: Our data provider provides strings which do not have our search string in order to better stress test the
      * code. This should never happen because our Results will only have lines matching the search term.
      *
+     * @covers ::getHighlightedLine
      * @dataProvider dataProviderTestGetHighlightedLine
+     *
+     * @param string $searchTerm the search term to highlight
+     * @param array $excludeTerm an array of terms to exclude in highlighting
+     * @param string $line the line to perform highlighting on
+     * @param string $expectation the final line we expect after highlighting
      */
     public function testGetHighlightedLine(string $searchTerm, array $excludeTerm, string $line, string $expectation)
     {

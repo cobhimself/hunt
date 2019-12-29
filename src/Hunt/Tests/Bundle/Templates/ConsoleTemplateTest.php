@@ -7,9 +7,18 @@ use Hunt\Component\Gatherer\StringGatherer;
 
 /**
  * @internal
+ * @codeCoverageIgnore
+ * @coversDefaultClass \Hunt\Bundle\Templates\ConsoleTemplate
+ * @covers ::init
+ * @uses \Hunt\Bundle\Models\ResultCollection
+ * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Bundle\Templates\AbstractTemplate
  */
 class ConsoleTemplateTest extends TemplateTestCase
 {
+    /**
+     * @covers ::setGatherer
+     */
     public function setUp()
     {
         $this->template = new ConsoleTemplate($this->getResultCollection(), $this->getOutputMock());
@@ -20,6 +29,15 @@ class ConsoleTemplateTest extends TemplateTestCase
             ->highlight();
     }
 
+    /**
+     * @covers ::getResultOutput
+     * @covers ::doHighlight
+     * @covers ::getHighlightEnd
+     * @covers ::getHighlightStart
+     * @covers ::getResultLine
+     * @covers ::getLineNumber
+     * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
+     */
     public function testGetResultOutput()
     {
         $expectedOutput = implode(\PHP_EOL, [
@@ -51,6 +69,7 @@ class ConsoleTemplateTest extends TemplateTestCase
 
     /**
      * Confirm our line numbers are returned with padding.
+     * @covers ::getLineNumber
      */
     public function testGetLineNumber()
     {

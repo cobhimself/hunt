@@ -2,23 +2,18 @@
 
 namespace Hunt\Tests\Bundle\Models;
 
-use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Finder\SplFileInfo;
+use Hunt\Tests\HuntTestCase;
+use InvalidArgumentException;
 
 /**
  * @internal
+ * @coversDefaultClass \Hunt\Bundle\Models\ResultCollection
+ * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
+ * @codeCoverageIgnore
  */
-class ResultCollectionTest extends TestCase
+class ResultCollectionTest extends HuntTestCase
 {
-    const FILENAME_ONE = 'this/is/a/file/name';
-
-    const FILENAME_TWO = 'this/is/another/file/name';
-
-    const FILENAME_THREE = 'this/is/a/really/long/file/name';
-
     /**
      * @var ResultCollection
      */
@@ -26,53 +21,101 @@ class ResultCollectionTest extends TestCase
 
     public function setUp()
     {
-        $this->resultCollection = $this->getResultCollection(
-            'searchTerm',
-            [
-                self::FILENAME_ONE => [
-                    'longest_line' => 5,
-                ],
-                self::FILENAME_TWO => [
-                    'longest_line' => 7,
-                ],
-                self::FILENAME_THREE => [
-                    'longest_line' => 1,
-                ],
-            ]
+        $this->resultCollection = $this->getResultCollectionWithFileConstants();
+    }
+
+    /**
+     * @covers ::getLongestFilenameLength
+     */
+    public function testGetLongestFilenameLength()
+    {
+        $this->assertEquals(
+            strlen(self::RESULT_FILE_THREE),
+            $this->resultCollection->getLongestFilenameLength()
         );
     }
 
-    public function testGetLongestFilenameLength()
-    {
-        $this->assertEquals(strlen(self::FILENAME_THREE), $this->resultCollection->getLongestFilenameLength());
-    }
-
+    /**
+     * @covers ::getLongestLineNumInResults
+     * @uses \Hunt\Bundle\Models\Result::getLongestLineNumLength()
+     */
     public function testGetLongestLineNumInResults()
     {
-        $this->assertEquals(7, $this->resultCollection->getLongestLineNumInResults());
+        $this->assertEquals(3, $this->resultCollection->getLongestLineNumInResults());
     }
 
-    private function getResultCollection(string $term, array $fileOptions): ResultCollection
+    /**
+     * @param int $sortDir the sort direction to use
+     * @param array $expectedKeys expected filename order
+     *
+     * @covers ::sortByFilename
+     * @dataProvider dataProviderForTestSortByFilename
+     */
+    public function testSortByFilename(int $sortDir, array $expectedKeys)
     {
-        $results = [];
-
-        foreach ($fileOptions as $fileName => $expectations) {
-            /** @var MockObject $mock */
-            $mock = $this->getMockBuilder(Result::class)
-                ->setConstructorArgs([
-                    $term,
-                    $fileName,
-                    $this->createMock(SplFileInfo::class),
-                ])
-                ->setMethods(['getLongestLineNumLength'])
-                ->getMock();
-
-            $mock->method('getLongestLineNumLength')
-                ->willReturn($expectations['longest_line']);
-
-            $results[$fileName] = $mock;
+        if ($sortDir !== 0) {
+            $this->resultCollection->sortByFilename($sortDir);
         }
+        $this->assertEquals($expectedKeys, $this->resultCollection->keys());
+    }
 
-        return new ResultCollection($results);
+    /**
+     * @expectedException InvalidArgumentException
+     * @covers ::sortByFilename
+     */
+    public function testSortByFilenameInvalidSortArgument()
+    {
+        $this->resultCollection->sortByFilename(-1);
+    }
+
+    /**
+     * @covers ::squashEmptyResults
+     * @uses \Hunt\Bundle\Models\Result::getNumMatches()
+     */
+    public function testSquashEmptyResults()
+    {
+        //Lets remove all matching lines from our second file so we can confirm the second file is squashed
+        $this->resultMatchingLines[self::RESULT_FILE_TWO] = [];
+        $this->resultCollection = $this->getResultCollectionWithFileConstants();
+
+        $this->resultCollection->squashEmptyResults();
+
+        $this->assertEquals(
+            [
+                self::RESULT_FILE_ONE,
+                self::RESULT_FILE_THREE,
+            ],
+            $this->resultCollection->keys()
+        );
+    }
+
+    public function dataProviderForTestSortByFilename(): array
+    {
+        return [
+            'test ascending' => [
+                \SORT_ASC,
+                [
+                    'this/is/a/file/name/one',
+                    'this/is/a/file/name/three',
+                    'this/is/a/file/name/two',
+                ]
+            ],
+            'test descending' => [
+                \SORT_DESC,
+                [
+                    'this/is/a/file/name/two',
+                    'this/is/a/file/name/three',
+                    'this/is/a/file/name/one',
+                ]
+            ],
+            'test no sort' => [
+                0,
+                [
+                    'this/is/a/file/name/one',
+                    'this/is/a/file/name/two',
+                    'this/is/a/file/name/three',
+                ]
+            ],
+        ];
     }
 }

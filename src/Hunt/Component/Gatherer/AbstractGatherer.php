@@ -28,10 +28,13 @@ abstract class AbstractGatherer implements GathererInterface
      */
     protected $trimMatchingLines = false;
 
-    public function __construct(string $term, array $exclude)
+    /**
+     * @codeCoverageIgnore
+     */
+    public function __construct(string $term, array $exclude = null)
     {
         $this->term = $term;
-        $this->exclude = $exclude;
+        $this->exclude = (is_array($exclude)) ? $exclude : [];
     }
 
     /**

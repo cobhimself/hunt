@@ -7,6 +7,7 @@ use Hunt\Tests\HuntTestCase;
 
 /**
  * @internal
+ * @codeCoverageIgnore
  */
 class GathererTestCase extends HuntTestCase
 {

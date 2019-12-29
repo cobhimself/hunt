@@ -6,9 +6,13 @@ use Hunt\Component\Gatherer\AbstractGatherer;
 
 /**
  * @internal
+ * @coversDefaultClass \Hunt\Component\Gatherer\AbstractGatherer
+ * @codeCoverageIgnore
  */
 class AbstractGathererTest extends GathererTestCase
 {
+    /**
+     */
     public function setUp()
     {
         $this->gatherer = $this->getMockForAbstractClass(
@@ -17,6 +21,10 @@ class AbstractGathererTest extends GathererTestCase
         );
     }
 
+    /**
+     * @covers ::setTrimMatchingLines
+     * @covers ::getTrimMatchingLines
+     */
     public function testGetTrimMatchingLines()
     {
         $this->gatherer->setTrimMatchingLines();
@@ -25,6 +33,7 @@ class AbstractGathererTest extends GathererTestCase
 
     /**
      * @expectedException \RuntimeException
+     * @covers ::gather
      */
     public function testGather()
     {
@@ -35,6 +44,7 @@ class AbstractGathererTest extends GathererTestCase
 
     /**
      * @expectedException \RuntimeException
+     * @covers ::getHighlightedLine
      */
     public function testGetHighlightedLine()
     {
