@@ -9,10 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractTemplate implements TemplateInterface
 {
-    const HIGHLIGHT_START = '*';
-
-    const HIGHLIGHT_END = '*';
-
     protected $bodyOutput = '';
 
     /**
@@ -56,7 +52,18 @@ abstract class AbstractTemplate implements TemplateInterface
     private $gatherer;
 
     /**
+     * @var string
+     */
+    private $highlightStart = '*';
+
+    /**
+     * @var string
+     */
+    private $highlightEnd = '*';
+
+    /**
      * AbstractTemplate constructor.
+     * @codeCoverageIgnore
      */
     public function __construct(ResultCollection $resultCollection, OutputInterface $output = null)
     {
@@ -68,6 +75,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Perform necessary actions before rendering the template.
+     * @codeCoverageIgnore
      */
     public function init()
     {
@@ -116,8 +124,8 @@ abstract class AbstractTemplate implements TemplateInterface
         if ($this->doHighlight()) {
             $finalLine .= $this->gatherer->getHighlightedLine(
                 $line,
-                self::HIGHLIGHT_START,
-                self::HIGHLIGHT_END
+                $this->getHighlightStart(),
+                $this->getHighlightEnd()
             );
         } else {
             $finalLine .= $line;
@@ -204,6 +212,7 @@ abstract class AbstractTemplate implements TemplateInterface
      * Renders a single result and adds it to the body output.
      *
      * Useful for iterating through result collections and having the body output be compiled.
+     * @codeCoverageIgnore
      */
     public function renderResult(Result $result)
     {
@@ -212,6 +221,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Return the currently rendered body output.
+     * @codeCoverageIgnore
      */
     public function getBodyOutput(): string
     {
@@ -222,6 +232,7 @@ abstract class AbstractTemplate implements TemplateInterface
      * Returns the rendered template output.
      *
      * NOTE: You should render the body of the template using renderResult before attempting to get the output.
+     * @codeCoverageIgnore
      */
     public function getOutput(): string
     {
@@ -240,5 +251,37 @@ abstract class AbstractTemplate implements TemplateInterface
         $this->gatherer = $gatherer;
 
         return $this;
+    }
+
+    /**
+     * Get the start string used when we want to begin highlighting.
+     */
+    public function getHighlightStart(): string
+    {
+        return $this->highlightStart;
+    }
+
+    /**
+     * Set the string to use when we want to begin highlighting.
+     */
+    public function setHighlightStart(string $highlightStart)
+    {
+        $this->highlightStart = $highlightStart;
+    }
+
+    /**
+     * Get the string to use when we are done highlighting.
+     */
+    public function getHighlightEnd(): string
+    {
+        return $this->highlightEnd;
+    }
+
+    /**
+     * Set the string to use when we are done highlighting.
+     */
+    public function setHighlightEnd(string $highlightEnd)
+    {
+        $this->highlightEnd = $highlightEnd;
     }
 }

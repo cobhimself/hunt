@@ -3,10 +3,16 @@
 namespace Hunt\Tests\Bundle\Templates;
 
 use Hunt\Bundle\Templates\AbstractTemplate;
+use Hunt\Component\Gatherer\StringGatherer;
 
 /**
  * @internal
- */
+ * @codeCoverageIgnore
+ * @coversDefaultClass \Hunt\Bundle\Templates\AbstractTemplate
+ * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
+ * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
+ * @covers ::setGatherer
+*/
 class AbstractTemplateTest extends TemplateTestCase
 {
     public function setUp()
@@ -19,16 +25,82 @@ class AbstractTemplateTest extends TemplateTestCase
             ]
         );
 
+        $this->template->setGatherer(new StringGatherer(self::SEARCH_TERM));
+
         $this->template->method('getResultOutput')
             ->willReturn('test result output');
     }
 
-    public function testGetResultLine()
-    {
-        $line = $this->template->getResultLine(100, 'this is the line', 'the');
-        $this->assertEquals('100: this is the line', $line);
+    /**
+     * @covers ::getResultLine
+     * @covers ::highlight
+     * @covers ::doHighlight
+     * @covers ::setHighlightStart
+     * @covers ::getHighlightStart
+     * @covers ::setHighlightEnd
+     * @covers ::getHighlightEnd
+     * @covers ::getLineNumber
+     * @dataProvider dataProviderForTestGetResultLine
+     */
+    public function testGetResultLine(
+        bool $highlight,
+        int $lineNum,
+        string $line,
+        string $expectation,
+        string $highlightStart = null,
+        string $highlightEnd = null
+    ) {
+        if (null !== $highlightStart) {
+            $this->template->setHighlightStart($highlightStart);
+        }
+
+        if (null !== $highlightEnd) {
+            $this->template->setHighlightEnd($highlightEnd);
+        }
+
+        $this->template->highlight($highlight);
+
+        $resultLine = $this->template->getResultLine($lineNum, $line, self::SEARCH_TERM);
+
+        $this->assertEquals($expectation, $resultLine);
     }
 
+    public function dataProviderForTestGetResultLine(): array
+    {
+        $line = 'this is the ' . self::SEARCH_TERM;
+        return [
+            'no highlight' => [
+                'highlight'   => false,
+                'lineNum'     => 100,
+                'line'        => $line,
+                'expectation' => '100: this is the ' . self::SEARCH_TERM,
+            ],
+            'highlight with default' => [
+                'highlight'   => true,
+                'lineNum'     => 100,
+                'line'        => $line,
+                'expectation' => '100: this is the *' . self::SEARCH_TERM . '*',
+            ],
+            'highlight with %/#' => [
+                'highlight'      => true,
+                'lineNum'        => 100,
+                'line'           => $line,
+                'expectation'    => '100: this is the %' . self::SEARCH_TERM . '#',
+                'highlightStart' => '%',
+                'highlightEnd'   => '#'
+            ],
+        ];
+    }
+
+    /**
+     * @covers ::getTermResults
+     * @covers ::doHighlight
+     * @covers ::getLineNumber
+     * @covers ::getResultLine
+     * @uses \Hunt\Bundle\Models\Result::getMatchingLines()
+     * @uses \Hunt\Bundle\Models\Result::getTerm()
+     * @uses \Hunt\Bundle\Models\Result::getFileName()
+     */
     public function testGetTermResults()
     {
         $result = $this->getResultForFileConstant(self::RESULT_FILE_ONE);
@@ -43,12 +115,20 @@ class AbstractTemplateTest extends TemplateTestCase
         );
     }
 
+    /**
+     * @covers ::setHeader
+     * @covers ::getHeader
+     */
     public function testGetHeader()
     {
         $this->template->setHeader('blah');
         $this->assertEquals('blah', $this->template->getHeader());
     }
 
+    /**
+     * @covers ::getFilename
+     * @uses \Hunt\Bundle\Models\Result::getFileName()
+     */
     public function testGetFilename()
     {
         $fileName = $this->template->getFilename(
@@ -57,6 +137,10 @@ class AbstractTemplateTest extends TemplateTestCase
         $this->assertEquals(self::RESULT_FILE_TWO, $fileName);
     }
 
+    /**
+     * @covers ::setFooter
+     * @covers ::getFooter
+     */
     public function testGetFooter()
     {
         $this->template->setFooter('bleh');

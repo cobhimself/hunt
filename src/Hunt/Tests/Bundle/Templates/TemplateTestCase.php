@@ -8,6 +8,7 @@ use Hunt\Tests\HuntTestCase;
 
 /**
  * @internal
+ * @codeCoverageIgnore
  */
 class TemplateTestCase extends HuntTestCase
 {

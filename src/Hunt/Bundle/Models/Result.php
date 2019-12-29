@@ -38,6 +38,8 @@ class Result
      * @param string      $term     the term which brought forth this result
      * @param string      $fileName the filename where the term was found
      * @param SplFileInfo $file     Symfony's SplFileInfo object of the file
+     *
+     * @codeCoverageIgnore
      */
     public function __construct(string $term, string $fileName, SplFileInfo $file)
     {

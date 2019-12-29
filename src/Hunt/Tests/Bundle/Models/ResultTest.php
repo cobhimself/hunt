@@ -9,6 +9,8 @@ use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * @internal
+ * @coversDefaultClass \Hunt\Bundle\Models\Result
+ * @codeCoverageIgnore
  */
 class ResultTest extends HuntTestCase
 {
@@ -21,26 +23,39 @@ class ResultTest extends HuntTestCase
     {
         $this->result = $this->getResultWithFileInfoMock(
             self::SEARCH_TERM,
-            self::EXPECTED_FILE_NAME
+            self::RESULT_FILE_ONE
         );
     }
 
+    /**
+     * @covers ::getFileName
+     */
     public function testGetFileName()
     {
-        $this->assertEquals(self::EXPECTED_FILE_NAME, $this->result->getFileName());
+        $this->assertEquals(self::RESULT_FILE_ONE, $this->result->getFileName());
     }
 
+    /**
+     * @covers ::getTerm
+     */
     public function testGetTerm()
     {
         $this->assertEquals(self::SEARCH_TERM, $this->result->getTerm());
     }
 
+    /**
+     * @covers ::setMatchingLines
+     */
     public function testSetMatchingLines()
     {
         /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(Result::class, $this->result->setMatchingLines([]));
     }
 
+    /**
+     * @covers ::getLongestLineNumLength
+     * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
+     */
     public function testGetLongestLineNumLength()
     {
         $this->result->setMatchingLines([
@@ -53,12 +68,20 @@ class ResultTest extends HuntTestCase
         $this->assertEquals(3, $this->result->getLongestLineNumLength());
     }
 
+    /**
+     * @covers ::getFileIterator
+     * @uses \Hunt\Bundle\Models\Result::getFile()
+     */
     public function testGetFileIterator()
     {
         /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(SplFileObject::class, $this->result->getFileIterator());
     }
 
+    /**
+     * @covers ::getNumMatches
+     * @covers ::setMatchingLines
+     */
     public function testGetNumMatches()
     {
         $this->result->setMatchingLines([
@@ -70,6 +93,10 @@ class ResultTest extends HuntTestCase
         $this->assertEquals(3, $this->result->getNumMatches());
     }
 
+    /**
+     * @covers ::getMatchingLines
+     * @covers ::setMatchingLines
+     */
     public function testGetMatchingLines()
     {
         $lines = [
@@ -84,6 +111,9 @@ class ResultTest extends HuntTestCase
         $this->assertEquals($lines, $this->result->getMatchingLines());
     }
 
+    /**
+     * @covers ::getFile
+     */
     public function testGetFile()
     {
         /* @noinspection UnnecessaryAssertionInspection */

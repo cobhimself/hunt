@@ -4,6 +4,7 @@ namespace Hunt\Tests;
 
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SplFileObject;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -11,7 +12,8 @@ use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * @internal
- */
+ * @codeCoverageIgnore
+*/
 class HuntTestCase extends TestCase
 {
     const SEARCH_TERM = 'searchTerm';
@@ -28,8 +30,6 @@ class HuntTestCase extends TestCase
     const RESULT_FILE_TWO = 'this/is/a/file/name/two';
 
     const RESULT_FILE_THREE = 'this/is/a/file/name/three';
-
-    const EXPECTED_FILE_NAME = 'this/is/a/file/name.php';
 
     /**
      * An array of result files with lines we are using as "matches".
@@ -78,6 +78,11 @@ class HuntTestCase extends TestCase
         return $fileInfoMock;
     }
 
+    /**
+     * Return a Result mock after creating an SplFileInfo mock for it to use.
+     *
+     * @return MockObject|Result
+     */
     protected function getResultWithFileInfoMock(string $searchTerm, string $fileName): Result
     {
         return new Result(
@@ -117,7 +122,6 @@ class HuntTestCase extends TestCase
 
     /**
      * Return a ResultCollection made up of our default matching line data.
-     * j.
      */
     protected function getResultCollectionWithFileConstants(): ResultCollection
     {
