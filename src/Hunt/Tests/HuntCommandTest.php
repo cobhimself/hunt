@@ -1,14 +1,16 @@
 <?php
 
-
 namespace Hunt\Tests;
 
-use Symfony\Component\Console\Application;
+use Hunt\Bundle\Command\HuntCommand;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Hunt\Bundle\Command\HuntCommand;
 
+/**
+ * @internal
+ */
 class HuntCommandTest extends KernelTestCase
 {
     /**
@@ -42,9 +44,8 @@ class HuntCommandTest extends KernelTestCase
                     HuntCommand::DIR => [realpath('src/Hunt/Tests/TestFiles')],
                 ],
                 'expectations' => [
-
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -53,8 +54,8 @@ class HuntCommandTest extends KernelTestCase
      *
      * @dataProvider executeDataProvider
      *
-     * @param array $options      An array of command line arguments to be sent to the command.
-     * @param array $expectations An array of expectations we have for the command.
+     * @param array $options      an array of command line arguments to be sent to the command
+     * @param array $expectations an array of expectations we have for the command
      */
     public function testExecute(array $options, array $expectations)
     {

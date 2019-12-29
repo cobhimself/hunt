@@ -4,8 +4,10 @@ namespace Hunt\Tests\Bundle\Templates;
 
 use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Component\Gatherer\StringGatherer;
-use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 class ConsoleTemplateTest extends TemplateTestCase
 {
     public function setUp()
@@ -20,7 +22,7 @@ class ConsoleTemplateTest extends TemplateTestCase
 
     public function testGetResultOutput()
     {
-        $expectedOutput = implode(PHP_EOL, [
+        $expectedOutput = implode(\PHP_EOL, [
             //Our line numbers should take up three spaces since our longest line number has three digits.
             '  this/is/a/file/name/one:   1: this is line one',
             //Notice how we've padded the results with spaces.
@@ -35,8 +37,8 @@ class ConsoleTemplateTest extends TemplateTestCase
             //This line will have our search time highlighted but there will not be a partial match on our excluded term
             'this/is/a/file/name/three:   1: this is line one and it has the *' . self::SEARCH_TERM . '* as well as ' . self::EXCLUDE_TERM,
             '                             2: this is line two',
-            '                           300: this is line three hundred'
-        ]) . PHP_EOL;
+            '                           300: this is line three hundred',
+        ]) . \PHP_EOL;
 
         $actualOutput = '';
 

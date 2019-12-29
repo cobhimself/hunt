@@ -2,9 +2,8 @@
 
 namespace Hunt\Component\Gatherer;
 
-
-use RuntimeException;
 use Hunt\Bundle\Models\Result;
+use RuntimeException;
 
 abstract class AbstractGatherer implements GathererInterface
 {
@@ -39,9 +38,8 @@ abstract class AbstractGatherer implements GathererInterface
      * Gather a set of matching lines from the Result's file.
      *
      * @throws RuntimeException
-     * @param Result $result
      *
-     * @return bool True if we still have matches, false otherwise.
+     * @return bool true if we still have matches, false otherwise
      */
     public function gather(Result $result): bool
     {
@@ -55,11 +53,6 @@ abstract class AbstractGatherer implements GathererInterface
      * Excluded terms are not highlighted.
      *
      * @throws RuntimeException
-     * @param string $line
-     * @param string $highlightStart
-     * @param string $highlightEnd
-     *
-     * @return string
      */
     public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string
     {
@@ -68,8 +61,6 @@ abstract class AbstractGatherer implements GathererInterface
 
     /**
      * Set whether or not we want this gatherer to trim whitespace from the beginning of matching lines.
-     *
-     * @param bool $trim
      *
      * @return AbstractGatherer
      */
@@ -82,8 +73,6 @@ abstract class AbstractGatherer implements GathererInterface
 
     /**
      * Get whether or not we want to trim spaces from the beginning of the matching lines.
-     *
-     * @return bool
      */
     public function getTrimMatchingLines(): bool
     {

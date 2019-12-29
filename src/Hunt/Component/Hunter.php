@@ -1,5 +1,6 @@
-<?php /** @noinspection DisconnectedForeachInstructionInspection */
+<?php
 
+/** @noinspection DisconnectedForeachInstructionInspection */
 
 namespace Hunt\Component;
 
@@ -9,7 +10,6 @@ use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
 
 class Hunter
 {
@@ -21,7 +21,8 @@ class Hunter
     private $baseDir;
 
     /**
-     * Whether or not we want to search recursively
+     * Whether or not we want to search recursively.
+     *
      * @var bool
      */
     private $recurse;
@@ -29,7 +30,7 @@ class Hunter
     /**
      * @var OutputInterface
      */
-     private $output;
+    private $output;
 
     /**
      * @var string
@@ -42,7 +43,7 @@ class Hunter
     private $excludeTerms;
 
     /**
-     * @var ResultCollection A collection of Hunter Results.
+     * @var ResultCollection a collection of Hunter Results
      */
     private $found;
 
@@ -69,9 +70,6 @@ class Hunter
 
     /**
      * Hunter constructor.
-     *
-     * @param OutputInterface  $output
-     * @param ProgressBar|null $progressBar
      */
     public function __construct(OutputInterface $output, ProgressBar $progressBar = null)
     {
@@ -82,9 +80,7 @@ class Hunter
     /**
      * Set the base directory where we we perform our search.
      *
-     * @param array[string] $baseDir The base directory to search.
-     *
-     * @return Hunter
+     * @param array[string] $baseDir The base directory to search
      */
     public function setBaseDir(array $baseDir): Hunter
     {
@@ -96,9 +92,7 @@ class Hunter
     /**
      * Whether or not to recursively search within our base directory.
      *
-     * @param bool $recurse If true, we will recurse; otherwise, we'll stay within the base directory.
-     *
-     * @return Hunter
+     * @param bool $recurse if true, we will recurse; otherwise, we'll stay within the base directory
      */
     public function setRecursive(bool $recurse): Hunter
     {
@@ -109,10 +103,6 @@ class Hunter
 
     /**
      * Specify the term we are hunting for.
-     *
-     * @param string $term
-     *
-     * @return Hunter
      */
     public function setTerm(string $term): Hunter
     {
@@ -122,7 +112,7 @@ class Hunter
     }
 
     /**
-     * Hunt through our files for the given search strings
+     * Hunt through our files for the given search strings.
      */
     public function hunt()
     {
@@ -138,9 +128,7 @@ class Hunter
     }
 
     /**
-     * @param array[string] $excludeTerms An array of terms to exclude.
-     *
-     * @return Hunter
+     * @param array[string] $excludeTerms An array of terms to exclude
      */
     public function setExclude(array $excludeTerms): Hunter
     {
@@ -150,7 +138,7 @@ class Hunter
     }
 
     /**
-     * Performs the initial search for files which contain the term
+     * Performs the initial search for files which contain the term.
      */
     private function getFileList()
     {
@@ -193,7 +181,6 @@ class Hunter
      * Build the final result set.
      *
      * Goes through each result and finds the lines which match our options.
-     *
      */
     private function gatherData()
     {
@@ -244,10 +231,6 @@ class Hunter
 
     /**
      * Set the Gatherer this Hunt is going to use to find the search term within the files.
-     *
-     * @param GathererInterface $gatherer
-     *
-     * @return Hunter
      */
     public function setGatherer(GathererInterface $gatherer): Hunter
     {
@@ -258,10 +241,6 @@ class Hunter
 
     /**
      * Set whether or not we want to trim matching lines.
-     *
-     * @param bool $trimMatches
-     *
-     * @return Hunter
      */
     public function setTrimMatches(bool $trimMatches): Hunter
     {

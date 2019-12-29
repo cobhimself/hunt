@@ -4,6 +4,9 @@ namespace Hunt\Tests\Component\Gatherer;
 
 use Hunt\Component\Gatherer\StringGatherer;
 
+/**
+ * @internal
+ */
 class StringGathererTest extends GathererTestCase
 {
     public function setUp()
@@ -24,11 +27,6 @@ class StringGathererTest extends GathererTestCase
      * code. This should never happen because our Results will only have lines matching the search term.
      *
      * @dataProvider dataProviderTestGetHighlightedLine
-     *
-     * @param string $searchTerm
-     * @param array $excludeTerm
-     * @param string $line
-     * @param string $expectation
      */
     public function testGetHighlightedLine(string $searchTerm, array $excludeTerm, string $line, string $expectation)
     {

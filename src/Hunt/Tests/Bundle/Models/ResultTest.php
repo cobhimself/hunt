@@ -7,6 +7,9 @@ use Hunt\Tests\HuntTestCase;
 use SplFileObject;
 use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * @internal
+ */
 class ResultTest extends HuntTestCase
 {
     /**
@@ -34,7 +37,7 @@ class ResultTest extends HuntTestCase
 
     public function testSetMatchingLines()
     {
-        /** @noinspection UnnecessaryAssertionInspection */
+        /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(Result::class, $this->result->setMatchingLines([]));
     }
 
@@ -52,7 +55,7 @@ class ResultTest extends HuntTestCase
 
     public function testGetFileIterator()
     {
-        /** @noinspection UnnecessaryAssertionInspection */
+        /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(SplFileObject::class, $this->result->getFileIterator());
     }
 
@@ -61,7 +64,7 @@ class ResultTest extends HuntTestCase
         $this->result->setMatchingLines([
             'line 1',
             'line 2',
-            'line 3'
+            'line 3',
         ]);
 
         $this->assertEquals(3, $this->result->getNumMatches());
@@ -73,7 +76,7 @@ class ResultTest extends HuntTestCase
             'line 1',
             'line 2',
             'line 3',
-            'line 4'
+            'line 4',
         ];
 
         $this->result->setMatchingLines($lines);
@@ -83,7 +86,7 @@ class ResultTest extends HuntTestCase
 
     public function testGetFile()
     {
-        /** @noinspection UnnecessaryAssertionInspection */
+        /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(SplFileInfo::class, $this->result->getFile());
     }
 }
