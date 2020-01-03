@@ -205,17 +205,13 @@ class Hunter
         $this->found = new ResultCollection($found);
 
         //Did we even find anything?
-        if ($found > 0) {
-            $this->output->writeln(
-                sprintf(
-                    'Found <bold>%d</bold> files containing the term <bold>%s</bold>.',
-                    count($this->found),
-                    $this->term
-                )
-            );
-        } else {
-            $this->output->writeln(sprintf('No files found with the term <bold>%s</bold>', $this->term));
-        }
+        $this->output->writeln(
+            sprintf(
+                'Found <bold>%d</bold> files containing the term <bold>%s</bold>.',
+                count($this->found),
+                $this->term
+            )
+        );
     }
 
     /**

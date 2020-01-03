@@ -2,6 +2,7 @@
 
 namespace Hunt\Tests\Component;
 
+use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
 use Hunt\Component\Gatherer\GathererInterface;
 use Hunt\Component\Gatherer\StringGatherer;
 use Hunt\Component\Hunter;
@@ -124,7 +125,7 @@ class HunterTest extends HuntTestCase
     {
         $progressBar = new ProgressBar($this->output, 777);
         $this->hunter->setProgressBar($progressBar);
-        $this->assertEquals(777, $progressBar->getMaxSteps());
+        $this->assertEquals(777, $this->hunter->getProgressBar()->getMaxSteps());
     }
 
     /**
@@ -149,6 +150,7 @@ class HunterTest extends HuntTestCase
      * @covers ::setGatherer
      * @covers ::getGatherer
      * @uses   \Hunt\Component\HunterFileListTraversable
+     * @uses \Hunt\Component\HunterArgs::getInvalidArgumentException()
      */
     public function testHunt(array $options, array $expectations)
     {
@@ -156,12 +158,23 @@ class HunterTest extends HuntTestCase
             ->setBaseDir($options[HunterArgs::DIR])
             ->setTerm($options[HunterArgs::TERM])
             ->setGatherer(new StringGatherer($options[HunterArgs::TERM]));
+
+        if (isset($expectations['exception'])) {
+            $expectation = $expectations['exception'];
+            $this->expectException($expectation['type']);
+            $this->expectExceptionMessageRegExp($expectation['message']);
+        }
+
         $this->hunter->hunt();
 
         $output = $this->getOutputMockDisplay($this->output);
 
-        foreach ($expectations as $expectation) {
-            $this->assertContains($expectation, $output);
+        if (isset($expectations['contains'])) {
+            $expectation = $expectations['contains'];
+
+            foreach ($expectation as $contains) {
+                $this->assertContains($contains, $output);
+            }
         }
     }
 
@@ -175,7 +188,21 @@ class HunterTest extends HuntTestCase
                     HunterArgs::TERM => self::SEARCH_TERM
                 ],
                 'expectations' => [
-                    'Found 0 files containing the term ' . self::SEARCH_TERM
+                    'contains' => [
+                        'Found 0 files containing the term ' . self::SEARCH_TERM
+                    ]
+                ]
+            ],
+            'no term means error' => [
+                'options' => [
+                    HunterArgs::DIR => [$testFilesDir . '/FakeClass.php'],
+                    HunterArgs::TERM => ''
+                ],
+                'expectations' => [
+                    'exception' => [
+                        'type' => InvalidCommandArgumentException::class,
+                        'message' => '/A term must be specified/'
+                    ]
                 ]
             ],
             'single file, search: @deprecated' => [
@@ -184,7 +211,9 @@ class HunterTest extends HuntTestCase
                     HunterArgs::TERM => 'deprecated'
                 ],
                 'expectations' => [
-                    'Found 1 files containing the term deprecated'
+                    'contains' => [
+                        'Found 1 files containing the term deprecated'
+                    ]
                 ]
             ],
         ];
