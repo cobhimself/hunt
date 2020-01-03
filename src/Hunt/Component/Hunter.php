@@ -47,7 +47,7 @@ class Hunter
      */
     private $found;
 
-    /**
+   /**
      * The gatherer this hunter uses.
      *
      * @var GathererInterface

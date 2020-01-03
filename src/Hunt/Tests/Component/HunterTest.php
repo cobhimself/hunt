@@ -149,15 +149,31 @@ class HunterTest extends HuntTestCase
      * @covers ::generateTemplate
      * @covers ::setGatherer
      * @covers ::getGatherer
-     * @uses   \Hunt\Component\HunterFileListTraversable
+     * @covers ::setExcludedTerms
+     * @covers ::setRecursive
+     * @covers   \Hunt\Component\HunterFileListTraversable
      * @uses \Hunt\Component\HunterArgs::getInvalidArgumentException()
      */
     public function testHunt(array $options, array $expectations)
     {
         $this->hunter
             ->setBaseDir($options[HunterArgs::DIR])
-            ->setTerm($options[HunterArgs::TERM])
-            ->setGatherer(new StringGatherer($options[HunterArgs::TERM]));
+            ->setTerm($options[HunterArgs::TERM]);
+
+        $exclude = [];
+        if (isset($options[HunterArgs::EXCLUDE])) {
+            $exclude = $options[HunterArgs::EXCLUDE];
+            $this->hunter->setExcludedTerms($exclude);
+        }
+
+        if (isset($options[HunterArgs::RECURSIVE])) {
+            $this->hunter->setRecursive($options[HunterArgs::RECURSIVE]);
+        }
+
+        $this->hunter->setGatherer(
+            new StringGatherer($options[HunterArgs::TERM], $exclude)
+        );
+
 
         if (isset($expectations['exception'])) {
             $expectation = $expectations['exception'];
@@ -174,6 +190,14 @@ class HunterTest extends HuntTestCase
 
             foreach ($expectation as $contains) {
                 $this->assertContains($contains, $output);
+            }
+        }
+
+        if (isset($expectations['notContains'])) {
+            $expectation = $expectations['notContains'];
+
+            foreach ($expectation as $notContains) {
+                $this->assertNotContains($notContains, $output);
             }
         }
     }
@@ -213,6 +237,22 @@ class HunterTest extends HuntTestCase
                 'expectations' => [
                     'contains' => [
                         'Found 1 files containing the term deprecated'
+                    ]
+                ]
+            ],
+            'recurse, search: PHPUnit_, exclude: PHPUnit_Framework_MockObjects_MockObject' => [
+                'options' => [
+                    HunterArgs::DIR => [$testFilesDir],
+                    HunterArgs::RECURSIVE => true,
+                    HunterArgs::TERM => 'PHPUnit_',
+                    HunterArgs::EXCLUDE => ['PHPUnit_Framework_MockObjects_MockObject'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 2 files containing the term PHPUnit_'
+                    ],
+                    'notContains' => [
+                        '*PHPUnit_*Framework_MockObjects_MockObject'
                     ]
                 ]
             ],

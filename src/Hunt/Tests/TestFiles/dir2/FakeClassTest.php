@@ -14,7 +14,7 @@ class FakeClassTest extends PHPUnit_Framework_TestCase
     /**
      * Mock to use by our fake test.
      *
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var PHPUnit_Framework_MockObjects_MockObject
      */
     private $mock;
 
