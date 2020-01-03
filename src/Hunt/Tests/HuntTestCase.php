@@ -4,9 +4,14 @@ namespace Hunt\Tests;
 
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
+use Hunt\Component\OutputStyler;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use SplFileObject;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\LogicException;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -14,7 +19,7 @@ use Symfony\Component\Finder\SplFileInfo;
  * @internal
  * @codeCoverageIgnore
 */
-class HuntTestCase extends TestCase
+class HuntTestCase extends KernelTestCase
 {
     const SEARCH_TERM = 'searchTerm';
 
@@ -117,7 +122,57 @@ class HuntTestCase extends TestCase
         $output = new StreamOutput(fopen('php://memory', 'wb', false));
         $output->setDecorated(false);
 
+        //Need to style the output so our color tags are processed correctly.
+        OutputStyler::applyFormat($output->getFormatter());
+
         return $output;
+    }
+
+    /**
+     * Get the output collected within our output mock.
+     *
+     * @param StreamOutput $output The stream output created by our getOutputMock method.
+     *
+     * @return string The final output mock output
+     */
+    protected function getOutputMockDisplay(StreamOutput $output): string
+    {
+        rewind($output->getStream());
+
+        $display = stream_get_contents($output->getStream());
+        $display = str_replace(PHP_EOL, "\n", $display);
+
+        return $display;
+    }
+
+    /**
+     * Get an input object for the given command with the given input from array.
+     *
+     * @param array $input
+     * @param Command $command
+     *
+     * @return ArrayInput
+     */
+    protected function getInputObject(array $input, Command $command = null): ArrayInput
+    {
+        //We've got to be able to get the name of the command.
+        if (!isset($input['command']) && null === $command) {
+            throw new \LogicException(
+                'HuntTestCase::getInputObject MUST have either a Command parameter'
+                    . " or 'command' key in the input parameter"
+
+            );
+        }
+
+        // set the command name automatically if the input was not given the application requires
+        // this argument and no command name was passed
+        if (!isset($input['command'])
+            && (null !== $application = $command->getApplication())
+            && $application->getDefinition()->hasArgument('command')) {
+            $input = array_merge(['command' => $command->getName()], $input);
+        }
+
+        return new ArrayInput($input);
     }
 
     /**

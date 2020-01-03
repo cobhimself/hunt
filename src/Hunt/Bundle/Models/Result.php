@@ -23,7 +23,7 @@ class Result
     private $fileName;
 
     /**
-     * @var SplFileInfo
+     * @var \SplFileInfo
      */
     private $file;
 
@@ -37,11 +37,11 @@ class Result
      *
      * @param string      $term     the term which brought forth this result
      * @param string      $fileName the filename where the term was found
-     * @param SplFileInfo $file     Symfony's SplFileInfo object of the file
+     * @param \SplFileInfo $file     Symfony's SplFileInfo object of the file
      *
      * @codeCoverageIgnore
      */
-    public function __construct(string $term, string $fileName, SplFileInfo $file)
+    public function __construct(string $term, string $fileName, \SplFileInfo $file)
     {
         $this->term = $term;
         $this->fileName = $fileName;
@@ -95,7 +95,7 @@ class Result
     /**
      * Return the file associated with this result.
      */
-    public function getFile(): SplFileInfo
+    public function getFile(): \SplFileInfo
     {
         return $this->file;
     }

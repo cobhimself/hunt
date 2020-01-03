@@ -11,6 +11,7 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @coversDefaultClass \Hunt\Bundle\Templates\AbstractTemplate
  * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
  * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
+ * @uses \Hunt\Component\OutputStyler
  * @covers ::setGatherer
 */
 class AbstractTemplateTest extends TemplateTestCase

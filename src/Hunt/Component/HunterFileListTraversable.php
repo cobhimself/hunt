@@ -6,6 +6,7 @@ use Generator;
 use Hunt\Bundle\Models\Result;
 use IteratorAggregate;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class HunterFileListTraversable implements IteratorAggregate
 {
@@ -23,12 +24,30 @@ class HunterFileListTraversable implements IteratorAggregate
 
     public function __construct(array $baseDir, string $term, bool $recurse)
     {
-        $finder = new Finder();
-        $finder->files()->in($baseDir);
+        $files = [];
+        $dirs = [];
+
+        //Separate files and folders in our baseDir
+        foreach ($baseDir as $path) {
+            if (is_dir($path)) {
+                $dirs[] = $path;
+            } elseif (is_file($path)) {
+                $files[] = new \SplFileInfo($path);
+            } else {
+                throw new \InvalidArgumentException($path . ' is not a valid directory or file path');
+            }
+        }
+
+        $finder = (new Finder())
+            ->files()
+            ->in($dirs)
+            ->append($files);
 
         if (!$recurse) {
             $finder->depth('== 0');
         }
+
+
         $finder->contains($term);
 
         $this->finder = $finder;
@@ -45,7 +64,17 @@ class HunterFileListTraversable implements IteratorAggregate
     public function getIterator()
     {
         foreach ($this->finder as $file) {
-            $path = $file->getRelativePath();
+            if ($file instanceof SplFileInfo) {
+                /**
+                 * @var SplFileInfo
+                 */
+                $path = $file->getRelativePath();
+            } else {
+                /**
+                 * @var \SplFileInfo
+                 */
+                $path = $file->getPathname();
+            }
 
             yield new Result($this->term, $path, $file);
         }
