@@ -13,6 +13,7 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
+ * @uses \Hunt\Component\OutputStyler
  */
 class ConsoleTemplateTest extends TemplateTestCase
 {

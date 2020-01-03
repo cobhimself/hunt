@@ -25,7 +25,7 @@ class Hunter
      *
      * @var bool
      */
-    private $recurse;
+    private $recurse = false;
 
     /**
      * @var OutputInterface
@@ -35,12 +35,12 @@ class Hunter
     /**
      * @var string
      */
-    private $term;
+    private $term = '';
 
     /**
      * @var array
      */
-    private $excludeTerms;
+    private $excludeTerms = [];
 
     /**
      * @var ResultCollection a collection of Hunter Results
@@ -59,7 +59,7 @@ class Hunter
      *
      * @var bool
      */
-    private $trimMatches;
+    private $trimMatches = false;
 
     /**
      * A progress bar we can use to update our progress.
@@ -69,12 +69,43 @@ class Hunter
     private $progressBar;
 
     /**
+     * Whether or not our search term is a regex term.
+     *
+     * @var bool
+     */
+    private $regex;
+
+    /**
      * Hunter constructor.
      */
-    public function __construct(OutputInterface $output, ProgressBar $progressBar = null)
+    public function __construct(OutputInterface $output = null, ProgressBar $progressBar = null)
     {
         $this->output = $output;
         $this->progressBar = $progressBar;
+    }
+
+    public function setOutput(OutputInterface $output): Hunter
+    {
+        $this->output = $output;
+
+        return $this;
+    }
+
+    public function getOutput(): OutputInterface
+    {
+        return $this->output;
+    }
+
+    public function setProgressBar(ProgressBar $progressBar): Hunter
+    {
+        $this->progressBar = $progressBar;
+
+        return $this;
+    }
+
+    public function getProgressBar(): ProgressBar
+    {
+        return $this->progressBar;
     }
 
     /**
@@ -82,8 +113,14 @@ class Hunter
      *
      * @param array[string] $baseDir The base directory to search
      */
-    public function setBaseDir(array $baseDir): Hunter
+    public function setBaseDir(array $baseDir = null): Hunter
     {
+        foreach ($baseDir as $dir) {
+            if (!file_exists($dir)) {
+                throw new \InvalidArgumentException('The given base directory cannot be found: ' . $dir);
+            }
+        }
+
         $this->baseDir = $baseDir;
 
         return $this;
@@ -116,6 +153,10 @@ class Hunter
      */
     public function hunt()
     {
+        if (empty($this->getTerm())) {
+            throw HunterArgs::getInvalidArgumentException(HunterArgs::TERM);
+        }
+
         $this->output->writeln('<info>Starting the hunt for <bold>' . $this->term . '</bold></info>');
 
         $this->getFileList();
@@ -130,7 +171,7 @@ class Hunter
     /**
      * @param array[string] $excludeTerms An array of terms to exclude
      */
-    public function setExclude(array $excludeTerms): Hunter
+    public function setExcludedTerms(array $excludeTerms): Hunter
     {
         $this->excludeTerms = $excludeTerms;
 
@@ -196,7 +237,7 @@ class Hunter
             $this->progressBar->advance();
 
             //Filter our result set. If no matches exist afterwards, we'll squash it.
-            $containsResults = $this->gatherer->gather($result);
+            $containsResults = $this->getGatherer()->gather($result);
 
             if (!$containsResults) {
                 $this->progressBar->advance(-1);
@@ -247,5 +288,50 @@ class Hunter
         $this->trimMatches = $trimMatches;
 
         return $this;
+    }
+
+    public function getBaseDir(): array
+    {
+        return $this->baseDir;
+    }
+
+    public function isRecursive(): bool
+    {
+        return $this->recurse;
+    }
+
+    public function getTerm(): string
+    {
+        return $this->term;
+    }
+
+    public function getGatherer(): GathererInterface
+    {
+        return $this->gatherer;
+    }
+
+    /**
+     * Whether or not we should trim the spaces at the beginning of our result matches.
+     */
+    public function doTrimMatches(): bool
+    {
+        return $this->trimMatches;
+    }
+
+    public function getExcludedTerms(): array
+    {
+        return $this->excludeTerms;
+    }
+
+    public function setRegex(bool $regex): Hunter
+    {
+        $this->regex = $regex;
+
+        return $this;
+    }
+
+    public function isRegex(): bool
+    {
+        return $this->regex;
     }
 }
