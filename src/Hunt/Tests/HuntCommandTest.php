@@ -13,7 +13,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * @internal
  * @codeCoverageIgnore
- * @uses \Hunt\Component\OutputStyler
+ * @covers \Hunt\Component\OutputStyler
  * @coversDefaultClass \Hunt\Bundle\Command\HuntCommand
  */
 class HuntCommandTest extends HuntTestCase
@@ -170,6 +170,7 @@ class HuntCommandTest extends HuntTestCase
                 'input' => [
                     HunterArgs::DIR  => [$testFilesDirectory],
                     HunterArgs::TERM => self::SEARCH_TERM,
+                    'no-ansi' => true
                 ],
                 'expectations' => [
                     'options' => [
@@ -226,7 +227,9 @@ class HuntCommandTest extends HuntTestCase
 
     private function prepareInputOptions(array $input): array
     {
-        static $keyTypeResolution = [];
+        static $keyTypeResolution = [
+            'no-ansi' => 'option'
+        ];
         $keysToRemove = [];
 
         /**

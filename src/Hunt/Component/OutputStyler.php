@@ -38,7 +38,7 @@ class OutputStyler
         $progressBar = new ProgressBar($output);
         $progressBar->setFormat('hunt');
 
-        if ($input->getOption('no-ansi')) {
+        if (null !== $nonAnsiRedrawFrequency) {
             $progressBar->setRedrawFrequency($nonAnsiRedrawFrequency);
         }
 
