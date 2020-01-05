@@ -183,7 +183,7 @@ class Hunter
      */
     private function getFileList()
     {
-        $found = [];
+        $resultCollection = new ResultCollection();
 
         $fileList = new HunterFileListTraversable($this->baseDir, $this->term, $this->recurse);
 
@@ -196,13 +196,13 @@ class Hunter
         foreach ($fileList as $result) {
             $this->progressBar->advance();
             $this->progressBar->setMessage($result->getFileName(), 'filename');
-            $found[] = $result;
+            $resultCollection->addResult($result);
         }
 
         $this->progressBar->finish();
         $this->progressBar->clear();
 
-        $this->found = new ResultCollection($found);
+        $this->found = $resultCollection;
 
         //Did we even find anything?
         $this->output->writeln(
@@ -222,6 +222,7 @@ class Hunter
     private function gatherData()
     {
         $this->progressBar->setMessage('Building Results');
+        $this->progressBar->setMessage('...', 'filename');
         $this->progressBar->start(count($this->found));
 
         //Sort our result collection
@@ -244,6 +245,7 @@ class Hunter
         $this->found->squashEmptyResults();
 
         $this->progressBar->finish();
+        $this->progressBar->clear();
     }
 
     private function generateTemplate()
@@ -253,6 +255,7 @@ class Hunter
 
         $this->progressBar->start(count($this->found));
         $this->progressBar->setMessage('Rendering template');
+        $this->progressBar->setMessage('...', 'filename');
 
         foreach ($this->found as $result) {
             $this->progressBar->setMessage($result->getFilename(), 'filename');
