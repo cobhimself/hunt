@@ -63,6 +63,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * AbstractTemplate constructor.
+     *
      * @codeCoverageIgnore
      */
     public function __construct(ResultCollection $resultCollection, OutputInterface $output = null)
@@ -75,6 +76,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Perform necessary actions before rendering the template.
+     *
      * @codeCoverageIgnore
      */
     public function init()
@@ -212,6 +214,7 @@ abstract class AbstractTemplate implements TemplateInterface
      * Renders a single result and adds it to the body output.
      *
      * Useful for iterating through result collections and having the body output be compiled.
+     *
      * @codeCoverageIgnore
      */
     public function renderResult(Result $result)
@@ -221,6 +224,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Return the currently rendered body output.
+     *
      * @codeCoverageIgnore
      */
     public function getBodyOutput(): string
@@ -232,6 +236,7 @@ abstract class AbstractTemplate implements TemplateInterface
      * Returns the rendered template output.
      *
      * NOTE: You should render the body of the template using renderResult before attempting to get the output.
+     *
      * @codeCoverageIgnore
      */
     public function getOutput(): string

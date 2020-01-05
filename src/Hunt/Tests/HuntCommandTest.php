@@ -19,6 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class HuntCommandTest extends HuntTestCase
 {
     const SEARCH_TERM = 'PHPUnit_';
+
     const EXCLUDE_TERM = ['PHPUnit_Framework_MockObjects_MockObject'];
 
     /**
@@ -43,12 +44,13 @@ class HuntCommandTest extends HuntTestCase
     /**
      * Test the execution of our Hunt Command.
      *
-     * @covers ::getHunter()
      * @covers ::configure()
      * @covers ::execute()
+     * @covers ::getHunter()
      * @covers ::getHunterArgs()
      *
      * @covers \Hunt\Component\HunterArgs
+     *
      * @uses \Hunt\Component\Hunter
      * @uses \Hunt\Bundle\Models\Result
      * @uses \Hunt\Bundle\Models\ResultCollection
@@ -62,12 +64,7 @@ class HuntCommandTest extends HuntTestCase
      * @dataProvider dataProviderForExecute
      *
      * @param array $input        an array of input strings passed to our command
-     * @param array $expectations an array of expectations with the following available keys:
-     *         - exception: an array with the following keys:
-     *             - class: the exception class
-     *             - message: the message returned in the exception
-     *         - options: an array of input option/argument names and values
-     *         - gathererInstance: the FQN of the expected gatherer class
+     * @param array $expectations an array of expectations.
      */
     public function testExecute(array $input, array $expectations)
     {
@@ -87,24 +84,30 @@ class HuntCommandTest extends HuntTestCase
             switch ($option) {
                 case HunterArgs::DIR:
                     $actualValue = $hunter->getBaseDir();
+
                     break;
                 case HunterArgs::TERM:
                     $actualValue = $hunter->getTerm();
+
                     break;
                 case HunterArgs::EXCLUDE:
                     $actualValue = $hunter->getExcludedTerms();
+
                     break;
                 case HunterArgs::TRIM_MATCHES:
                     $actualValue = $hunter->doTrimMatches();
+
                     break;
                 case HunterArgs::REGEX:
                     $actualValue = $hunter->isRegex();
+
                     break;
                 case HunterArgs::RECURSIVE:
                     $actualValue = $hunter->isRecursive();
+
                     break;
             }
-            /** @var bool|array|string $actualValue */
+            /* @var bool|array|string $actualValue */
             $this->assertEquals(
                 $value,
                 $actualValue,
@@ -124,18 +127,19 @@ class HuntCommandTest extends HuntTestCase
     {
         $defaultDir = getcwd();
         $testFilesDirectory = __DIR__ . '/TestFiles/';
+
         return [
             'non-existent dir' => [
                 'input' => [
-                    HunterArgs::DIR => ['/blah'],
+                    HunterArgs::DIR  => ['/blah'],
                     HunterArgs::TERM => self::SEARCH_TERM,
                 ],
                 'expectations' => [
                     'exception' => [
-                        'class' => InvalidArgumentException::class,
-                        'message' => '/A valid directory or file to search through must be provided/'
-                    ]
-                ]
+                        'class'   => InvalidArgumentException::class,
+                        'message' => '/A valid directory or file to search through must be provided/',
+                    ],
+                ],
             ],
             'no dir' => [
                 'input' => [
@@ -151,26 +155,26 @@ class HuntCommandTest extends HuntTestCase
                         HunterArgs::TERM         => self::SEARCH_TERM,
                         HunterArgs::RECURSIVE    => false,
                     ],
-                    'gathererInstance' => StringGatherer::class
-                ]
+                    'gathererInstance' => StringGatherer::class,
+                ],
             ],
             'empty term' => [
                 'input' => [
-                    HunterArgs::DIR => [$testFilesDirectory],
-                    HunterArgs::TERM => ''
+                    HunterArgs::DIR  => [$testFilesDirectory],
+                    HunterArgs::TERM => '',
                 ],
                 'expectations' => [
                     'exception' => [
-                        'class' => InvalidCommandArgumentException::class,
-                        'message' => '/A term must be specified/'
-                    ]
-                ]
+                        'class'   => InvalidCommandArgumentException::class,
+                        'message' => '/A term must be specified/',
+                    ],
+                ],
             ],
             'term and dir' => [
                 'input' => [
                     HunterArgs::DIR  => [$testFilesDirectory],
                     HunterArgs::TERM => self::SEARCH_TERM,
-                    'no-ansi' => true
+                    'no-ansi'        => true,
                 ],
                 'expectations' => [
                     'options' => [
@@ -181,8 +185,8 @@ class HuntCommandTest extends HuntTestCase
                         HunterArgs::TERM         => self::SEARCH_TERM,
                         HunterArgs::RECURSIVE    => false,
                     ],
-                    'gathererInstance' => StringGatherer::class
-                ]
+                    'gathererInstance' => StringGatherer::class,
+                ],
             ],
             'all params' => [
                 'input' => [
@@ -202,25 +206,25 @@ class HuntCommandTest extends HuntTestCase
                         HunterArgs::TERM         => self::SEARCH_TERM,
                         HunterArgs::RECURSIVE    => true,
                     ],
-                ]
+                ],
             ],
             'regex is true' => [
                 'input' => [
-                    HunterArgs::DIR          => [$testFilesDirectory],
-                    HunterArgs::REGEX        => true,
-                    HunterArgs::TERM         => self::SEARCH_TERM,
+                    HunterArgs::DIR   => [$testFilesDirectory],
+                    HunterArgs::REGEX => true,
+                    HunterArgs::TERM  => self::SEARCH_TERM,
                 ],
                 'expectations' => [
                     'options' => [
-                        HunterArgs::DIR          => [$testFilesDirectory],
-                        HunterArgs::REGEX        => true,
-                        HunterArgs::TERM         => self::SEARCH_TERM,
+                        HunterArgs::DIR   => [$testFilesDirectory],
+                        HunterArgs::REGEX => true,
+                        HunterArgs::TERM  => self::SEARCH_TERM,
                     ],
                     'exception' => [
-                        'class' => \InvalidArgumentException::class,
-                        'message' => '/Gatherer not implemented yet/'
-                    ]
-                ]
+                        'class'   => \InvalidArgumentException::class,
+                        'message' => '/Gatherer not implemented yet/',
+                    ],
+                ],
             ],
         ];
     }
@@ -228,13 +232,13 @@ class HuntCommandTest extends HuntTestCase
     private function prepareInputOptions(array $input): array
     {
         static $keyTypeResolution = [
-            'no-ansi' => 'option'
+            'no-ansi' => 'option',
         ];
         $keysToRemove = [];
 
         /**
-         * @var string $key
-         * @var mixed $value
+         * @var string
+         * @var mixed  $value
          */
         foreach ($input as $key => $value) {
             if (!array_key_exists($key, $keyTypeResolution)) {
@@ -245,7 +249,7 @@ class HuntCommandTest extends HuntTestCase
                     $keyTypeResolution[$key] = 'argument';
                 }
             }
-            if ($keyTypeResolution[$key] === 'option') {
+            if ('option' === $keyTypeResolution[$key]) {
                 $input['--' . $key] = $value;
                 $keysToRemove[] = $key;
             }

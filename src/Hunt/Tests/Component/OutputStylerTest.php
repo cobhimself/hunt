@@ -9,11 +9,11 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 /**
  * @codeCoverageIgnore
+ *
+ * @internal
  */
 class OutputStylerTest extends HuntTestCase
 {
-
-
     ///**
     // * @dataProvider dataProviderForTestGetProgressBar
     // */
@@ -31,16 +31,16 @@ class OutputStylerTest extends HuntTestCase
     {
         return [
             'ansi is true' => [
-                'ansi' => true,
+                'ansi'         => true,
                 'expectations' => [
-                    'freq' => 100
-                ]
+                    'freq' => 100,
+                ],
             ],
             'ansi is false' => [
-                'ansi' => false,
+                'ansi'         => false,
                 'expectations' => [
-                    'freq' => 500
-                ]
+                    'freq' => 500,
+                ],
             ],
         ];
     }
@@ -55,7 +55,6 @@ class OutputStylerTest extends HuntTestCase
         $testLine = '<' . $styleName . '>' . $text . '</' . $styleName . '>';
         $formattedExpectation = "\033" . $expectations['startCode'] . $text . "\033" . $expectations['endCode'];
         $unformattedExpectation = $text;
-
 
         //Test when it's decorated
         $formatter = new OutputFormatter(true);
@@ -79,19 +78,19 @@ class OutputStylerTest extends HuntTestCase
     {
         return [
             [
-                'style' => 'info',
+                'style'        => 'info',
                 'expectations' => [
                     'instanceof' => OutputFormatterStyle::class,
-                    'startCode' => '[32m',
-                    'endCode' => '[39m',
+                    'startCode'  => '[32m',
+                    'endCode'    => '[39m',
                 ],
             ],
             [
-                'style' => 'bold',
+                'style'        => 'bold',
                 'expectations' => [
                     'instanceof' => OutputFormatterStyle::class,
-                    'startCode' => '[1m',
-                    'endCode' => '[22m',
+                    'startCode'  => '[1m',
+                    'endCode'    => '[22m',
                 ],
             ],
         ];

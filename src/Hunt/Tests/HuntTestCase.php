@@ -9,7 +9,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use SplFileObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -18,7 +17,7 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * @internal
  * @codeCoverageIgnore
-*/
+ */
 class HuntTestCase extends KernelTestCase
 {
     const SEARCH_TERM = 'searchTerm';
@@ -55,8 +54,8 @@ class HuntTestCase extends KernelTestCase
             3 => 'this is line three with ' . self::SEARCH_TERM . 'Ok',
         ],
         self::RESULT_FILE_THREE => [
-            1 => 'this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
-            2 => 'this is line two',
+            1   => 'this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+            2   => 'this is line two',
             300 => 'this is line three hundred',
         ],
     ];
@@ -131,7 +130,7 @@ class HuntTestCase extends KernelTestCase
     /**
      * Get the output collected within our output mock.
      *
-     * @param StreamOutput $output The stream output created by our getOutputMock method.
+     * @param StreamOutput $output the stream output created by our getOutputMock method
      *
      * @return string The final output mock output
      */
@@ -140,7 +139,7 @@ class HuntTestCase extends KernelTestCase
         rewind($output->getStream());
 
         $display = stream_get_contents($output->getStream());
-        $display = str_replace(PHP_EOL, "\n", $display);
+        $display = str_replace(\PHP_EOL, "\n", $display);
 
         return $display;
     }
@@ -148,20 +147,13 @@ class HuntTestCase extends KernelTestCase
     /**
      * Get an input object for the given command with the given input from array.
      *
-     * @param array $input
      * @param Command $command
-     *
-     * @return ArrayInput
      */
     protected function getInputObject(array $input, Command $command = null): ArrayInput
     {
         //We've got to be able to get the name of the command.
         if (!isset($input['command']) && null === $command) {
-            throw new \LogicException(
-                'HuntTestCase::getInputObject MUST have either a Command parameter'
-                    . " or 'command' key in the input parameter"
-
-            );
+            throw new \LogicException('HuntTestCase::getInputObject MUST have either a Command parameter' . " or 'command' key in the input parameter");
         }
 
         // set the command name automatically if the input was not given the application requires

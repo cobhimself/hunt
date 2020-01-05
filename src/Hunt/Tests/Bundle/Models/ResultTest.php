@@ -54,14 +54,15 @@ class ResultTest extends HuntTestCase
 
     /**
      * @covers ::getLongestLineNumLength
+     *
      * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
      */
     public function testGetLongestLineNumLength()
     {
         $this->result->setMatchingLines([
-            0 => 'line 1',
-            1 => 'line 2',
-            20 => 'line 20', //2 digits
+            0   => 'line 1',
+            1   => 'line 2',
+            20  => 'line 20', //2 digits
             400 => 'line 400', //3 digits is the expectation
         ]);
 
@@ -70,6 +71,7 @@ class ResultTest extends HuntTestCase
 
     /**
      * @covers ::getFileIterator
+     *
      * @uses \Hunt\Bundle\Models\Result::getFile()
      */
     public function testGetFileIterator()

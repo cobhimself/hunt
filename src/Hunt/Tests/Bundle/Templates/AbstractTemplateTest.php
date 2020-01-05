@@ -9,11 +9,12 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @internal
  * @codeCoverageIgnore
  * @coversDefaultClass \Hunt\Bundle\Templates\AbstractTemplate
+ *
  * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
  * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
  * @uses \Hunt\Component\OutputStyler
  * @covers ::setGatherer
-*/
+ */
 class AbstractTemplateTest extends TemplateTestCase
 {
     public function setUp()
@@ -33,14 +34,14 @@ class AbstractTemplateTest extends TemplateTestCase
     }
 
     /**
+     * @covers ::doHighlight
+     * @covers ::getHighlightEnd
+     * @covers ::getHighlightStart
+     * @covers ::getLineNumber
      * @covers ::getResultLine
      * @covers ::highlight
-     * @covers ::doHighlight
-     * @covers ::setHighlightStart
-     * @covers ::getHighlightStart
      * @covers ::setHighlightEnd
-     * @covers ::getHighlightEnd
-     * @covers ::getLineNumber
+     * @covers ::setHighlightStart
      * @dataProvider dataProviderForTestGetResultLine
      */
     public function testGetResultLine(
@@ -69,6 +70,7 @@ class AbstractTemplateTest extends TemplateTestCase
     public function dataProviderForTestGetResultLine(): array
     {
         $line = 'this is the ' . self::SEARCH_TERM;
+
         return [
             'no highlight' => [
                 'highlight'   => false,
@@ -88,16 +90,17 @@ class AbstractTemplateTest extends TemplateTestCase
                 'line'           => $line,
                 'expectation'    => '100: this is the %' . self::SEARCH_TERM . '#',
                 'highlightStart' => '%',
-                'highlightEnd'   => '#'
+                'highlightEnd'   => '#',
             ],
         ];
     }
 
     /**
-     * @covers ::getTermResults
      * @covers ::doHighlight
      * @covers ::getLineNumber
      * @covers ::getResultLine
+     * @covers ::getTermResults
+     *
      * @uses \Hunt\Bundle\Models\Result::getMatchingLines()
      * @uses \Hunt\Bundle\Models\Result::getTerm()
      * @uses \Hunt\Bundle\Models\Result::getFileName()
@@ -117,8 +120,8 @@ class AbstractTemplateTest extends TemplateTestCase
     }
 
     /**
-     * @covers ::setHeader
      * @covers ::getHeader
+     * @covers ::setHeader
      */
     public function testGetHeader()
     {
@@ -128,6 +131,7 @@ class AbstractTemplateTest extends TemplateTestCase
 
     /**
      * @covers ::getFilename
+     *
      * @uses \Hunt\Bundle\Models\Result::getFileName()
      */
     public function testGetFilename()
@@ -139,8 +143,8 @@ class AbstractTemplateTest extends TemplateTestCase
     }
 
     /**
-     * @covers ::setFooter
      * @covers ::getFooter
+     * @covers ::setFooter
      */
     public function testGetFooter()
     {

@@ -2,7 +2,7 @@
 
 namespace Hunt\Bundle\Models;
 
-use \InvalidArgumentException;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -47,9 +47,11 @@ class ResultCollection extends ParameterBag
         switch ($flags) {
             case \SORT_DESC:
                 $sortMethod = 'krsort';
+
                 break;
             case \SORT_ASC:
                 $sortMethod = 'ksort';
+
                 break;
             default:
                 throw new InvalidArgumentException('The provided sort flag is not valid!');

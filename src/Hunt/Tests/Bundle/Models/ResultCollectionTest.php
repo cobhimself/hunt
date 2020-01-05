@@ -4,11 +4,11 @@ namespace Hunt\Tests\Bundle\Models;
 
 use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Tests\HuntTestCase;
-use InvalidArgumentException;
 
 /**
  * @internal
  * @coversDefaultClass \Hunt\Bundle\Models\ResultCollection
+ *
  * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
  * @codeCoverageIgnore
  */
@@ -37,6 +37,7 @@ class ResultCollectionTest extends HuntTestCase
 
     /**
      * @covers ::getLongestLineNumInResults
+     *
      * @uses \Hunt\Bundle\Models\Result::getLongestLineNumLength()
      */
     public function testGetLongestLineNumInResults()
@@ -45,7 +46,7 @@ class ResultCollectionTest extends HuntTestCase
     }
 
     /**
-     * @param int $sortDir the sort direction to use
+     * @param int   $sortDir      the sort direction to use
      * @param array $expectedKeys expected filename order
      *
      * @covers ::sortByFilename
@@ -53,14 +54,14 @@ class ResultCollectionTest extends HuntTestCase
      */
     public function testSortByFilename(int $sortDir, array $expectedKeys)
     {
-        if ($sortDir !== 0) {
+        if (0 !== $sortDir) {
             $this->resultCollection->sortByFilename($sortDir);
         }
         $this->assertEquals($expectedKeys, $this->resultCollection->keys());
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @covers ::sortByFilename
      */
     public function testSortByFilenameInvalidSortArgument()
@@ -70,6 +71,7 @@ class ResultCollectionTest extends HuntTestCase
 
     /**
      * @covers ::squashEmptyResults
+     *
      * @uses \Hunt\Bundle\Models\Result::getNumMatches()
      */
     public function testSquashEmptyResults()
@@ -98,7 +100,7 @@ class ResultCollectionTest extends HuntTestCase
                     'this/is/a/file/name/one',
                     'this/is/a/file/name/three',
                     'this/is/a/file/name/two',
-                ]
+                ],
             ],
             'test descending' => [
                 \SORT_DESC,
@@ -106,7 +108,7 @@ class ResultCollectionTest extends HuntTestCase
                     'this/is/a/file/name/two',
                     'this/is/a/file/name/three',
                     'this/is/a/file/name/one',
-                ]
+                ],
             ],
             'test no sort' => [
                 0,
@@ -114,7 +116,7 @@ class ResultCollectionTest extends HuntTestCase
                     'this/is/a/file/name/one',
                     'this/is/a/file/name/two',
                     'this/is/a/file/name/three',
-                ]
+                ],
             ],
         ];
     }

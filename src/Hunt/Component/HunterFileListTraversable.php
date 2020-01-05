@@ -47,7 +47,6 @@ class HunterFileListTraversable implements IteratorAggregate
             $finder->depth('== 0');
         }
 
-
         $finder->contains($term);
 
         $this->finder = $finder;
