@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Hunt\Component;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
@@ -26,8 +25,7 @@ class OutputStyler
 
     /**
      * @param int $nonAnsiRedrawFrequency if the output is non-ansi, the redraw frequency value to set
-     *                                    on the progress bar.
-     * @return ProgressBar
+     *                                    on the progress bar
      */
     public static function getProgressBar(
         InputInterface $input,

@@ -30,8 +30,8 @@ class GathererTestCase extends HuntTestCase
          */
         $termCombinations = [
             'searchTerm' => 'searchTermExcluded',
-            'PHPUnit_' => 'PHPUnit_Framework_MockObjects_MockObject',
-            '1234' => '123456',
+            'PHPUnit_'   => 'PHPUnit_Framework_MockObjects_MockObject',
+            '1234'       => '123456',
         ];
 
         /*
@@ -48,39 +48,39 @@ class GathererTestCase extends HuntTestCase
          */
         $testTemplates = [
             [
-                'line' => 'this is a line without our search term',
+                'line'     => 'this is a line without our search term',
                 'expected' => 'this is a line without our search term',
             ],
             [
-                'line' => 'this line will end with our ' . $term,
+                'line'     => 'this line will end with our ' . $term,
                 'expected' => 'this line will end with our ' . $highlightedTerm,
             ],
             [
-                'line' => $term . ' will start this sentence.',
+                'line'     => $term . ' will start this sentence.',
                 'expected' => $highlightedTerm . ' will start this sentence.',
             ],
             [
-                'line' => 'Our ' . $term . ' will not be starting this sentence.',
+                'line'     => 'Our ' . $term . ' will not be starting this sentence.',
                 'expected' => 'Our ' . $highlightedTerm . ' will not be starting this sentence.',
             ],
             [
-                'line' => 'Our ' . $excludedTerm . ' should not be highlighted.',
+                'line'     => 'Our ' . $excludedTerm . ' should not be highlighted.',
                 'expected' => 'Our ' . $excludedTerm . ' should not be highlighted.',
             ],
             [
-                'line' => $excludedTerm . ' should not be highlighted.',
+                'line'     => $excludedTerm . ' should not be highlighted.',
                 'expected' => $excludedTerm . ' should not be highlighted.',
             ],
             [
-                'line' => 'The following should not be highlighted: ' . $excludedTerm,
+                'line'     => 'The following should not be highlighted: ' . $excludedTerm,
                 'expected' => 'The following should not be highlighted: ' . $excludedTerm,
             ],
             [
-                'line' => $term . $excludedTerm,
+                'line'     => $term . $excludedTerm,
                 'expected' => $highlightedTerm . $excludedTerm,
             ],
             [
-                'line' => $excludedTerm . $term,
+                'line'     => $excludedTerm . $term,
                 'expected' => $excludedTerm . $highlightedTerm,
             ],
         ];
@@ -101,10 +101,10 @@ class GathererTestCase extends HuntTestCase
                 $replacedExpected = str_replace($replace, $with, $template['expected']);
 
                 $compiledData[$counter . ': (' . $replacedLine . ') => (' . $replacedExpected . ')'] = [
-                    'searchTerm' => $searchTerm,
+                    'searchTerm'  => $searchTerm,
                     'excludeTerm' => [$excludeTerm],
-                    'line' => $replacedLine,
-                    'expected' => $replacedExpected,
+                    'line'        => $replacedLine,
+                    'expected'    => $replacedExpected,
                 ];
             }
         }

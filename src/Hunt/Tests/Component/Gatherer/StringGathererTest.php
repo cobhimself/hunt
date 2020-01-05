@@ -7,7 +7,9 @@ use Hunt\Component\Gatherer\StringGatherer;
 /**
  * @coversDefaultClass \Hunt\Component\Gatherer\StringGatherer
  * @codeCoverageIgnore
+ *
  * @uses \Hunt\Bundle\Models\Result
+ *
  * @internal
  */
 class StringGathererTest extends GathererTestCase
@@ -31,9 +33,9 @@ class StringGathererTest extends GathererTestCase
      * @covers ::getHighlightedLine
      * @dataProvider dataProviderTestGetHighlightedLine
      *
-     * @param string $searchTerm the search term to highlight
-     * @param array $excludeTerm an array of terms to exclude in highlighting
-     * @param string $line the line to perform highlighting on
+     * @param string $searchTerm  the search term to highlight
+     * @param array  $excludeTerm an array of terms to exclude in highlighting
+     * @param string $line        the line to perform highlighting on
      * @param string $expectation the final line we expect after highlighting
      */
     public function testGetHighlightedLine(string $searchTerm, array $excludeTerm, string $line, string $expectation)

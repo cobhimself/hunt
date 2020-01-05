@@ -1,14 +1,11 @@
 <?php
 
-
 namespace Hunt\Component;
-
 
 use Hunt\Bundle\Command\HuntCommand;
 use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
 use Hunt\Component\Gatherer\GathererFactory;
 use Hunt\Component\Gatherer\GathererInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -107,7 +104,7 @@ class HunterArgs
     /**
      * Apply arguments and options to the hunter class.
      *
-     * @param Hunter $hunter The hunter to setup.
+     * @param Hunter $hunter the hunter to setup
      */
     public function apply(Hunter $hunter, InputInterface $input, OutputInterface $output)
     {
@@ -198,7 +195,7 @@ class HunterArgs
         $term = $this->get(self::TERM);
         $exclude = $this->get(self::EXCLUDE);
 
-        $gathererType = ($this->get(self::REGEX) === true)
+        $gathererType = (true === $this->get(self::REGEX))
             ? GathererFactory::GATHERER_REGEX
             : GathererFactory::GATHERER_STRING;
 
@@ -210,12 +207,12 @@ class HunterArgs
 
     public static function getInvalidArgumentException(string $argument, string $extraInfo = ''): InvalidCommandArgumentException
     {
-        if ($extraInfo !== '') {
+        if ('' !== $extraInfo) {
             $extraInfo = ' ' . $extraInfo;
         }
 
         $messages = [
-            self::DIR => 'A valid directory or file to search through must be provided.' . $extraInfo,
+            self::DIR  => 'A valid directory or file to search through must be provided.' . $extraInfo,
             self::TERM => 'A term must be specified',
         ];
 
@@ -231,6 +228,7 @@ class HunterArgs
         foreach ($this->get(self::DIR) as $dir) {
             if (!file_exists($dir)) {
                 $extra = sprintf('%s is not a directory or file', $dir);
+
                 throw self::getInvalidArgumentException(self::DIR, $extra);
             }
         }

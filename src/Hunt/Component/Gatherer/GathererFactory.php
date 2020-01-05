@@ -1,14 +1,13 @@
 <?php
 
-
 namespace Hunt\Component\Gatherer;
 
-
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 class GathererFactory
 {
     const GATHERER_STRING = 1;
+
     const GATHERER_REGEX = 2;
 
     public static function getByType(int $type, $term, $exclude)

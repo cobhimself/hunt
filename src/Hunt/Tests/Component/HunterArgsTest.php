@@ -11,14 +11,18 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Most of this class is covered by HuntCommandTest; these tests fill in the gaps.
+ *
  * @codeCoverageIgnore
  * @coversDefaultClass \Hunt\Component\HunterArgs
+ *
  * @uses \Hunt\Component\HunterArgs
  * @uses \Hunt\Bundle\Command\HuntCommand
  * @uses \Hunt\Component\Gatherer\GathererFactory
  * @uses \Hunt\Component\Hunter
  * @uses \Hunt\Component\HunterFileListTraversable
  * @uses \Hunt\Component\Gatherer\AbstractGatherer
+ *
+ * @internal
  */
 class HunterArgsTest extends HuntTestCase
 {

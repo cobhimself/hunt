@@ -16,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @internal
  * @coversDefaultClass \Hunt\Component\Hunter
  * @covers ::__construct
+ *
  * @uses \Hunt\Component\OutputStyler
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Models\ResultCollection
@@ -52,8 +53,8 @@ class HunterTest extends HuntTestCase
      * @covers ::setBaseDir
      * @dataProvider dataProviderForTestSetBaseDir
      *
-     * @param array $directories an array of directory names
-     * @param bool $throwsException whether or not we should expect an exception to be thrown
+     * @param array $directories     an array of directory names
+     * @param bool  $throwsException whether or not we should expect an exception to be thrown
      */
     public function testSetBaseDir(array $directories, bool $throwsException = false)
     {
@@ -69,21 +70,21 @@ class HunterTest extends HuntTestCase
     {
         return [
             'one directory' => [
-                ['/tmp']
+                ['/tmp'],
             ],
             'multiple directories' => [
-                ['/home', '/tmp']
+                ['/home', '/tmp'],
             ],
             'non-existent directory' => [
                 ['/blah'],
-                true
-            ]
+                true,
+            ],
         ];
     }
 
     /**
-     * @covers ::setRecursive
      * @covers ::isRecursive
+     * @covers ::setRecursive
      */
     public function testSetRecursive()
     {
@@ -98,8 +99,8 @@ class HunterTest extends HuntTestCase
     }
 
     /**
-     * @covers ::setTerm
      * @covers ::getTerm
+     * @covers ::setTerm
      */
     public function testSetTerm()
     {
@@ -108,8 +109,8 @@ class HunterTest extends HuntTestCase
     }
 
     /**
-     * @covers ::setOutput
      * @covers ::getOutput
+     * @covers ::setOutput
      */
     public function testSetOutput()
     {
@@ -118,8 +119,8 @@ class HunterTest extends HuntTestCase
     }
 
     /**
-     * @covers ::setProgressBar
      * @covers ::getProgressBar
+     * @covers ::setProgressBar
      */
     public function testSetProgressBar()
     {
@@ -129,8 +130,8 @@ class HunterTest extends HuntTestCase
     }
 
     /**
-     * @covers ::setRegex
      * @covers ::isRegex
+     * @covers ::setRegex
      */
     public function testSetRegex()
     {
@@ -140,18 +141,19 @@ class HunterTest extends HuntTestCase
 
     /**
      * @dataProvider dataProviderForTestHunt
-     * @covers ::hunt
-     * @covers ::getTerm
-     * @covers ::setBaseDir
-     * @covers ::setTerm
-     * @covers ::getFileList()
      * @covers ::gatherData
      * @covers ::generateTemplate
-     * @covers ::setGatherer
+     * @covers ::getFileList()
      * @covers ::getGatherer
+     * @covers ::getTerm
+     * @covers ::hunt
+     * @covers ::setBaseDir
      * @covers ::setExcludedTerms
+     * @covers ::setGatherer
      * @covers ::setRecursive
+     * @covers ::setTerm
      * @covers   \Hunt\Component\HunterFileListTraversable
+     *
      * @uses \Hunt\Component\HunterArgs::getInvalidArgumentException()
      */
     public function testHunt(array $options, array $expectations)
@@ -173,7 +175,6 @@ class HunterTest extends HuntTestCase
         $this->hunter->setGatherer(
             new StringGatherer($options[HunterArgs::TERM], $exclude)
         );
-
 
         if (isset($expectations['exception'])) {
             $expectation = $expectations['exception'];
@@ -205,74 +206,75 @@ class HunterTest extends HuntTestCase
     public function dataProviderForTestHunt(): array
     {
         $testFilesDir = realpath(__DIR__ . '/../TestFiles');
+
         return [
             'return zero search results' => [
                 'options' => [
-                    HunterArgs::DIR => [$testFilesDir],
-                    HunterArgs::TERM => self::SEARCH_TERM
+                    HunterArgs::DIR  => [$testFilesDir],
+                    HunterArgs::TERM => self::SEARCH_TERM,
                 ],
                 'expectations' => [
                     'contains' => [
-                        'Found 0 files containing the term ' . self::SEARCH_TERM
-                    ]
-                ]
+                        'Found 0 files containing the term ' . self::SEARCH_TERM,
+                    ],
+                ],
             ],
             'no term means error' => [
                 'options' => [
-                    HunterArgs::DIR => [$testFilesDir . '/FakeClass.php'],
-                    HunterArgs::TERM => ''
+                    HunterArgs::DIR  => [$testFilesDir . '/FakeClass.php'],
+                    HunterArgs::TERM => '',
                 ],
                 'expectations' => [
                     'exception' => [
-                        'type' => InvalidCommandArgumentException::class,
-                        'message' => '/A term must be specified/'
-                    ]
-                ]
+                        'type'    => InvalidCommandArgumentException::class,
+                        'message' => '/A term must be specified/',
+                    ],
+                ],
             ],
             'single file, search: @deprecated' => [
                 'options' => [
-                    HunterArgs::DIR => [$testFilesDir . '/FakeClass.php'],
-                    HunterArgs::TERM => 'deprecated'
+                    HunterArgs::DIR  => [$testFilesDir . '/FakeClass.php'],
+                    HunterArgs::TERM => 'deprecated',
                 ],
                 'expectations' => [
                     'contains' => [
-                        'Found 1 files containing the term deprecated'
-                    ]
-                ]
+                        'Found 1 files containing the term deprecated',
+                    ],
+                ],
             ],
             'recurse, search: PHPUnit_, exclude: PHPUnit_Framework_MockObjects_MockObject' => [
                 'options' => [
-                    HunterArgs::DIR => [$testFilesDir],
+                    HunterArgs::DIR       => [$testFilesDir],
                     HunterArgs::RECURSIVE => true,
-                    HunterArgs::TERM => 'PHPUnit_',
-                    HunterArgs::EXCLUDE => ['PHPUnit_Framework_MockObjects_MockObject'],
+                    HunterArgs::TERM      => 'PHPUnit_',
+                    HunterArgs::EXCLUDE   => ['PHPUnit_Framework_MockObjects_MockObject'],
                 ],
                 'expectations' => [
                     'contains' => [
-                        'Found 2 files containing the term PHPUnit_'
+                        'Found 2 files containing the term PHPUnit_',
                     ],
                     'notContains' => [
-                        '*PHPUnit_*Framework_MockObjects_MockObject'
-                    ]
-                ]
+                        '*PHPUnit_*Framework_MockObjects_MockObject',
+                    ],
+                ],
             ],
         ];
     }
 
     /**
-     * @covers ::setGatherer
      * @covers ::getGatherer
+     * @covers ::setGatherer
      */
     public function testSetGatherer()
     {
         $this->hunter->setGatherer(new StringGatherer('term'));
-        /** @noinspection UnnecessaryAssertionInspection */
+        /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(GathererInterface::class, $this->hunter->getGatherer());
     }
 
     /**
-     * @covers ::setTrimMatches
      * @covers ::doTrimMatches
+     * @covers ::setTrimMatches
      */
     public function testSetTrimMatches()
     {
@@ -286,8 +288,8 @@ class HunterTest extends HuntTestCase
     }
 
     /**
-     * @covers ::setExcludedTerms
      * @covers ::getExcludedTerms
+     * @covers ::setExcludedTerms
      * @dataProvider dataProviderForTestSetExclude
      *
      * @param array $exclude an array of terms we want to exclude
@@ -302,13 +304,13 @@ class HunterTest extends HuntTestCase
     {
         return [
             'nothing' => [
-                []
+                [],
             ],
             'one term' => [
-                ['term']
+                ['term'],
             ],
             'multiple terms' => [
-                ['term one', 'term two']
+                ['term one', 'term two'],
             ],
         ];
     }

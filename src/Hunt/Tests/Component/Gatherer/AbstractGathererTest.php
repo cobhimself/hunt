@@ -11,8 +11,6 @@ use Hunt\Component\Gatherer\AbstractGatherer;
  */
 class AbstractGathererTest extends GathererTestCase
 {
-    /**
-     */
     public function setUp()
     {
         $this->gatherer = $this->getMockForAbstractClass(
@@ -22,8 +20,8 @@ class AbstractGathererTest extends GathererTestCase
     }
 
     /**
-     * @covers ::setTrimMatchingLines
      * @covers ::getTrimMatchingLines
+     * @covers ::setTrimMatchingLines
      */
     public function testGetTrimMatchingLines()
     {

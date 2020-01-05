@@ -8,20 +8,21 @@ use Hunt\Tests\HuntTestCase;
 
 /**
  * @codeCoverageIgnore
+ *
+ * @internal
  */
 class GathererFactoryTest extends HuntTestCase
 {
-
     /**
      * @covers \Hunt\Component\Gatherer\GathererFactory
      * @dataProvider dataProviderForTestGetByType
      */
     public function testGetByType(int $type, string $className)
     {
-        if ($type === -1) {
+        if (-1 === $type) {
             $this->expectException(\InvalidArgumentException::class);
             $this->expectExceptionMessage('Unknown gatherer type: -1');
-        } elseif ($type === GathererFactory::GATHERER_REGEX) {
+        } elseif (GathererFactory::GATHERER_REGEX === $type) {
             $this->expectException(\InvalidArgumentException::class);
             $this->expectExceptionMessage('Gatherer not implemented yet.');
         }
@@ -36,17 +37,17 @@ class GathererFactoryTest extends HuntTestCase
     {
         return [
             'string gatherer' => [
-                'type' => GathererFactory::GATHERER_STRING,
-                'className' => StringGatherer::class
+                'type'      => GathererFactory::GATHERER_STRING,
+                'className' => StringGatherer::class,
             ],
             'regex gatherer' => [
-                'type' => GathererFactory::GATHERER_REGEX,
-                'className' => ''
+                'type'      => GathererFactory::GATHERER_REGEX,
+                'className' => '',
             ],
             'unknown gatherer' => [
-                'type' => -1,
-                'className' => ''
-            ]
+                'type'      => -1,
+                'className' => '',
+            ],
         ];
     }
 }

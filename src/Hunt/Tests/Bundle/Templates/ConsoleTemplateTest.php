@@ -10,6 +10,7 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @codeCoverageIgnore
  * @coversDefaultClass \Hunt\Bundle\Templates\ConsoleTemplate
  * @covers ::init
+ *
  * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
@@ -31,12 +32,13 @@ class ConsoleTemplateTest extends TemplateTestCase
     }
 
     /**
-     * @covers ::getResultOutput
      * @covers ::doHighlight
      * @covers ::getHighlightEnd
      * @covers ::getHighlightStart
-     * @covers ::getResultLine
      * @covers ::getLineNumber
+     * @covers ::getResultLine
+     * @covers ::getResultOutput
+     *
      * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
      */
     public function testGetResultOutput()
@@ -70,6 +72,7 @@ class ConsoleTemplateTest extends TemplateTestCase
 
     /**
      * Confirm our line numbers are returned with padding.
+     *
      * @covers ::getLineNumber
      */
     public function testGetLineNumber()
