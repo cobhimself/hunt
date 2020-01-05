@@ -19,7 +19,6 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @uses \Hunt\Component\Hunter
  * @uses \Hunt\Component\HunterFileListTraversable
  * @uses \Hunt\Component\Gatherer\AbstractGatherer
- * @uses \Hunt\Component\OutputStyler
  */
 class HunterArgsTest extends HuntTestCase
 {
@@ -50,6 +49,7 @@ class HunterArgsTest extends HuntTestCase
 
     /**
      * @covers ::get
+     * @covers \Hunt\Component\OutputStyler
      */
     public function testGetWithNonExistentArgIsNull()
     {

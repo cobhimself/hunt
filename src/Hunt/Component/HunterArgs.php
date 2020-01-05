@@ -186,7 +186,11 @@ class HunterArgs
 
     private function createProgressBar(): ProgressBar
     {
-        return OutputStyler::getProgressBar($this->input, $this->output);
+        return OutputStyler::getProgressBar(
+            $this->input,
+            $this->output,
+            $this->get('no-ansi') ? self::PROGRESS_REDRAW_ANSI : null
+        );
     }
 
     private function getGatherer(): GathererInterface
