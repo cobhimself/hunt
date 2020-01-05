@@ -67,7 +67,7 @@ class HunterFileListTraversable implements IteratorAggregate
                 /**
                  * @var SplFileInfo
                  */
-                $path = $file->getRelativePath();
+                $path = $file->getRelativePathName();
             } else {
                 /**
                  * @var \SplFileInfo

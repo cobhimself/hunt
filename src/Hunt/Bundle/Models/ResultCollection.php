@@ -76,4 +76,9 @@ class ResultCollection extends ParameterBag
 
         return count($this->parameters);
     }
+
+    public function addResult(Result $result)
+    {
+        $this->add([$result->getFileName() => $result]);
+    }
 }

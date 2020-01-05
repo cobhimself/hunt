@@ -54,12 +54,12 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var string
      */
-    private $highlightStart = '*';
+    protected $highlightStart = '*';
 
     /**
      * @var string
      */
-    private $highlightEnd = '*';
+    protected $highlightEnd = '*';
 
     /**
      * AbstractTemplate constructor.
