@@ -21,6 +21,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @uses \Hunt\Component\Hunter
  * @uses \Hunt\Component\HunterFileListTraversable
  * @uses \Hunt\Component\Gatherer\AbstractGatherer
+ * @uses \Hunt\Bundle\Templates\TemplateFactory
  *
  * @internal
  */

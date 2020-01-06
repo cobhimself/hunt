@@ -172,12 +172,12 @@ class HuntTestCase extends KernelTestCase
      */
     protected function getResultCollectionWithFileConstants(): ResultCollection
     {
-        $results = [];
+        $results = new ResultCollection();
 
         foreach ($this->resultMatchingLines as $fileName => $lines) {
-            $results[$fileName] = $this->getResultForFileConstant($fileName);
+            $results->addResult($this->getResultForFileConstant($fileName));
         }
 
-        return new ResultCollection($results);
+        return $results;
     }
 }

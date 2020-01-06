@@ -44,16 +44,21 @@ class ConfluenceWikiTemplateTest extends TemplateTestCase
     public function testGetResultOutput()
     {
         $expectedOutput = implode(\PHP_EOL, [
-            '|{status:title= |color=red}|this/is/a/file/name/one|{noformat:nopanel=true}1: this is line one',
+            '|{status:title= |color=red}|this/is/a/file/name/one|{noformat:nopanel=true}',
+            '1: this is line one',
             '2: this is line two',
-            '3: line three has the ' . self::SEARCH_TERM . '{noformat}|',
-            '|{status:title= |color=red}|this/is/a/file/name/two|{noformat:nopanel=true}1: this is line one',
+            '3: line three has the ' . self::SEARCH_TERM,
+            '{noformat}|',
+            '|{status:title= |color=red}|this/is/a/file/name/two|{noformat:nopanel=true}',
+            '1: this is line one',
             '2: this is line two with the ' . self::SEARCH_TERM,
-            '3: this is line three with ' . self::SEARCH_TERM . 'Ok{noformat}|',
-            '|{status:title= |color=red}|this/is/a/file/name/three|{noformat:nopanel=true}'
-                . '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+            '3: this is line three with ' . self::SEARCH_TERM . 'Ok',
+            '{noformat}|',
+            '|{status:title= |color=red}|this/is/a/file/name/three|{noformat:nopanel=true}',
+            '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
             '2: this is line two',
-            '300: this is line three hundred{noformat}|',
+            '300: this is line three hundred',
+            '{noformat}|',
         ]) . \PHP_EOL;
 
         $actualOutput = '';
