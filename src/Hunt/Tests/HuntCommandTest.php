@@ -65,7 +65,7 @@ class HuntCommandTest extends HuntTestCase
      * @dataProvider dataProviderForExecute
      *
      * @param array $input        an array of input strings passed to our command
-     * @param array $expectations an array of expectations.
+     * @param array $expectations an array of expectations
      */
     public function testExecute(array $input, array $expectations)
     {
