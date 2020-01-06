@@ -23,8 +23,8 @@ class ConsoleTemplateTest extends TemplateTestCase
      */
     public function setUp()
     {
-        $this->template = new ConsoleTemplate($this->getResultCollection(), $this->getOutputMock());
-        $this->template
+        $this->template = new ConsoleTemplate();
+        $this->template->init($this->getResultCollection(), $this->getOutputMock())
             ->setGatherer(
                 new StringGatherer(self::SEARCH_TERM, [self::EXCLUDE_TERM])
             )

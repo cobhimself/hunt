@@ -4,6 +4,8 @@ namespace Hunt\Component;
 
 use Hunt\Bundle\Command\HuntCommand;
 use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
+use Hunt\Bundle\Templates\TemplateFactory;
+use Hunt\Bundle\Templates\TemplateInterface;
 use Hunt\Component\Gatherer\GathererFactory;
 use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -26,6 +28,8 @@ class HunterArgs
     const TRIM_MATCHES = 'trim-matches';
 
     const REGEX = 'regex';
+
+    const TEMPLATE = 'template';
 
     const PROGRESS_REDRAW_ANSI = 500;
 
@@ -98,6 +102,13 @@ class HunterArgs
                 '-E',
                 null,
                 'If given, the search term will be treated as if it were a regex expression'
+            )
+            ->addOption(
+                self::TEMPLATE,
+                '-T',
+                InputOption::VALUE_REQUIRED,
+                'If provided, specifies the template to use. Must be one of: console, confluence-wiki.',
+                'console'
             );
     }
 
@@ -123,6 +134,7 @@ class HunterArgs
             ->setRegex($this->get(self::REGEX))
             ->setOutput($this->output)
             ->setProgressBar($this->getProgressBar())
+            ->setTemplate($this->getTemplate())
             ->setGatherer($this->getGatherer());
     }
 
@@ -237,5 +249,12 @@ class HunterArgs
         if (empty($term)) {
             throw self::getInvalidArgumentException(self::TERM, 'Given term: ' . var_export($term, true));
         }
+    }
+
+    private function getTemplate(): TemplateInterface
+    {
+        $template = $this->get(self::TEMPLATE);
+
+        return TemplateFactory::get($template);
     }
 }

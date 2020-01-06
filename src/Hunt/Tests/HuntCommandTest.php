@@ -60,6 +60,7 @@ class HuntCommandTest extends HuntTestCase
      * @uses \Hunt\Component\Gatherer\StringGatherer
      * @uses \Hunt\Component\Gatherer\GathererFactory
      * @uses \Hunt\Component\HunterFileListTraversable
+     * @uses \Hunt\Bundle\Templates\TemplateFactory
      *
      * @dataProvider dataProviderForExecute
      *

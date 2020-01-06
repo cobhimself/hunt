@@ -62,26 +62,16 @@ abstract class AbstractTemplate implements TemplateInterface
     protected $highlightEnd = '*';
 
     /**
-     * AbstractTemplate constructor.
-     *
-     * @codeCoverageIgnore
-     */
-    public function __construct(ResultCollection $resultCollection, OutputInterface $output = null)
-    {
-        $this->resultCollection = $resultCollection;
-        $this->output = $output;
-
-        $this->init();
-    }
-
-    /**
      * Perform necessary actions before rendering the template.
      *
      * @codeCoverageIgnore
      */
-    public function init()
+    public function init(ResultCollection $resultCollection, OutputInterface $output): TemplateInterface
     {
-        //nop return;
+        $this->resultCollection = $resultCollection;
+        $this->output = $output;
+
+        return $this;
     }
 
     /**
@@ -113,14 +103,8 @@ abstract class AbstractTemplate implements TemplateInterface
      * Returns an individual term result line.
      *
      * Override this method if you'd like to modify how each individual term result appears in the result list.
-     *
-     * @param $lineNum
-     * @param $line
-     * @param $term
-     *
-     * @return mixed
      */
-    public function getResultLine($lineNum, $line, $term)
+    public function getResultLine(string $lineNum, string $line, string $term): string
     {
         $finalLine = $this->getLineNumber($lineNum) . ': ';
         if ($this->doHighlight()) {
@@ -132,6 +116,7 @@ abstract class AbstractTemplate implements TemplateInterface
         } else {
             $finalLine .= $line;
         }
+        $finalLine = str_replace("\n", '', $finalLine);
 
         return $finalLine;
     }
@@ -249,7 +234,7 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * Set the Gatherer we should use when highlighting our results.
      *
-     * @return AbstractTemplate
+     * @return TemplateInterface
      */
     public function setGatherer(GathererInterface $gatherer): TemplateInterface
     {

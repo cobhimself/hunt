@@ -24,8 +24,19 @@ class ConfluenceWikiTemplate extends AbstractTemplate
     {
         $statusText = '{status:title= |color=red}';
         $filename = $this->getFileName($result);
-        $matchingLines = '{noformat:nopanel=true}' . implode(PHP_EOL, $this->getTermResults($result)) . '{noformat}';
+        $resultLines = implode(PHP_EOL, $this->getTermResults($result));
+        $matchingLines = '{noformat:nopanel=true}' . PHP_EOL . $resultLines . PHP_EOL . '{noformat}';
 
         return '|' . $statusText . '|' . $filename . '|' . $matchingLines . '|' . PHP_EOL;
+    }
+
+    /**
+     * We need to escape the pipe character since it's important for our output.
+     */
+    public function getResultLine(string $lineNum, string $line, string $term): string
+    {
+        $line = parent::getResultLine($lineNum, $line, $term);
+
+        return str_replace('|', '\|', $line);
     }
 }

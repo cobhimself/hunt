@@ -4,18 +4,16 @@ namespace Hunt\Bundle\Templates;
 
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
+use Symfony\Component\Console\Output\OutputInterface;
 
 interface TemplateInterface
 {
     /**
-     * AbstractTemplate constructor.
+     * Initialize our template.
+     *
+     * If extending, this parent method MUST be called.
      */
-    public function __construct(ResultCollection $resultCollection);
-
-    /**
-     * Perform necessary actions before rendering the template.
-     */
-    public function init();
+    public function init(ResultCollection $result, OutputInterface $output): TemplateInterface;
 
     /**
      * Whether or not to highlight the term within the results.
@@ -33,14 +31,8 @@ interface TemplateInterface
      * Returns an individual term result line.
      *
      * Override this method if you'd like to modify how each individual term result appears in the result list.
-     *
-     * @param $lineNum
-     * @param $line
-     * @param $term
-     *
-     * @return mixed
      */
-    public function getResultLine($lineNum, $line, $term);
+    public function getResultLine(string $lineNum, string $line, string $term): string;
 
     /**
      * Return whether or not we are going to highlight our search term.

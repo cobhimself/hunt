@@ -8,8 +8,11 @@ use Hunt\Tests\HuntTestCase;
 /**
  * @internal
  * @coversDefaultClass \Hunt\Bundle\Models\ResultCollection
+ * @covers ::addResult
  *
  * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
+ * @uses \Hunt\Bundle\Models\Result::getFileName()
+ *
  * @codeCoverageIgnore
  */
 class ResultCollectionTest extends HuntTestCase

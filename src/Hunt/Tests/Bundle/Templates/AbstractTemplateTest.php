@@ -10,7 +10,8 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @codeCoverageIgnore
  * @coversDefaultClass \Hunt\Bundle\Templates\AbstractTemplate
  *
- * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
+ * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
  * @uses \Hunt\Component\OutputStyler
  * @covers ::setGatherer
@@ -19,15 +20,10 @@ class AbstractTemplateTest extends TemplateTestCase
 {
     public function setUp()
     {
-        $this->template = $this->getMockForAbstractClass(
-            AbstractTemplate::class,
-            [
-                $this->getResultCollection(),
-                $this->getOutputMock(),
-            ]
-        );
-
-        $this->template->setGatherer(new StringGatherer(self::SEARCH_TERM));
+        $this->template = $this->getMockForAbstractClass(AbstractTemplate::class);
+        $this->template
+            ->init($this->getResultCollection(), $this->getOutputMock())
+            ->setGatherer(new StringGatherer(self::SEARCH_TERM));
 
         $this->template->method('getResultOutput')
             ->willReturn('test result output');

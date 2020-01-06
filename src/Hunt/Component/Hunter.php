@@ -4,9 +4,12 @@
 
 namespace Hunt\Component;
 
+use Hunt\Bundle\Exceptions\InvalidTemplateException;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
+use Hunt\Bundle\Templates\ConfluenceWikiTemplate;
 use Hunt\Bundle\Templates\ConsoleTemplate;
+use Hunt\Bundle\Templates\TemplateInterface;
 use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -74,6 +77,11 @@ class Hunter
      * @var bool
      */
     private $regex;
+
+    /**
+     * @var TemplateInterface The template to use for our results
+     */
+    private $template;
 
     /**
      * Hunter constructor.
@@ -156,6 +164,9 @@ class Hunter
         if (empty($this->getTerm())) {
             throw HunterArgs::getInvalidArgumentException(HunterArgs::TERM);
         }
+
+        //Attempt to get the template at this time. If it's not set, we can fail early.
+        $this->getTemplate();
 
         $this->output->writeln('<info>Starting the hunt for <bold>' . $this->term . '</bold></info>');
 
@@ -250,8 +261,9 @@ class Hunter
 
     private function generateTemplate()
     {
-        $template = new ConsoleTemplate($this->found, $this->output);
-        $template->setGatherer($this->gatherer);
+        $template = $this->getTemplate();
+        $template->init($this->found, $this->output)
+            ->setGatherer($this->gatherer);
 
         $this->progressBar->start(count($this->found));
         $this->progressBar->setMessage('Rendering template');
@@ -263,11 +275,13 @@ class Hunter
             $template->renderResult($result);
         }
 
+        $this->progressBar->setMessage('Done', 'filename');
         $this->progressBar->finish();
-        $this->progressBar->clear();
 
+        $this->output->writeln('');
         $this->output->writeln($template->getOutput());
     }
+
 
     /**
      * Set the Gatherer this Hunt is going to use to find the search term within the files.
@@ -332,5 +346,21 @@ class Hunter
     public function isRegex(): bool
     {
         return $this->regex;
+    }
+
+    public function setTemplate(TemplateInterface $template): Hunter
+    {
+        $this->template = $template;
+
+        return $this;
+    }
+
+    public function getTemplate(): TemplateInterface
+    {
+        if (null === $this->template) {
+            throw new \LogicException('Cannot get template because it has not been set!');
+        }
+
+        return $this->template;
     }
 }

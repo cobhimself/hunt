@@ -3,6 +3,8 @@
 namespace Hunt\Bundle\Templates;
 
 use Hunt\Bundle\Models\Result;
+use Hunt\Bundle\Models\ResultCollection;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsoleTemplate extends AbstractTemplate
 {
@@ -70,8 +72,10 @@ class ConsoleTemplate extends AbstractTemplate
     /**
      * Initializes variables we'll use in our final output.
      */
-    public function init()
+    public function init(ResultCollection $resultCollection, OutputInterface $output): TemplateInterface
     {
+        parent::init($resultCollection, $output);
+
         $this->longestFilenameLength = $this->resultCollection->getLongestFilenameLength();
         $this->longestLineNum = $this->resultCollection->getLongestLineNumInResults();
         if ($this->output->isDebug()) {
@@ -84,5 +88,7 @@ class ConsoleTemplate extends AbstractTemplate
             );
         }
         $this->highlight();
+
+        return $this;
     }
 }

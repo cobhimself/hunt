@@ -3,6 +3,8 @@
 namespace Hunt\Tests\Component;
 
 use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
+use Hunt\Bundle\Exceptions\InvalidTemplateException;
+use Hunt\Bundle\Templates\TemplateFactory;
 use Hunt\Component\Gatherer\GathererInterface;
 use Hunt\Component\Gatherer\StringGatherer;
 use Hunt\Component\Hunter;
@@ -152,15 +154,25 @@ class HunterTest extends HuntTestCase
      * @covers ::setGatherer
      * @covers ::setRecursive
      * @covers ::setTerm
+     * @covers ::setTemplate
+     * @covers ::getTemplate
      * @covers   \Hunt\Component\HunterFileListTraversable
+     * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      *
      * @uses \Hunt\Component\HunterArgs::getInvalidArgumentException()
+     * @uses \Hunt\Bundle\Templates\TemplateFactory
      */
     public function testHunt(array $options, array $expectations)
     {
-        $this->hunter
-            ->setBaseDir($options[HunterArgs::DIR])
-            ->setTerm($options[HunterArgs::TERM]);
+        if (isset($expectations['exception'])) {
+            $expectation = $expectations['exception'];
+            $this->expectException($expectation['type']);
+            $this->expectExceptionMessageRegExp($expectation['message']);
+        }
+
+        if (isset($options['get_template_before_set'])) {
+            $this->hunter->getTemplate();
+        }
 
         $exclude = [];
         if (isset($options[HunterArgs::EXCLUDE])) {
@@ -168,18 +180,15 @@ class HunterTest extends HuntTestCase
             $this->hunter->setExcludedTerms($exclude);
         }
 
+        $templateType = $options[HunterArgs::TEMPLATE] ?? 'console';
+
+        $this->hunter->setTemplate(TemplateFactory::get($templateType))
+            ->setGatherer(new StringGatherer($options[HunterArgs::TERM], $exclude))
+            ->setBaseDir($options[HunterArgs::DIR])
+            ->setTerm($options[HunterArgs::TERM]);
+
         if (isset($options[HunterArgs::RECURSIVE])) {
             $this->hunter->setRecursive($options[HunterArgs::RECURSIVE]);
-        }
-
-        $this->hunter->setGatherer(
-            new StringGatherer($options[HunterArgs::TERM], $exclude)
-        );
-
-        if (isset($expectations['exception'])) {
-            $expectation = $expectations['exception'];
-            $this->expectException($expectation['type']);
-            $this->expectExceptionMessageRegExp($expectation['message']);
         }
 
         $this->hunter->hunt();
@@ -258,6 +267,32 @@ class HunterTest extends HuntTestCase
                     ],
                 ],
             ],
+            'bad template' => [
+                'options' => [
+                    HunterArgs::DIR => [$testFilesDir],
+                    HunterArgs::TERM => self::SEARCH_TERM,
+                    HunterArgs::TEMPLATE => 'bad-template',
+                ],
+                'expectations' => [
+                    'exception' => [
+                        'type'    => InvalidTemplateException::class,
+                        'message' => '/"bad-template" is not a valid template type./',
+                    ],
+                ]
+            ],
+            'attempt to get template before set' => [
+                'options' => [
+                    HunterArgs::DIR => [$testFilesDir],
+                    HunterArgs::TERM => self::SEARCH_TERM,
+                    'get_template_before_set' => true,
+                ],
+                'expectations' => [
+                    'exception' => [
+                        'type'    => \LogicException::class,
+                        'message' => '/Cannot get template because it has not been set/',
+                    ],
+                ]
+            ]
         ];
     }
 
