@@ -10,14 +10,15 @@ use Hunt\Tests\Bundle\Templates\TemplateTestCase;
 
 /**
  * @codeCoverageIgnore
+ *
+ * @internal
  */
 class TemplateFactoryTest extends TemplateTestCase
 {
-
     /**
      * @dataProvider dataProviderForTestGet
-     * @covers \Hunt\Bundle\Templates\TemplateFactory
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
+     * @covers \Hunt\Bundle\Templates\TemplateFactory
      */
     public function testGet(string $type, array $expectations)
     {
@@ -34,27 +35,26 @@ class TemplateFactoryTest extends TemplateTestCase
     {
         return [
             'console template' => [
-                'type' => TemplateFactory::CONSOLE,
+                'type'        => TemplateFactory::CONSOLE,
                 'expectation' => [
                     'instanceof' => ConsoleTemplate::class,
                 ],
             ],
             'confluence-wiki template' => [
-                'type' => TemplateFactory::CONFLUENCE_WIKI,
+                'type'        => TemplateFactory::CONFLUENCE_WIKI,
                 'expectation' => [
                     'instanceof' => ConfluenceWikiTemplate::class,
                 ],
             ],
             'non-existent template' => [
-                'type' => 'blah',
+                'type'        => 'blah',
                 'expectation' => [
                     'exception' => [
-                        'type' => InvalidTemplateException::class,
+                        'type'    => InvalidTemplateException::class,
                         'message' => '/"blah" is not a valid template type./',
                     ],
                 ],
             ],
-
         ];
     }
 }

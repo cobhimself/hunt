@@ -147,17 +147,17 @@ class HunterTest extends HuntTestCase
      * @covers ::generateTemplate
      * @covers ::getFileList()
      * @covers ::getGatherer
+     * @covers ::getTemplate
      * @covers ::getTerm
      * @covers ::hunt
      * @covers ::setBaseDir
      * @covers ::setExcludedTerms
      * @covers ::setGatherer
      * @covers ::setRecursive
-     * @covers ::setTerm
      * @covers ::setTemplate
-     * @covers ::getTemplate
-     * @covers   \Hunt\Component\HunterFileListTraversable
+     * @covers ::setTerm
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
+     * @covers   \Hunt\Component\HunterFileListTraversable
      *
      * @uses \Hunt\Component\HunterArgs::getInvalidArgumentException()
      * @uses \Hunt\Bundle\Templates\TemplateFactory
@@ -269,8 +269,8 @@ class HunterTest extends HuntTestCase
             ],
             'bad template' => [
                 'options' => [
-                    HunterArgs::DIR => [$testFilesDir],
-                    HunterArgs::TERM => self::SEARCH_TERM,
+                    HunterArgs::DIR      => [$testFilesDir],
+                    HunterArgs::TERM     => self::SEARCH_TERM,
                     HunterArgs::TEMPLATE => 'bad-template',
                 ],
                 'expectations' => [
@@ -278,12 +278,12 @@ class HunterTest extends HuntTestCase
                         'type'    => InvalidTemplateException::class,
                         'message' => '/"bad-template" is not a valid template type./',
                     ],
-                ]
+                ],
             ],
             'attempt to get template before set' => [
                 'options' => [
-                    HunterArgs::DIR => [$testFilesDir],
-                    HunterArgs::TERM => self::SEARCH_TERM,
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => self::SEARCH_TERM,
                     'get_template_before_set' => true,
                 ],
                 'expectations' => [
@@ -291,8 +291,8 @@ class HunterTest extends HuntTestCase
                         'type'    => \LogicException::class,
                         'message' => '/Cannot get template because it has not been set/',
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 

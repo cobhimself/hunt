@@ -2,12 +2,12 @@
 
 namespace Hunt\Bundle\Templates;
 
-
 use Hunt\Bundle\Models\Result;
 
 class ConfluenceWikiTemplate extends AbstractTemplate
 {
     protected $highlightStart = '';
+
     protected $highlightEnd = '';
 
     /**
@@ -24,10 +24,10 @@ class ConfluenceWikiTemplate extends AbstractTemplate
     {
         $statusText = '{status:title= |color=red}';
         $filename = $this->getFileName($result);
-        $resultLines = implode(PHP_EOL, $this->getTermResults($result));
-        $matchingLines = '{noformat:nopanel=true}' . PHP_EOL . $resultLines . PHP_EOL . '{noformat}';
+        $resultLines = implode(\PHP_EOL, $this->getTermResults($result));
+        $matchingLines = '{noformat:nopanel=true}' . \PHP_EOL . $resultLines . \PHP_EOL . '{noformat}';
 
-        return '|' . $statusText . '|' . $filename . '|' . $matchingLines . '|' . PHP_EOL;
+        return '|' . $statusText . '|' . $filename . '|' . $matchingLines . '|' . \PHP_EOL;
     }
 
     /**

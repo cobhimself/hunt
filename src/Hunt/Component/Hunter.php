@@ -4,11 +4,8 @@
 
 namespace Hunt\Component;
 
-use Hunt\Bundle\Exceptions\InvalidTemplateException;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
-use Hunt\Bundle\Templates\ConfluenceWikiTemplate;
-use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Bundle\Templates\TemplateInterface;
 use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -281,7 +278,6 @@ class Hunter
         $this->output->writeln('');
         $this->output->writeln($template->getOutput());
     }
-
 
     /**
      * Set the Gatherer this Hunt is going to use to find the search term within the files.

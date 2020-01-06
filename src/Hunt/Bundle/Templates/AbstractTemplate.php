@@ -233,8 +233,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Set the Gatherer we should use when highlighting our results.
-     *
-     * @return TemplateInterface
      */
     public function setGatherer(GathererInterface $gatherer): TemplateInterface
     {

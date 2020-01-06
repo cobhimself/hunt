@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Hunt\Bundle\Templates;
-
 
 use Hunt\Bundle\Exceptions\InvalidTemplateException;
 
@@ -16,7 +14,7 @@ class TemplateFactory
      * @var array An array of available templates
      */
     const TEMPLATE_LIST = [
-        self::CONSOLE => ConsoleTemplate::class,
+        self::CONSOLE         => ConsoleTemplate::class,
         self::CONFLUENCE_WIKI => ConfluenceWikiTemplate::class,
     ];
 
@@ -30,6 +28,4 @@ class TemplateFactory
 
         return new $template();
     }
-
-
 }
