@@ -9,7 +9,7 @@ git clone <hunt repo link>
 composer install
 ```
 
-The `hunt` command file will be symlinked into the `vendor/bin` folder. This is useful if you bring `hunt` in as a
+The `hunt` command file will be symlinked into the `vendor/bin` folder if you bring `hunt` in as a
 project dependency. Otherwise, the `hunt` file within the root directory will kick `hunt` off.
 
 ## Usage
