@@ -55,6 +55,33 @@ Regular expressions can be provided as well:
 
 `./hunt -r -x '/.*cache/' <term> <dir> [<dir>] ...`
 
+Or, if you prefer, global expressions can be used:
+
+`./hunt -r -x 'src/*/*.php <term> <dir> [<dir>] ...`
+
+### Exclude directories from matches
+
+If you want to exclude specific file names from the results, you can use the `--exclude-name` option:
+
+`./hunt -r --exclude-name Test.php <term> <dir> [<dir>] ...`
+
+Multiple file names can be provided:
+
+`./hunt -r --exclude-name Test.php --exclude-name File.php <term> <dir> [<dir>]`
+
+However, it may be easier to use the short option name `-X`:
+
+`./hunt -r -X Test.php -X File.php <term> <dir> [<dir>]`
+
+Regular expressions can be used as well:
+
+`./hunt -r -X '/.*Test.php$/' <term> <dir> [<dir>] ...`
+
+Alternatively, you can specify the filter using global expressions. To only return PHP files with 'Test' at the
+end of their names:
+
+`./hunt -r -X '*Test.php' <term> <dir> [<dir>] ...`
+
 ### Specify a template
 
 Out of the box, `hunt` comes with two template types: `console` and `confluence-wiki`. The `console` template is useful

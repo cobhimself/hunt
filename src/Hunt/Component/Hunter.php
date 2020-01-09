@@ -86,6 +86,11 @@ class Hunter
     private $excludeDirs = [];
 
     /**
+     * @var array An array of file names, including regex strings, to exclude from our results.
+     */
+    private $excludeFileNames = [];
+
+    /**
      * Hunter constructor.
      */
     public function __construct(OutputInterface $output = null, ProgressBar $progressBar = null)
@@ -380,5 +385,20 @@ class Hunter
     public function getExcludeDirs(): array
     {
         return $this->excludeDirs;
+    }
+
+    /**
+     * @param array $excludeFileNames An array of file names, including regex strings, to exclude from our results.
+     */
+    public function setExcludeFileNames(array $excludeFileNames): Hunter
+    {
+        $this->excludeFileNames = $excludeFileNames;
+
+        return $this;
+    }
+
+    public function getExcludeFileNames(): array
+    {
+        return $this->excludeFileNames;
     }
 }

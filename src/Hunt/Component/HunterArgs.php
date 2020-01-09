@@ -33,6 +33,8 @@ class HunterArgs
 
     const EXCLUDE_DIRS = 'exclude-dir';
 
+    const EXCLUDE_NAMES = 'exclude-name';
+
     const PROGRESS_REDRAW_ANSI = 500;
 
     /**
@@ -109,6 +111,14 @@ class HunterArgs
                     . 'times to exclude multiple directories',
                 []
             )
+            ->addOption(
+                self::EXCLUDE_NAMES,
+                '-X',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Exclude filenames with the given string; can include regex. Specify option multiple'
+                . 'times to exclude multiple file names.',
+                []
+            )
             ->addArgument(
                 self::TERM,
                 InputArgument::REQUIRED,
@@ -146,6 +156,7 @@ class HunterArgs
             ->setProgressBar($this->getProgressBar())
             ->setTemplate($this->getTemplate())
             ->setExcludeDirs($this->get(self::EXCLUDE_DIRS))
+            ->setExcludeFileNames($this->get(self::EXCLUDE_NAMES))
             ->setGatherer($this->getGatherer());
     }
 

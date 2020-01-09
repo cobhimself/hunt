@@ -160,6 +160,8 @@ class HunterTest extends HuntTestCase
      * @covers ::setTerm
      * @covers ::getExcludeDirs
      * @covers ::setExcludeDirs
+     * @covers ::getExcludeFileNames
+     * @covers ::setExcludeFileNames
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -180,6 +182,10 @@ class HunterTest extends HuntTestCase
 
         if (isset($options[HunterArgs::EXCLUDE_DIRS])) {
             $this->hunter->setExcludeDirs($options[HunterArgs::EXCLUDE_DIRS]);
+        }
+
+        if (isset($options[HunterArgs::EXCLUDE_NAMES])) {
+            $this->hunter->setExcludeFileNames($options[HunterArgs::EXCLUDE_NAMES]);
         }
 
         $exclude = [];
@@ -332,6 +338,38 @@ class HunterTest extends HuntTestCase
                     'notContains' => [
                         'dir1',
                         'dir2/FakeClassTest.php',
+                    ],
+                ],
+            ],
+            'exclude file name *.txt' => [
+                'options' => [
+                    HunterArgs::DIR          => [$testFilesDir],
+                    HunterArgs::TERM         => 'PHPUnit_',
+                    HunterArgs::RECURSIVE    => true,
+                    HunterArgs::EXCLUDE_NAMES => ['*.txt'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 1 files containing the term PHPUnit_',
+                    ],
+                    'notContains' => [
+                        'plain.txt',
+                    ],
+                ],
+            ],
+            'exclude file name plain*' => [
+                'options' => [
+                    HunterArgs::DIR          => [$testFilesDir],
+                    HunterArgs::TERM         => 'PHPUnit_',
+                    HunterArgs::RECURSIVE    => true,
+                    HunterArgs::EXCLUDE_NAMES => ['/.*lain.*/'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 1 files containing the term PHPUnit_',
+                    ],
+                    'notContains' => [
+                        'plain.txt',
                     ],
                 ],
             ],
