@@ -81,12 +81,12 @@ class Hunter
     private $template;
 
     /**
-     * @var array An array of directory names, including regex strings, to exclude from our results.
+     * @var array an array of directory names, including regex strings, to exclude from our results
      */
     private $excludeDirs = [];
 
     /**
-     * @var array An array of file names, including regex strings, to exclude from our results.
+     * @var array an array of file names, including regex strings, to exclude from our results
      */
     private $excludeFileNames = [];
 
@@ -373,7 +373,6 @@ class Hunter
     /**
      * @param array $excludeDirs an array of directory names to exclude in our hunt. Can be a directory name like 'dir',
      *                           a regular expression like '/foo\/bar/', or a path segment like 'foo/bar'
-     * @return Hunter
      */
     public function setExcludeDirs(array $excludeDirs): Hunter
     {
@@ -388,7 +387,7 @@ class Hunter
     }
 
     /**
-     * @param array $excludeFileNames An array of file names, including regex strings, to exclude from our results.
+     * @param array $excludeFileNames an array of file names, including regex strings, to exclude from our results
      */
     public function setExcludeFileNames(array $excludeFileNames): Hunter
     {

@@ -145,23 +145,23 @@ class HunterTest extends HuntTestCase
      * @dataProvider dataProviderForTestHunt
      * @covers ::gatherData
      * @covers ::generateTemplate
+     * @covers ::getBaseDir
+     * @covers ::getExcludeDirs
+     * @covers ::getExcludeFileNames
      * @covers ::getFileList()
      * @covers ::getGatherer
      * @covers ::getTemplate
      * @covers ::getTerm
      * @covers ::hunt
+     * @covers ::isRecursive
      * @covers ::setBaseDir
-     * @covers ::getBaseDir
+     * @covers ::setExcludeDirs
      * @covers ::setExcludedTerms
+     * @covers ::setExcludeFileNames
      * @covers ::setGatherer
      * @covers ::setRecursive
-     * @covers ::isRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
-     * @covers ::getExcludeDirs
-     * @covers ::setExcludeDirs
-     * @covers ::getExcludeFileNames
-     * @covers ::setExcludeFileNames
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -343,9 +343,9 @@ class HunterTest extends HuntTestCase
             ],
             'exclude file name *.txt' => [
                 'options' => [
-                    HunterArgs::DIR          => [$testFilesDir],
-                    HunterArgs::TERM         => 'PHPUnit_',
-                    HunterArgs::RECURSIVE    => true,
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => 'PHPUnit_',
+                    HunterArgs::RECURSIVE     => true,
                     HunterArgs::EXCLUDE_NAMES => ['*.txt'],
                 ],
                 'expectations' => [
@@ -359,9 +359,9 @@ class HunterTest extends HuntTestCase
             ],
             'exclude file name plain*' => [
                 'options' => [
-                    HunterArgs::DIR          => [$testFilesDir],
-                    HunterArgs::TERM         => 'PHPUnit_',
-                    HunterArgs::RECURSIVE    => true,
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => 'PHPUnit_',
+                    HunterArgs::RECURSIVE     => true,
                     HunterArgs::EXCLUDE_NAMES => ['/.*lain.*/'],
                 ],
                 'expectations' => [

@@ -48,13 +48,13 @@ class HunterFileListTraversable implements IteratorAggregate
         }
 
         if (!empty($hunter->getExcludeDirs())) {
-            foreach($hunter->getExcludeDirs() as $dir) {
+            foreach ($hunter->getExcludeDirs() as $dir) {
                 $finder->notPath($dir);
             }
         }
 
         if (!empty($hunter->getExcludeFileNames())) {
-            foreach($hunter->getExcludeFileNames() as $name) {
+            foreach ($hunter->getExcludeFileNames() as $name) {
                 $finder->notName($name);
             }
         }
