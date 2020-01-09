@@ -1,4 +1,4 @@
-# Hunt
+# Hunt 1.1.0
 
 Hunt for text, gather its usage.
 
