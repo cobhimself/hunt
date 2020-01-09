@@ -31,6 +31,8 @@ class HunterArgs
 
     const TEMPLATE = 'template';
 
+    const EXCLUDE_DIRS = 'exclude-dir';
+
     const PROGRESS_REDRAW_ANSI = 500;
 
     /**
@@ -67,17 +69,6 @@ class HunterArgs
     {
         $this->cmd->setDescription('Hunt down code and build a report.')
             ->setHelp('This command helps you find strings within files and report on where it is found.')
-            ->addArgument(
-                self::TERM,
-                InputArgument::REQUIRED,
-                'A string to hunt for.'
-            )
-            ->addArgument(
-                self::DIR,
-                InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
-                'One or more directories to hunt for our TERM. If not specified, current working directory is used.',
-                [getcwd()]
-            )
             ->addOption(
                 self::RECURSIVE,
                 '-r',
@@ -109,6 +100,25 @@ class HunterArgs
                 InputOption::VALUE_REQUIRED,
                 'If provided, specifies the template to use. Must be one of: console, confluence-wiki.',
                 'console'
+            )
+            ->addOption(
+                self::EXCLUDE_DIRS,
+                '-x',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'A directory name to exclude from our results; can include regex. Specify option multiple'
+                    . 'times to exclude multiple directories',
+                []
+            )
+            ->addArgument(
+                self::TERM,
+                InputArgument::REQUIRED,
+                'A string to hunt for.'
+            )
+            ->addArgument(
+                self::DIR,
+                InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
+                'One or more directories to hunt for our TERM. If not specified, current working directory is used.',
+                [getcwd()]
             );
     }
 
@@ -135,6 +145,7 @@ class HunterArgs
             ->setOutput($this->output)
             ->setProgressBar($this->getProgressBar())
             ->setTemplate($this->getTemplate())
+            ->setExcludeDirs($this->get(self::EXCLUDE_DIRS))
             ->setGatherer($this->getGatherer());
     }
 

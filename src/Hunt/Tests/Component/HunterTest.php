@@ -151,11 +151,15 @@ class HunterTest extends HuntTestCase
      * @covers ::getTerm
      * @covers ::hunt
      * @covers ::setBaseDir
+     * @covers ::getBaseDir
      * @covers ::setExcludedTerms
      * @covers ::setGatherer
      * @covers ::setRecursive
+     * @covers ::isRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
+     * @covers ::getExcludeDirs
+     * @covers ::setExcludeDirs
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -172,6 +176,10 @@ class HunterTest extends HuntTestCase
 
         if (isset($options['get_template_before_set'])) {
             $this->hunter->getTemplate();
+        }
+
+        if (isset($options[HunterArgs::EXCLUDE_DIRS])) {
+            $this->hunter->setExcludeDirs($options[HunterArgs::EXCLUDE_DIRS]);
         }
 
         $exclude = [];
@@ -290,6 +298,40 @@ class HunterTest extends HuntTestCase
                     'exception' => [
                         'type'    => \LogicException::class,
                         'message' => '/Cannot get template because it has not been set/',
+                    ],
+                ],
+            ],
+            'exclude dir1' => [
+                'options' => [
+                    HunterArgs::DIR          => [$testFilesDir],
+                    HunterArgs::TERM         => 'PHPUnit_',
+                    HunterArgs::RECURSIVE    => true,
+                    HunterArgs::EXCLUDE_DIRS => ['dir1'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 1 files containing the term PHPUnit_',
+                        'dir2/FakeClassTest.php',
+                    ],
+                    'notContains' => [
+                        'dir1',
+                    ],
+                ],
+            ],
+            'exclude dir regex' => [
+                'options' => [
+                    HunterArgs::DIR          => [$testFilesDir],
+                    HunterArgs::TERM         => 'PHPUnit_',
+                    HunterArgs::RECURSIVE    => true,
+                    HunterArgs::EXCLUDE_DIRS => ['/dir.*/'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 0 files containing the term PHPUnit_',
+                    ],
+                    'notContains' => [
+                        'dir1',
+                        'dir2/FakeClassTest.php',
                     ],
                 ],
             ],

@@ -22,13 +22,13 @@ class HunterFileListTraversable implements IteratorAggregate
      */
     private $term;
 
-    public function __construct(array $baseDir, string $term, bool $recurse)
+    public function __construct(Hunter $hunter)
     {
         $files = [];
         $dirs = [];
 
         //Separate files and folders in our baseDir
-        foreach ($baseDir as $path) {
+        foreach ($hunter->getBaseDir() as $path) {
             if (is_dir($path)) {
                 $dirs[] = $path;
             } elseif (is_file($path)) {
@@ -43,14 +43,20 @@ class HunterFileListTraversable implements IteratorAggregate
             ->in($dirs)
             ->append($files);
 
-        if (!$recurse) {
+        if (!$hunter->isRecursive()) {
             $finder->depth('== 0');
         }
 
-        $finder->contains($term);
+        if (!empty($hunter->getExcludeDirs())) {
+            foreach($hunter->getExcludeDirs() as $dir) {
+                $finder->notPath($dir);
+            }
+        }
+
+        $finder->contains($hunter->getTerm());
 
         $this->finder = $finder;
-        $this->term = $term;
+        $this->term = $hunter->getTerm();
     }
 
     /**

@@ -36,6 +36,25 @@ instances of `PHPUnit_Framework_MockObject_MockObject`:
 
 `./hunt --exclude PHPUnit_Framework_MockObject_MockObject PHPUnit_ src includes app`
 
+### Exclude directories from matches
+
+If you want to exclude directories from the hunt, use the --exclude-dir option.
+For example, if you wanted to exclude cache folders, regardless of where they appear in the path:
+
+`./hunt -r --exclude-dir cache <term> <dir> [<dir>] ...`
+
+Multiple directories can be excluded by repeating the `--exclude-dir` option:
+
+`./hunt -r --exclude-dir cache --exclude-dir vendor <term> <dir> [<dir>] ...`
+
+However, it may be easier to use the short option name `-x`:
+
+`./hunt -r -x cache -x vendor <term> <dir> [<dir>] ...`
+
+Regular expressions can be provided as well:
+
+`./hunt -r -x '/.*cache/' <term> <dir> [<dir>] ...`
+
 ### Specify a template
 
 Out of the box, `hunt` comes with two template types: `console` and `confluence-wiki`. The `console` template is useful

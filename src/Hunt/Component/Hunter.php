@@ -81,6 +81,11 @@ class Hunter
     private $template;
 
     /**
+     * @var array An array of directory names, including regex strings, to exclude from our results.
+     */
+    private $excludeDirs = [];
+
+    /**
      * Hunter constructor.
      */
     public function __construct(OutputInterface $output = null, ProgressBar $progressBar = null)
@@ -193,7 +198,7 @@ class Hunter
     {
         $resultCollection = new ResultCollection();
 
-        $fileList = new HunterFileListTraversable($this->baseDir, $this->term, $this->recurse);
+        $fileList = new HunterFileListTraversable($this);
 
         $this->progressBar->setMessage('Finding files with matches');
         $this->progressBar->setMessage('...', 'filename');
@@ -358,5 +363,22 @@ class Hunter
         }
 
         return $this->template;
+    }
+
+    /**
+     * @param array $excludeDirs an array of directory names to exclude in our hunt. Can be a directory name like 'dir',
+     *                           a regular expression like '/foo\/bar/', or a path segment like 'foo/bar'
+     * @return Hunter
+     */
+    public function setExcludeDirs(array $excludeDirs): Hunter
+    {
+        $this->excludeDirs = $excludeDirs;
+
+        return $this;
+    }
+
+    public function getExcludeDirs(): array
+    {
+        return $this->excludeDirs;
     }
 }
