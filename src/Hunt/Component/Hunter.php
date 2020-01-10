@@ -97,14 +97,14 @@ class Hunter
     /**
      * @since 1.2.0
      *
-     * @var array An array of search strings which MUST be within our result's file path.
+     * @var array an array of search strings which MUST be within our result's file path
      */
     private $matchPath = [];
 
     /**
      * @since 1.2.0
      *
-     * @var array An array of search strings which MUST be within our result's file name.
+     * @var array an array of search strings which MUST be within our result's file name
      */
     private $matchName = [];
 
@@ -440,7 +440,7 @@ class Hunter
     /**
      * @since 1.2.0
      *
-     * @param array $matchPath An array of search strings which MUST be within our result's file path.
+     * @param array $matchPath an array of search strings which MUST be within our result's file path
      */
     public function setMatchPath(array $matchPath): Hunter
     {
@@ -460,7 +460,7 @@ class Hunter
     /**
      * @since 1.2.0
      *
-     * @param array $matchName An array of search strings which MUST be within our result's file path.
+     * @param array $matchName an array of search strings which MUST be within our result's file path
      */
     public function setMatchName(array $matchName): Hunter
     {

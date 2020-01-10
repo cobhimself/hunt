@@ -2,7 +2,6 @@
 
 namespace Hunt\Tests\Component;
 
-use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
 use Hunt\Bundle\Exceptions\InvalidTemplateException;
 use Hunt\Bundle\Templates\TemplateFactory;
 use Hunt\Component\Gatherer\GathererInterface;
@@ -147,9 +146,12 @@ class HunterTest extends HuntTestCase
      * @covers ::generateTemplate
      * @covers ::getBaseDir
      * @covers ::getExcludeDirs
+     * @covers ::getExcludedTerms
      * @covers ::getExcludeFileNames
      * @covers ::getFileList()
      * @covers ::getGatherer
+     * @covers ::getMatchName
+     * @covers ::getMatchPath
      * @covers ::getTemplate
      * @covers ::getTerm
      * @covers ::hunt
@@ -157,16 +159,13 @@ class HunterTest extends HuntTestCase
      * @covers ::setBaseDir
      * @covers ::setExcludeDirs
      * @covers ::setExcludedTerms
-     * @covers ::getExcludedTerms
      * @covers ::setExcludeFileNames
      * @covers ::setGatherer
+     * @covers ::setMatchName
+     * @covers ::setMatchPath
      * @covers ::setRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
-     * @covers ::getMatchPath
-     * @covers ::setMatchPath
-     * @covers ::getMatchName
-     * @covers ::setMatchName
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -226,7 +225,7 @@ class HunterTest extends HuntTestCase
             ],
             'no base directory' => [
                 'options' => [
-                    HunterArgs::TERM => 'test'
+                    HunterArgs::TERM => 'test',
                 ],
                 'expectations' => [
                     'exception' => [
@@ -382,7 +381,7 @@ class HunterTest extends HuntTestCase
                     HunterArgs::DIR           => [$testFilesDir],
                     HunterArgs::TERM          => 'PHPUnit_',
                     HunterArgs::RECURSIVE     => true,
-                    HunterArgs::MATCH_PATH => ['dir1'],
+                    HunterArgs::MATCH_PATH    => ['dir1'],
                 ],
                 'expectations' => [
                     'contains' => [
@@ -398,7 +397,7 @@ class HunterTest extends HuntTestCase
                     HunterArgs::DIR           => [$testFilesDir],
                     HunterArgs::TERM          => 'Purple Monkey!',
                     HunterArgs::RECURSIVE     => true,
-                    HunterArgs::MATCH_PATH => ['/.*\/test\/.*/'],
+                    HunterArgs::MATCH_PATH    => ['/.*\/test\/.*/'],
                 ],
                 'expectations' => [
                     'contains' => [
@@ -415,7 +414,7 @@ class HunterTest extends HuntTestCase
                     HunterArgs::DIR           => [$testFilesDir],
                     HunterArgs::TERM          => 'PHPUnit_',
                     HunterArgs::RECURSIVE     => true,
-                    HunterArgs::MATCH_NAME => ['*txt'],
+                    HunterArgs::MATCH_NAME    => ['*txt'],
                 ],
                 'expectations' => [
                     'contains' => [
@@ -432,7 +431,7 @@ class HunterTest extends HuntTestCase
                     HunterArgs::DIR           => [$testFilesDir],
                     HunterArgs::TERM          => 'FakeClass',
                     HunterArgs::RECURSIVE     => true,
-                    HunterArgs::MATCH_NAME => ['/FakeClass.*\.php/'],
+                    HunterArgs::MATCH_NAME    => ['/FakeClass.*\.php/'],
                 ],
                 'expectations' => [
                     'contains' => [
@@ -507,21 +506,21 @@ class HunterTest extends HuntTestCase
     private function setOptionsOnHunter(array $options)
     {
         $optionMap = [
-            HunterArgs::TERM => 'setTerm',
-            HunterArgs::DIR => 'setBaseDir',
-            HunterArgs::EXCLUDE_DIRS => 'setExcludeDirs',
+            HunterArgs::TERM          => 'setTerm',
+            HunterArgs::DIR           => 'setBaseDir',
+            HunterArgs::EXCLUDE_DIRS  => 'setExcludeDirs',
             HunterArgs::EXCLUDE_NAMES => 'setExcludeFileNames',
-            HunterArgs::EXCLUDE => 'setExcludedTerms',
-            HunterArgs::RECURSIVE => 'setRecursive',
-            HunterArgs::MATCH_PATH => 'setMatchPath',
-            HunterArgs::MATCH_NAME => 'setMatchName',
+            HunterArgs::EXCLUDE       => 'setExcludedTerms',
+            HunterArgs::RECURSIVE     => 'setRecursive',
+            HunterArgs::MATCH_PATH    => 'setMatchPath',
+            HunterArgs::MATCH_NAME    => 'setMatchName',
         ];
 
         //Go through each of our options and set them based on our option method map
         foreach ($options as $option => $value) {
             if (array_key_exists($option, $optionMap)) {
                 $func = $optionMap[$option];
-                $this->hunter->$func($value);
+                $this->hunter->{$func}($value);
             }
         }
 
