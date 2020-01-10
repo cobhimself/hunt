@@ -5,3 +5,4 @@ Some things we may look for are parts of strings showing up multiple times: PHPU
     - Might not want: PHPUnit_Framework_MockObjects_MockObject
     - What if they are on the same line? PHPUnit_Framework_TestCase PHPUnit_Framework_MockObjects_MockObject
     - What if they swap order? PHPUnit_Framework_MockObjects_MockObject PHPUnit_Framework_TestCase
+    - What if we say FakeClass here?

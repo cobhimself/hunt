@@ -95,6 +95,24 @@ Regular expressions can be used as well:
 
 `./hunt -r -m '/^src\/.*/' <term> <dir> [<dir>]`
 
+### Force file names to match
+
+If you want the returned set of results files to match a specific file name, use the `--match-name` option:
+
+`./hunt -r --match-name '*Test.php' <term> <dir> [<dir>]`
+
+Multiple file names can be provided:
+
+`./hunt -r --match-name '*AbstractTest.php' --match-name '*TestInterface.php' <term> <dir> [<dir>]`
+
+Using the short option might be easier:
+
+`./hunt -r -M '*AbstractTest.php' -M '*TestInterface.php' <term> <dir> [<dir>]`
+
+Regular expressions can be used as well:
+
+`./hunt -r -M '/.*AbstractTest.*/' <term> <dir> [<dir>]`
+
 ### Specify a template
 
 Out of the box, `hunt` comes with two template types: `console` and `confluence-wiki`. The `console` template is useful

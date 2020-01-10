@@ -102,6 +102,13 @@ class Hunter
     private $matchPath = [];
 
     /**
+     * @since 1.2.0
+     *
+     * @var array An array of search strings which MUST be within our result's file name.
+     */
+    private $matchName = [];
+
+    /**
      * Hunter constructor.
      */
     public function __construct(OutputInterface $output = null, ProgressBar $progressBar = null)
@@ -448,5 +455,25 @@ class Hunter
     public function getMatchPath(): array
     {
         return $this->matchPath;
+    }
+
+    /**
+     * @since 1.2.0
+     *
+     * @param array $matchName An array of search strings which MUST be within our result's file path.
+     */
+    public function setMatchName(array $matchName): Hunter
+    {
+        $this->matchName = $matchName;
+
+        return $this;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public function getMatchName(): array
+    {
+        return $this->matchName;
     }
 }

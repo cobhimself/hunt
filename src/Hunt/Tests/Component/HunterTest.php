@@ -165,6 +165,8 @@ class HunterTest extends HuntTestCase
      * @covers ::setTerm
      * @covers ::getMatchPath
      * @covers ::setMatchPath
+     * @covers ::getMatchName
+     * @covers ::setMatchName
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -408,6 +410,40 @@ class HunterTest extends HuntTestCase
                     ],
                 ],
             ],
+            'match file name' => [
+                'options' => [
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => 'PHPUnit_',
+                    HunterArgs::RECURSIVE     => true,
+                    HunterArgs::MATCH_NAME => ['*txt'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'plain.txt',
+                        'Found 1 files containing the term PHPUnit_',
+                    ],
+                    'notContains' => [
+                        'dir2',
+                    ],
+                ],
+            ],
+            'match file name regex' => [
+                'options' => [
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => 'FakeClass',
+                    HunterArgs::RECURSIVE     => true,
+                    HunterArgs::MATCH_NAME => ['/FakeClass.*\.php/'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        '*FakeClass*Test',
+                        'Found 3 files containing the term FakeClass',
+                    ],
+                    'notContains' => [
+                        'plain.txt',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -478,6 +514,7 @@ class HunterTest extends HuntTestCase
             HunterArgs::EXCLUDE => 'setExcludedTerms',
             HunterArgs::RECURSIVE => 'setRecursive',
             HunterArgs::MATCH_PATH => 'setMatchPath',
+            HunterArgs::MATCH_NAME => 'setMatchName',
         ];
 
         //Go through each of our options and set them based on our option method map

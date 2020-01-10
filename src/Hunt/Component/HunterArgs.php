@@ -37,6 +37,8 @@ class HunterArgs
 
     const MATCH_PATH = 'match-path';
 
+    const MATCH_NAME = 'match-name';
+
     const PROGRESS_REDRAW_ANSI = 500;
 
     /**
@@ -129,6 +131,14 @@ class HunterArgs
                 . 'times to require multiple matches',
                 []
             )
+            ->addOption(
+                self::MATCH_NAME,
+                '-M',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'A string to require be in the file name of our results; can include regex. Specify multiple'
+                . 'times to require multiple matches',
+                []
+            )
             ->addArgument(
                 self::TERM,
                 InputArgument::REQUIRED,
@@ -168,6 +178,7 @@ class HunterArgs
             ->setExcludeDirs($this->get(self::EXCLUDE_DIRS))
             ->setExcludeFileNames($this->get(self::EXCLUDE_NAMES))
             ->setMatchPath($this->get(self::MATCH_PATH))
+            ->setMatchName($this->get(self::MATCH_NAME))
             ->setGatherer($this->getGatherer());
     }
 

@@ -65,6 +65,12 @@ class HunterFileListTraversable implements IteratorAggregate
             }
         }
 
+        if (!empty($hunter->getMatchName())) {
+            foreach ($hunter->getMatchName() as $requiredMatch) {
+                $finder->name($requiredMatch);
+            }
+        }
+
         $finder->contains($hunter->getTerm());
 
         $this->finder = $finder;
