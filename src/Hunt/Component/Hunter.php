@@ -95,6 +95,13 @@ class Hunter
     private $excludeFileNames = [];
 
     /**
+     * @since 1.2.0
+     *
+     * @var array An array of search strings which MUST be within our result's file path.
+     */
+    private $matchPath = [];
+
+    /**
      * Hunter constructor.
      */
     public function __construct(OutputInterface $output = null, ProgressBar $progressBar = null)
@@ -162,6 +169,10 @@ class Hunter
      */
     public function setTerm(string $term): Hunter
     {
+        if (empty($term)) {
+            throw new \InvalidArgumentException('Term cannot be empty');
+        }
+
         $this->term = $term;
 
         return $this;
@@ -172,10 +183,6 @@ class Hunter
      */
     public function hunt()
     {
-        if (empty($this->getTerm())) {
-            throw HunterArgs::getInvalidArgumentException(HunterArgs::TERM);
-        }
-
         //Attempt to get the template at this time. If it's not set, we can fail early.
         $this->getTemplate();
 
@@ -315,6 +322,10 @@ class Hunter
 
     public function getBaseDir(): array
     {
+        if (empty($this->baseDir)) {
+            throw HunterArgs::getInvalidArgumentException(HunterArgs::DIR);
+        }
+
         return $this->baseDir;
     }
 
@@ -325,6 +336,10 @@ class Hunter
 
     public function getTerm(): string
     {
+        if (empty($this->term)) {
+            throw HunterArgs::getInvalidArgumentException(HunterArgs::TERM);
+        }
+
         return $this->term;
     }
 
@@ -413,5 +428,25 @@ class Hunter
     public function getExcludeFileNames(): array
     {
         return $this->excludeFileNames;
+    }
+
+    /**
+     * @since 1.2.0
+     *
+     * @param array $matchPath An array of search strings which MUST be within our result's file path.
+     */
+    public function setMatchPath(array $matchPath): Hunter
+    {
+        $this->matchPath = $matchPath;
+
+        return $this;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public function getMatchPath(): array
+    {
+        return $this->matchPath;
     }
 }

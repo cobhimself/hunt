@@ -33,6 +33,10 @@ abstract class AbstractGatherer implements GathererInterface
      */
     public function __construct(string $term, array $exclude = null)
     {
+        if (empty($term)) {
+            throw new \InvalidArgumentException('You must specify a term!');
+        }
+
         $this->term = $term;
         $this->exclude = (is_array($exclude)) ? $exclude : [];
     }

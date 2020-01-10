@@ -1,4 +1,4 @@
-# Hunt 1.1.0
+# Hunt 1.2.0
 
 Hunt for text, gather its usage.
 
@@ -77,10 +77,23 @@ Regular expressions can be used as well:
 
 `./hunt -r -X '/.*Test.php$/' <term> <dir> [<dir>] ...`
 
-Alternatively, you can specify the filter using global expressions. To only return PHP files with 'Test' at the
-end of their names:
+### Force directories to match
 
-`./hunt -r -X '*Test.php' <term> <dir> [<dir>] ...`
+If you want to the returned set of results to match a specific folder path, use the `--match-path` option:
+
+`./hunt -r --match-path 'src/' <term> <dir> [<dir>]`
+
+Multiple file names can be provided:
+
+`./hunt -r --match-path 'src/' --match-path 'test/' <term> <dir> [<dir>]`
+
+Using the short option might be easier:
+
+`./hunt -r -m 'src/' -m 'test/' <term> <dir> [<dir>]`
+
+Regular expressions can be used as well:
+
+`./hunt -r -m '/^src\/.*/' <term> <dir> [<dir>]`
 
 ### Specify a template
 

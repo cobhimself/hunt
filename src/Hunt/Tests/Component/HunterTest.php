@@ -157,11 +157,14 @@ class HunterTest extends HuntTestCase
      * @covers ::setBaseDir
      * @covers ::setExcludeDirs
      * @covers ::setExcludedTerms
+     * @covers ::getExcludedTerms
      * @covers ::setExcludeFileNames
      * @covers ::setGatherer
      * @covers ::setRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
+     * @covers ::getMatchPath
+     * @covers ::setMatchPath
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -180,30 +183,7 @@ class HunterTest extends HuntTestCase
             $this->hunter->getTemplate();
         }
 
-        if (isset($options[HunterArgs::EXCLUDE_DIRS])) {
-            $this->hunter->setExcludeDirs($options[HunterArgs::EXCLUDE_DIRS]);
-        }
-
-        if (isset($options[HunterArgs::EXCLUDE_NAMES])) {
-            $this->hunter->setExcludeFileNames($options[HunterArgs::EXCLUDE_NAMES]);
-        }
-
-        $exclude = [];
-        if (isset($options[HunterArgs::EXCLUDE])) {
-            $exclude = $options[HunterArgs::EXCLUDE];
-            $this->hunter->setExcludedTerms($exclude);
-        }
-
-        $templateType = $options[HunterArgs::TEMPLATE] ?? 'console';
-
-        $this->hunter->setTemplate(TemplateFactory::get($templateType))
-            ->setGatherer(new StringGatherer($options[HunterArgs::TERM], $exclude))
-            ->setBaseDir($options[HunterArgs::DIR])
-            ->setTerm($options[HunterArgs::TERM]);
-
-        if (isset($options[HunterArgs::RECURSIVE])) {
-            $this->hunter->setRecursive($options[HunterArgs::RECURSIVE]);
-        }
+        $this->setOptionsOnHunter($options);
 
         $this->hunter->hunt();
 
@@ -231,6 +211,28 @@ class HunterTest extends HuntTestCase
         $testFilesDir = realpath(__DIR__ . '/../TestFiles');
 
         return [
+            'no term' => [
+                'options' => [
+                    HunterArgs::DIR  => [$testFilesDir],
+                ],
+                'expectations' => [
+                    'exception' => [
+                        'type'    => \InvalidArgumentException::class,
+                        'message' => '/A term must be specified/',
+                    ],
+                ],
+            ],
+            'no base directory' => [
+                'options' => [
+                    HunterArgs::TERM => 'test'
+                ],
+                'expectations' => [
+                    'exception' => [
+                        'type'    => \InvalidArgumentException::class,
+                        'message' => '/A valid directory or file to search through must/',
+                    ],
+                ],
+            ],
             'return zero search results' => [
                 'options' => [
                     HunterArgs::DIR  => [$testFilesDir],
@@ -249,8 +251,8 @@ class HunterTest extends HuntTestCase
                 ],
                 'expectations' => [
                     'exception' => [
-                        'type'    => InvalidCommandArgumentException::class,
-                        'message' => '/A term must be specified/',
+                        'type'    => \InvalidArgumentException::class,
+                        'message' => '/Term cannot be empty/',
                     ],
                 ],
             ],
@@ -373,6 +375,39 @@ class HunterTest extends HuntTestCase
                     ],
                 ],
             ],
+            'require dir1 in path' => [
+                'options' => [
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => 'PHPUnit_',
+                    HunterArgs::RECURSIVE     => true,
+                    HunterArgs::MATCH_PATH => ['dir1'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 1 files containing the term PHPUnit_',
+                    ],
+                    'notContains' => [
+                        'FakeClassTest.php',
+                    ],
+                ],
+            ],
+            'match deep folder path with globs' => [
+                'options' => [
+                    HunterArgs::DIR           => [$testFilesDir],
+                    HunterArgs::TERM          => 'Purple Monkey!',
+                    HunterArgs::RECURSIVE     => true,
+                    HunterArgs::MATCH_PATH => ['/.*\/test\/.*/'],
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'dir2/dir3/test/FakeClassTest.php',
+                        'Found 1 files containing the term Purple Monkey!',
+                    ],
+                    'notContains' => [
+                        'dir1',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -428,5 +463,34 @@ class HunterTest extends HuntTestCase
                 ['term one', 'term two'],
             ],
         ];
+    }
+
+    /**
+     * Take the options given to us for the test and set them on our hunter object.
+     */
+    private function setOptionsOnHunter(array $options)
+    {
+        $optionMap = [
+            HunterArgs::TERM => 'setTerm',
+            HunterArgs::DIR => 'setBaseDir',
+            HunterArgs::EXCLUDE_DIRS => 'setExcludeDirs',
+            HunterArgs::EXCLUDE_NAMES => 'setExcludeFileNames',
+            HunterArgs::EXCLUDE => 'setExcludedTerms',
+            HunterArgs::RECURSIVE => 'setRecursive',
+            HunterArgs::MATCH_PATH => 'setMatchPath',
+        ];
+
+        //Go through each of our options and set them based on our option method map
+        foreach ($options as $option => $value) {
+            if (array_key_exists($option, $optionMap)) {
+                $func = $optionMap[$option];
+                $this->hunter->$func($value);
+            }
+        }
+
+        $templateType = $options[HunterArgs::TEMPLATE] ?? 'console';
+        $this->hunter->setTemplate(TemplateFactory::get($templateType));
+
+        $this->hunter->setGatherer(new StringGatherer($this->hunter->getTerm(), $this->hunter->getExcludedTerms()));
     }
 }

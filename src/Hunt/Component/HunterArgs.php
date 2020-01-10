@@ -35,6 +35,8 @@ class HunterArgs
 
     const EXCLUDE_NAMES = 'exclude-name';
 
+    const MATCH_PATH = 'match-path';
+
     const PROGRESS_REDRAW_ANSI = 500;
 
     /**
@@ -119,6 +121,14 @@ class HunterArgs
                 . 'times to exclude multiple file names.',
                 []
             )
+            ->addOption(
+                self::MATCH_PATH,
+                '-m',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'A string to require be in the path of our results; can include regex. Specify multiple'
+                . 'times to require multiple matches',
+                []
+            )
             ->addArgument(
                 self::TERM,
                 InputArgument::REQUIRED,
@@ -157,6 +167,7 @@ class HunterArgs
             ->setTemplate($this->getTemplate())
             ->setExcludeDirs($this->get(self::EXCLUDE_DIRS))
             ->setExcludeFileNames($this->get(self::EXCLUDE_NAMES))
+            ->setMatchPath($this->get(self::MATCH_PATH))
             ->setGatherer($this->getGatherer());
     }
 

@@ -21,6 +21,9 @@ class FakeClass
         $this->blah = 'blah';
     }
 
+    /**
+     * We'll put the string "Purple Monkey!" in here so we can confirm we don't see it when we test for matching paths.
+     */
     public function doWerk()
     {
         $this->blah = 'werk';
