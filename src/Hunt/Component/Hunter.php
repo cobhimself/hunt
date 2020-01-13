@@ -504,6 +504,9 @@ class Hunter
         return $this->matchName;
     }
 
+    /**
+     * @since 1.3.0
+     */
     public function setListOnly(bool $listOnly): Hunter
     {
         $this->listOnly = $listOnly;
@@ -511,6 +514,9 @@ class Hunter
         return $this;
     }
 
+    /**
+     * @since 1.3.0
+     */
     public function isListOnly(): bool
     {
         return $this->listOnly;

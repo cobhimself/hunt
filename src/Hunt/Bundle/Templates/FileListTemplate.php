@@ -4,6 +4,9 @@ namespace Hunt\Bundle\Templates;
 
 use Hunt\Bundle\Models\Result;
 
+/**
+ * @since 1.3.0
+ */
 class FileListTemplate extends AbstractTemplate
 {
     /**

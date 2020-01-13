@@ -1,4 +1,4 @@
-# Hunt 1.2.0
+# Hunt 1.3.0
 
 Hunt for text, gather its usage.
 
@@ -115,9 +115,15 @@ Regular expressions can be used as well:
 
 ### Specify a template
 
-Out of the box, `hunt` comes with two template types: `console` and `confluence-wiki`. The `console` template is useful
-for seeing preliminary results of your search. The `confluence-wiki` template can be copied and pasted into the markup
-macro within Confluence and it will format itself as a table with statuses for each file with matches.
+Out of the box, `hunt` comes with three template types: `console`, `confluence-wiki`, and `file-list`. The `console`
+template is useful for seeing preliminary results of your search. The `confluence-wiki` template can be copied and
+pasted into the markup macro within Confluence and it will format itself as a table with statuses for each file with
+matches.
+
+#### Files with matches only
+
+If you only want to see a list of files where we've found matches, specify the `--list` option or
+use `--template=file-list`. If `--list` is provided, the `--template` option is ignored.'
 
 ## Running Tests
 
