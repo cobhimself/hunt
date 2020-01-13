@@ -212,10 +212,11 @@ class HuntTestCase extends KernelTestCase
     /**
      * Calls the setter for a specific Hunter argument.
      *
-     * @param string $arg  The HunterArgs constant for the argument we want to set.
-     * @param mixed $value The value we want to set for the argument.
+     * @param string $arg   the HunterArgs constant for the argument we want to set
+     * @param mixed  $value the value we want to set for the argument
      */
-    protected function callHunterSetter(Hunter $hunter, string $arg, $value) {
+    protected function callHunterSetter(Hunter $hunter, string $arg, $value)
+    {
         //Don't call what we don't have.
         if (!array_key_exists($arg, self::HUNTER_SETTER_MAP)) {
             return;
@@ -227,21 +228,23 @@ class HuntTestCase extends KernelTestCase
     /**
      * Calls the getter for a specific Hunter argument.
      *
-     * @param string $arg  The HunterArgs constant for the argument we want to get.
+     * @param string $arg the HunterArgs constant for the argument we want to get
      */
-    protected function callHunterGetter(Hunter $hunter, string $arg) {
+    protected function callHunterGetter(Hunter $hunter, string $arg)
+    {
         //Don't call what we don't have.
         if (!array_key_exists($arg, self::HUNTER_GETTER_MAP)) {
             return;
         }
 
-        $this->callHunterFunc($hunter,self::HUNTER_GETTER_MAP[$arg]);
+        $this->callHunterFunc($hunter, self::HUNTER_GETTER_MAP[$arg]);
     }
 
     /**
      * Calls the provided function on the given Hunter object.
      */
-    protected function callHunterFunc(Hunter $hunter, string $func, array $args = []) {
+    protected function callHunterFunc(Hunter $hunter, string $func, array $args = [])
+    {
         call_user_func_array([$hunter, $func], $args);
     }
 }

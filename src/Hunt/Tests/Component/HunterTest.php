@@ -156,19 +156,19 @@ class HunterTest extends HuntTestCase
      * @covers ::getTemplate
      * @covers ::getTerm
      * @covers ::hunt
+     * @covers ::isListOnly
      * @covers ::isRecursive
      * @covers ::setBaseDir
      * @covers ::setExcludeDirs
      * @covers ::setExcludedTerms
      * @covers ::setExcludeFileNames
      * @covers ::setGatherer
+     * @covers ::setListOnly
      * @covers ::setMatchName
      * @covers ::setMatchPath
      * @covers ::setRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
-     * @covers ::setListOnly
-     * @covers ::isListOnly
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -480,7 +480,7 @@ class HunterTest extends HuntTestCase
                     HunterArgs::TERM      => 'FakeClass',
                     HunterArgs::RECURSIVE => true,
                     HunterArgs::LIST_ONLY => true,
-                    HunterArgs::TEMPLATE  => TemplateFactory::CONSOLE
+                    HunterArgs::TEMPLATE  => TemplateFactory::CONSOLE,
                 ],
                 'expectations' => [
                     'contains' => [
@@ -496,7 +496,7 @@ class HunterTest extends HuntTestCase
                     HunterArgs::DIR       => [$testFilesDir],
                     HunterArgs::TERM      => 'FakeClass',
                     HunterArgs::RECURSIVE => true,
-                    HunterArgs::TEMPLATE  => TemplateFactory::FILE_LIST
+                    HunterArgs::TEMPLATE  => TemplateFactory::FILE_LIST,
                 ],
                 'expectations' => [
                     'contains' => [

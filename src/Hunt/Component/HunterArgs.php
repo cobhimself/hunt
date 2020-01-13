@@ -281,9 +281,9 @@ class HunterArgs
         }
 
         $messages = [
-            self::DIR  => 'A valid directory or file to search through must be provided.' . $extraInfo,
-            self::TERM => 'A term must be specified',
-            self::LIST_ONLY => 'The list option cannot be provided if a template has been specified.'
+            self::DIR       => 'A valid directory or file to search through must be provided.' . $extraInfo,
+            self::TERM      => 'A term must be specified',
+            self::LIST_ONLY => 'The list option cannot be provided if a template has been specified.',
         ];
 
         $message = sprintf('Error with argument (%s): %s', $argument, $messages[$argument]);

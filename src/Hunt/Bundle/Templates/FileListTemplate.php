@@ -3,13 +3,11 @@
 namespace Hunt\Bundle\Templates;
 
 use Hunt\Bundle\Models\Result;
-use Hunt\Bundle\Models\ResultCollection;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class FileListTemplate extends AbstractTemplate
 {
     /**
-     * Render the filename only
+     * Render the filename only.
      */
     public function getResultOutput(Result $result): string
     {

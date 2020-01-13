@@ -111,7 +111,7 @@ class Hunter
     private $matchName = [];
 
     /**
-     * @var bool Whether or not we want to just list file names with matches.
+     * @var bool whether or not we want to just list file names with matches
      */
     private $listOnly = false;
 

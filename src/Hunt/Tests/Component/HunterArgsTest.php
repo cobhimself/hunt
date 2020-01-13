@@ -4,7 +4,6 @@ namespace Hunt\Tests\Component;
 
 use Hunt\Bundle\Command\HuntCommand;
 use Hunt\Bundle\Templates\FileListTemplate;
-use Hunt\Bundle\Templates\TemplateFactory;
 use Hunt\Component\Hunter;
 use Hunt\Component\HunterArgs;
 use Hunt\Tests\HuntTestCase;
@@ -71,7 +70,7 @@ class HunterArgsTest extends HuntTestCase
     {
         $this->tester->execute(
             [
-                HunterArgs::TERM => self::SEARCH_TERM,
+                HunterArgs::TERM             => self::SEARCH_TERM,
                 '--' . HunterArgs::LIST_ONLY => true,
             ]
         );

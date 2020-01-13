@@ -19,8 +19,8 @@ use Hunt\Component\Gatherer\StringGatherer;
 class ConfluenceWikiTemplateTest extends TemplateTestCase
 {
     /**
-     * @covers ::setGatherer
      * @covers ::init
+     * @covers ::setGatherer
      */
     public function setUp()
     {
