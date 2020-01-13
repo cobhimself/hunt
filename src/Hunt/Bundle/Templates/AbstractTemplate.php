@@ -154,10 +154,8 @@ abstract class AbstractTemplate implements TemplateInterface
      *
      *  - getTermResults
      *  - getFilename
-     *
-     * @return mixed
      */
-    abstract public function getResultOutput(Result $result);
+    abstract public function getResultOutput(Result $result): string;
 
     /**
      * Set the header string to be output before the template.

@@ -10,12 +10,15 @@ class TemplateFactory
 
     const CONFLUENCE_WIKI = 'confluence-wiki';
 
+    const FILE_LIST = 'file-list';
+
     /**
      * @var array An array of available templates
      */
     const TEMPLATE_LIST = [
         self::CONSOLE         => ConsoleTemplate::class,
         self::CONFLUENCE_WIKI => ConfluenceWikiTemplate::class,
+        self::FILE_LIST       => FileListTemplate::class,
     ];
 
     public static function get(string $type): TemplateInterface

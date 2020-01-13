@@ -24,10 +24,8 @@ class ConsoleTemplate extends AbstractTemplate
      *
      *  - getTermResults
      *  - getFilename
-     *
-     * @return mixed
      */
-    public function getResultOutput(Result $result)
+    public function getResultOutput(Result $result): string
     {
         static $filenameSeparator = ': ';
         $output = '';

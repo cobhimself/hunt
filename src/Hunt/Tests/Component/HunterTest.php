@@ -23,6 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
  * @uses \Hunt\Bundle\Templates\ConsoleTemplate
+ * @uses \Hunt\Bundle\Templates\FileListTemplate
  * @uses \Hunt\Component\Gatherer\AbstractGatherer
  * @uses \Hunt\Component\Gatherer\StringGatherer
  * @codeCoverageIgnore
@@ -166,6 +167,8 @@ class HunterTest extends HuntTestCase
      * @covers ::setRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
+     * @covers ::setListOnly
+     * @covers ::isListOnly
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
      * @covers   \Hunt\Component\HunterFileListTraversable
      *
@@ -182,6 +185,17 @@ class HunterTest extends HuntTestCase
 
         if (isset($options['get_template_before_set'])) {
             $this->hunter->getTemplate();
+        }
+
+        //Set our template to default to the console template unless we've specified we do not want the template
+        //to be specified for us.
+        if (!isset($options[HunterArgs::TEMPLATE]) && !isset($options['do_not_set_default_template'])) {
+            $options[HunterArgs::TEMPLATE] = TemplateFactory::CONSOLE;
+        }
+
+        if (isset($options[HunterArgs::TEMPLATE])) {
+            //Convert our template value string into an actual template so we can set it directly
+            $options[HunterArgs::TEMPLATE] = TemplateFactory::get($options[HunterArgs::TEMPLATE]);
         }
 
         $this->setOptionsOnHunter($options);
@@ -443,6 +457,56 @@ class HunterTest extends HuntTestCase
                     ],
                 ],
             ],
+            'list only' => [
+                'options' => [
+                    HunterArgs::DIR               => [$testFilesDir],
+                    HunterArgs::TERM              => 'FakeClass',
+                    HunterArgs::RECURSIVE         => true,
+                    HunterArgs::LIST_ONLY         => true,
+                    'do_not_set_default_template' => true,
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 4 files containing the term FakeClass',
+                    ],
+                    'notContains' => [
+                        ':',
+                    ],
+                ],
+            ],
+            'list only even when template provided' => [
+                'options' => [
+                    HunterArgs::DIR       => [$testFilesDir],
+                    HunterArgs::TERM      => 'FakeClass',
+                    HunterArgs::RECURSIVE => true,
+                    HunterArgs::LIST_ONLY => true,
+                    HunterArgs::TEMPLATE  => TemplateFactory::CONSOLE
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 4 files containing the term FakeClass',
+                    ],
+                    'notContains' => [
+                        ':',
+                    ],
+                ],
+            ],
+            'list files using list template' => [
+                'options' => [
+                    HunterArgs::DIR       => [$testFilesDir],
+                    HunterArgs::TERM      => 'FakeClass',
+                    HunterArgs::RECURSIVE => true,
+                    HunterArgs::TEMPLATE  => TemplateFactory::FILE_LIST
+                ],
+                'expectations' => [
+                    'contains' => [
+                        'Found 4 files containing the term FakeClass',
+                    ],
+                    'notContains' => [
+                        ':',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -505,27 +569,10 @@ class HunterTest extends HuntTestCase
      */
     private function setOptionsOnHunter(array $options)
     {
-        $optionMap = [
-            HunterArgs::TERM          => 'setTerm',
-            HunterArgs::DIR           => 'setBaseDir',
-            HunterArgs::EXCLUDE_DIRS  => 'setExcludeDirs',
-            HunterArgs::EXCLUDE_NAMES => 'setExcludeFileNames',
-            HunterArgs::EXCLUDE       => 'setExcludedTerms',
-            HunterArgs::RECURSIVE     => 'setRecursive',
-            HunterArgs::MATCH_PATH    => 'setMatchPath',
-            HunterArgs::MATCH_NAME    => 'setMatchName',
-        ];
-
-        //Go through each of our options and set them based on our option method map
+        //Go through each of our options and set them
         foreach ($options as $option => $value) {
-            if (array_key_exists($option, $optionMap)) {
-                $func = $optionMap[$option];
-                $this->hunter->{$func}($value);
-            }
+            $this->callHunterSetter($this->hunter, $option, $value);
         }
-
-        $templateType = $options[HunterArgs::TEMPLATE] ?? 'console';
-        $this->hunter->setTemplate(TemplateFactory::get($templateType));
 
         $this->hunter->setGatherer(new StringGatherer($this->hunter->getTerm(), $this->hunter->getExcludedTerms()));
     }

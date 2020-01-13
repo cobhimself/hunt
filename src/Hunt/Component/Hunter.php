@@ -6,6 +6,8 @@ namespace Hunt\Component;
 
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
+use Hunt\Bundle\Templates\FileListTemplate;
+use Hunt\Bundle\Templates\TemplateFactory;
 use Hunt\Bundle\Templates\TemplateInterface;
 use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -107,6 +109,11 @@ class Hunter
      * @var array an array of search strings which MUST be within our result's file name
      */
     private $matchName = [];
+
+    /**
+     * @var bool Whether or not we want to just list file names with matches.
+     */
+    private $listOnly = false;
 
     /**
      * Hunter constructor.
@@ -380,15 +387,35 @@ class Hunter
         return $this->regex;
     }
 
+    /**
+     * Set the template associated with this hunter.
+     *
+     * NOTE: If $this->listOnly is true, this method is a noop since file-list is forced.
+     */
     public function setTemplate(TemplateInterface $template): Hunter
     {
-        $this->template = $template;
+        //If we want to only list the results, the template cannot be set to anything other than a file-list
+        if (($template instanceof FileListTemplate) || !$this->isListOnly()) {
+            $this->template = $template;
+        } else {
+            $this->template = TemplateFactory::get(TemplateFactory::FILE_LIST);
+        }
 
         return $this;
     }
 
+    /**
+     * Get the template associated with this hunter.
+     *
+     * If we've been told this is a list only hunt, force the template to be a file-list.
+     */
     public function getTemplate(): TemplateInterface
     {
+        //Force the template to be a file-list template if we've specified this to be list only
+        if (!($this->template instanceof FileListTemplate) && $this->isListOnly()) {
+            $this->template = TemplateFactory::get(TemplateFactory::FILE_LIST);
+        }
+
         if (null === $this->template) {
             throw new \LogicException('Cannot get template because it has not been set!');
         }
@@ -475,5 +502,17 @@ class Hunter
     public function getMatchName(): array
     {
         return $this->matchName;
+    }
+
+    public function setListOnly(bool $listOnly): Hunter
+    {
+        $this->listOnly = $listOnly;
+
+        return $this;
+    }
+
+    public function isListOnly(): bool
+    {
+        return $this->listOnly;
     }
 }

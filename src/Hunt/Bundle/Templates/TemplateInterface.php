@@ -58,10 +58,8 @@ interface TemplateInterface
      *
      *  - getTermResults
      *  - getFilename
-     *
-     * @return mixed
      */
-    public function getResultOutput(Result $result);
+    public function getResultOutput(Result $result): string;
 
     /**
      * Set the header string to be output before the template.

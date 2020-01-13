@@ -20,11 +20,13 @@ class ConfluenceWikiTemplateTest extends TemplateTestCase
 {
     /**
      * @covers ::setGatherer
+     * @covers ::init
      */
     public function setUp()
     {
-        $this->template = new ConfluenceWikiTemplate($this->getResultCollection(), $this->getOutputMock());
+        $this->template = new ConfluenceWikiTemplate();
         $this->template
+            ->init($this->getResultCollection(), $this->getOutputMock())
             ->setGatherer(
                 new StringGatherer(self::SEARCH_TERM, [self::EXCLUDE_TERM])
             )

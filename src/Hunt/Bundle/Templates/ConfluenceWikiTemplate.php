@@ -17,10 +17,8 @@ class ConfluenceWikiTemplate extends AbstractTemplate
      *
      *  - getTermResults
      *  - getFilename
-     *
-     * @return mixed
      */
-    public function getResultOutput(Result $result)
+    public function getResultOutput(Result $result): string
     {
         $statusText = '{status:title= |color=red}';
         $filename = $this->getFileName($result);

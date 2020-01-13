@@ -41,6 +41,8 @@ class HunterArgs
 
     const PROGRESS_REDRAW_ANSI = 500;
 
+    const LIST_ONLY = 'list';
+
     /**
      * @var InputInterface
      */
@@ -101,10 +103,20 @@ class HunterArgs
                 'If given, the search term will be treated as if it were a regex expression'
             )
             ->addOption(
+                self::LIST_ONLY,
+                '-l',
+                null,
+                sprintf(
+                    'Only list file names with results. Alias for --%s. If given, the %s option is ignored.',
+                    self::TEMPLATE . '=' . TemplateFactory::FILE_LIST,
+                    TemplateFactory::FILE_LIST
+                )
+            )
+            ->addOption(
                 self::TEMPLATE,
                 '-T',
                 InputOption::VALUE_REQUIRED,
-                'If provided, specifies the template to use. Must be one of: console, confluence-wiki.',
+                'If provided, specifies the template to use. Must be one of: console, confluence-wiki, file-list.',
                 'console'
             )
             ->addOption(
@@ -174,6 +186,7 @@ class HunterArgs
             ->setRegex($this->get(self::REGEX))
             ->setOutput($this->output)
             ->setProgressBar($this->getProgressBar())
+            ->setListOnly($this->get(self::LIST_ONLY))
             ->setTemplate($this->getTemplate())
             ->setExcludeDirs($this->get(self::EXCLUDE_DIRS))
             ->setExcludeFileNames($this->get(self::EXCLUDE_NAMES))
@@ -270,6 +283,7 @@ class HunterArgs
         $messages = [
             self::DIR  => 'A valid directory or file to search through must be provided.' . $extraInfo,
             self::TERM => 'A term must be specified',
+            self::LIST_ONLY => 'The list option cannot be provided if a template has been specified.'
         ];
 
         $message = sprintf('Error with argument (%s): %s', $argument, $messages[$argument]);
@@ -297,7 +311,10 @@ class HunterArgs
 
     private function getTemplate(): TemplateInterface
     {
-        $template = $this->get(self::TEMPLATE);
+        //See if we've specified we only want to se a list of files.
+        $template = $this->get(self::LIST_ONLY)
+            ? TemplateFactory::FILE_LIST
+            : $this->get(self::TEMPLATE);
 
         return TemplateFactory::get($template);
     }
