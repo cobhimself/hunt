@@ -1,4 +1,4 @@
-# Hunt 1.3.0
+# Hunt 1.4.0
 
 Hunt for text, gather its usage.
 
@@ -27,6 +27,28 @@ Note: The `-r` shorthand can be used as well.
 
 ### Trim leading spaces in results
 `./hunt --trim-matches @deprecated src includes app`
+
+### Regular expression searching
+
+The `--regex` forces the hunt to happen utilizing a regular expression term. The given string must start and end with
+`/`. The regular expression is passed on to the `preg_*` PHP method. See its documentation for help.
+
+`./hunt --regex '/PHPUnit_Framework_MockObject_MockObject/' <dir>`
+
+The above command would match any line with "PHPUnit_Framework_MockObject_MockObject". Simple searches like this should
+usually not utilize the `--regex` flag because it's more expensive. The following would match any PHPUnit call which is
+not namespaced:
+
+`./hunt --regex '/PHPUnit_.*/' <dir>`
+
+This would cause the match to be highlighted completely. However, you can leverage regex groups to highlight only a
+specific portion of the match:
+
+`./hunt --regex '/PHPUnit_(.*)_MockObject_MockObject/' <dir>`
+
+Now, only the content grouped by the `(.*)` group will be highlighted.
+
+NOTE: Not having `/` before and after your regex will result in an error.
 
 ### Exclude terms from matches
 
@@ -137,6 +159,3 @@ To run the test suite for `hunt`:
 
  - Currently, templates are hard-coded. In the future, it will be possible to specify a twig template to use to render the
 result output.
- - Hunt uses "Gatherers" to gather its hunt's result. A normal string search gatherer is used by default and, while an
-   option currently exists to specify the search string is a regular expression, this functionality is not
-   implemented yet.
