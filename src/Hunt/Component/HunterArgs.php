@@ -304,7 +304,6 @@ class HunterArgs
             }
         }
 
-        /** @var string $term */
         $term = $this->get(self::TERM);
         if (empty($term)) {
             throw self::getInvalidArgumentException(self::TERM, 'Given term: ' . var_export($term, true));
