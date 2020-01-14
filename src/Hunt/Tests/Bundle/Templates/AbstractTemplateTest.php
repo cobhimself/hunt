@@ -12,6 +12,8 @@ use Hunt\Component\Gatherer\StringGatherer;
  *
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Models\ResultCollection
+ * @uses \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
+ * @uses \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
  * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
  * @uses \Hunt\Component\OutputStyler
  * @covers ::setGatherer

@@ -213,17 +213,13 @@ class HuntCommandTest extends HuntTestCase
                 'input' => [
                     HunterArgs::DIR   => [$testFilesDirectory],
                     HunterArgs::REGEX => true,
-                    HunterArgs::TERM  => self::SEARCH_TERM,
+                    HunterArgs::TERM  => '/' . self::SEARCH_TERM . '/',
                 ],
                 'expectations' => [
                     'options' => [
                         HunterArgs::DIR   => [$testFilesDirectory],
                         HunterArgs::REGEX => true,
-                        HunterArgs::TERM  => self::SEARCH_TERM,
-                    ],
-                    'exception' => [
-                        'class'   => \InvalidArgumentException::class,
-                        'message' => '/Gatherer not implemented yet/',
+                        HunterArgs::TERM  => '/' . self::SEARCH_TERM . '/',
                     ],
                 ],
             ],

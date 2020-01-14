@@ -16,7 +16,7 @@ class GathererFactory
             case self::GATHERER_STRING:
                 return new StringGatherer($term, $exclude);
             case self::GATHERER_REGEX:
-                throw new InvalidArgumentException('Gatherer not implemented yet.');
+                return new RegexGatherer($term, $exclude);
             default:
                 throw new InvalidArgumentException('Unknown gatherer type: ' . $type);
         }

@@ -11,6 +11,8 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @coversDefaultClass \Hunt\Bundle\Templates\ConfluenceWikiTemplate
  * @covers ::init
  *
+ * @uses \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
+ * @uses \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
  * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
