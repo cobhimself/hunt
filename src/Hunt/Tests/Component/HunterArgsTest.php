@@ -77,4 +77,19 @@ class HunterArgsTest extends HuntTestCase
 
         $this->assertInstanceOf(FileListTemplate::class, $this->huntCommand->getHunter()->getTemplate());
     }
+
+    /**
+     * @covers ::validateArguments
+     * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
+     * @expectedExceptionMessageRegExp /Improperly formatted/
+     */
+    public function testMalformedRegex()
+    {
+        $this->tester->execute(
+            [
+                HunterArgs::TERM         => '/bad-regex',
+                '--' . HunterArgs::REGEX => true,
+            ]
+        );
+    }
 }

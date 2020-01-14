@@ -284,6 +284,7 @@ class HunterArgs
             self::DIR       => 'A valid directory or file to search through must be provided.' . $extraInfo,
             self::TERM      => 'A term must be specified',
             self::LIST_ONLY => 'The list option cannot be provided if a template has been specified.',
+            self::REGEX     => 'Improperly formatted regex: ' . $extraInfo,
         ];
 
         $message = sprintf('Error with argument (%s): %s', $argument, $messages[$argument]);
@@ -306,6 +307,13 @@ class HunterArgs
         $term = $this->get(self::TERM);
         if (empty($term)) {
             throw self::getInvalidArgumentException(self::TERM, 'Given term: ' . var_export($term, true));
+        }
+
+        if (
+            ('/' !== $term[0] || '/' !== $term[strlen($term) - 1])
+            && $this->get(self::REGEX)
+        ) {
+            throw self::getInvalidArgumentException(self::REGEX, $term . ' does not appear to be a valid regex string. Make sure you start and end with /.');
         }
     }
 

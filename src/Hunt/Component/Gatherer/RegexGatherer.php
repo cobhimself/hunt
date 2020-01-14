@@ -4,10 +4,13 @@ namespace Hunt\Component\Gatherer;
 
 use Hunt\Bundle\Models\Result;
 
-class StringGatherer extends AbstractGatherer
+/**
+ * @since 1.4.0
+ */
+class RegexGatherer extends AbstractGatherer
 {
     /**
-     * Performs a string based comparison for our term/excluded terms and sets the matching lines within the result.
+     * Performs a regex based comparison for our term/excluded terms and sets the matching lines within the result.
      */
     public function gather(Result $result): bool
     {
@@ -21,7 +24,7 @@ class StringGatherer extends AbstractGatherer
                 }
             }
 
-            if (false !== strpos($testLine, $this->term)) {
+            if (!empty($testLine) && preg_match($this->term, $testLine)) {
                 $matchingLines[$num] = $this->getTrimMatchingLines() ? ltrim($line) : $line;
             }
         }
@@ -39,10 +42,15 @@ class StringGatherer extends AbstractGatherer
         $this->workingLine = $line;
         $translateArray = $this->removeExcludedTerms();
 
-        //Perform our highlighting
-        $this->workingLine = str_replace(
+        $this->workingLine = preg_replace_callback(
             $this->term,
-            $highlightStart . $this->term . $highlightEnd,
+            static function ($matches) use ($highlightEnd, $highlightStart) {
+                if (1 === count($matches)) {
+                    return $highlightStart . $matches[0] . $highlightEnd;
+                }
+
+                return str_replace($matches[1], $highlightStart . $matches[1] . $highlightEnd, $matches[0]);
+            },
             $this->workingLine
         );
 

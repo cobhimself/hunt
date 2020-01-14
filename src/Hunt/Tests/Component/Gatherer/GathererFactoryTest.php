@@ -3,6 +3,7 @@
 namespace Hunt\Tests\Component\Gatherer;
 
 use Hunt\Component\Gatherer\GathererFactory;
+use Hunt\Component\Gatherer\RegexGatherer;
 use Hunt\Component\Gatherer\StringGatherer;
 use Hunt\Tests\HuntTestCase;
 
@@ -22,9 +23,6 @@ class GathererFactoryTest extends HuntTestCase
         if (-1 === $type) {
             $this->expectException(\InvalidArgumentException::class);
             $this->expectExceptionMessage('Unknown gatherer type: -1');
-        } elseif (GathererFactory::GATHERER_REGEX === $type) {
-            $this->expectException(\InvalidArgumentException::class);
-            $this->expectExceptionMessage('Gatherer not implemented yet.');
         }
 
         $this->assertInstanceOf(
@@ -42,7 +40,7 @@ class GathererFactoryTest extends HuntTestCase
             ],
             'regex gatherer' => [
                 'type'      => GathererFactory::GATHERER_REGEX,
-                'className' => '',
+                'className' => RegexGatherer::class,
             ],
             'unknown gatherer' => [
                 'type'      => -1,

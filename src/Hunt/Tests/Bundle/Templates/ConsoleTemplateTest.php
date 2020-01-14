@@ -13,6 +13,8 @@ use Hunt\Component\Gatherer\StringGatherer;
  *
  * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
+ * @uses \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
  * @uses \Hunt\Component\OutputStyler
  */
