@@ -1,4 +1,4 @@
-# Hunt 1.4.0
+# Hunt 1.5.0
 
 Hunt for text, gather its usage.
 
@@ -23,10 +23,27 @@ Hunt for the string "@deprecated" in any file within the `src`, `includes`, or `
 ### Recursive Searching
 `./hunt --recursive @deprecated src includes app`
 
-Note: The `-r` shorthand can be used as well.
+> NOTE: The `-r` shorthand can be used as well.
+
+### Result Context
+
+If you would like to see a set amount of lines before and after your results, use the `--context` option. The value
+provided should be the number of lines you'd like to see before and after each result.
+
+For example, we are choosing to see 3 lines before and after the results in the given file:
+
+`./hunt --context 3 <searchTerm> <file.txt>`
+
+> NOTE: This option is ignored if using the `--list` option as there is no need to display context when all you want to
+> see is a list of matching files.
 
 ### Trim leading spaces in results
 `./hunt --trim-matches @deprecated src includes app`
+
+When used alongside the `--context` option, as many leading spaces as possible will be removed from the results.
+Indentation is preserved.
+
+> NOTE: Only space characters are removed from the results. Leading tabs are not removed.
 
 ### Regular expression searching
 
@@ -140,7 +157,7 @@ Regular expressions can be used as well:
 Out of the box, `hunt` comes with three template types: `console`, `confluence-wiki`, and `file-list`. The `console`
 template is useful for seeing preliminary results of your search. The `confluence-wiki` template can be copied and
 pasted into the markup macro within Confluence and it will format itself as a table with statuses for each file with
-matches.
+matches. The `console` template is the default template.
 
 #### Files with matches only
 
