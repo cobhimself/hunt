@@ -7,7 +7,6 @@ use Hunt\Component\MatchContext\ContextCollector;
 use Hunt\Component\MatchContext\ContextCollectorFactory;
 use Hunt\Component\MatchContext\DummyContextCollector;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 /**
  * @codeCoverageIgnore

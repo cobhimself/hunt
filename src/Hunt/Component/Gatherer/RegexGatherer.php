@@ -2,8 +2,6 @@
 
 namespace Hunt\Component\Gatherer;
 
-use Hunt\Bundle\Models\Result;
-
 /**
  * @since 1.4.0
  */

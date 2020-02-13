@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Hunt\Component\MatchContext;
-
 
 use Hunt\Component\MatchContext\ContextCollector;
 use Hunt\Component\MatchContext\ContextCollectorInterface;

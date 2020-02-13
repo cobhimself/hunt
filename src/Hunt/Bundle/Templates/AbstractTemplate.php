@@ -143,7 +143,7 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * Process our context lines to conform to our template.
      *
-     * @param array $lines An array of lines we should append our context lines to.
+     * @param array $lines        An array of lines we should append our context lines to.
      * @param array $contextLines An array containing context lines for a match.
      *
      * @since 1.5.0

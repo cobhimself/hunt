@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Hunt\Bundle\Exceptions;
 
 use Throwable;

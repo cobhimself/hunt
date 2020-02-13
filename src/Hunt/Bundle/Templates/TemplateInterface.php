@@ -109,7 +109,7 @@ interface TemplateInterface
      *
      * @since 1.5.0
      *
-     * @param array $lines An array of lines we should append our context lines to.
+     * @param array $lines        An array of lines we should append our context lines to.
      * @param array $contextLines An array containing context lines for a match.
      */
     public function processContextLines(array &$lines, array $contextLines);

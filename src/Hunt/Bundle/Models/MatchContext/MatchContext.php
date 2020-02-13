@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Hunt\Bundle\Models\MatchContext;
-
 
 /**
  * Hold context lines for our results.

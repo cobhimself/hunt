@@ -2,7 +2,6 @@
 
 namespace Hunt\Component;
 
-
 /**
  * Helper which trims the same amount of leading strings off the left side of an array of strings.
  *
@@ -42,7 +41,7 @@ class Trimmer
 
     /**
      * @param string|array $lines The lines to trim spaces off of. If an array, the trim is performed on each item.
-     * @param int $num The number of spaces to trim from the beginning of the line.
+     * @param int          $num   The number of spaces to trim from the beginning of the line.
      *
      * @return string|array An array is returned if an array was passed in, otherwise a trimmed string is returned.
      */

@@ -2,7 +2,6 @@
 
 namespace Hunt\Bundle\Models\MatchContext;
 
-
 /**
  * @since 1.5.0
  */
