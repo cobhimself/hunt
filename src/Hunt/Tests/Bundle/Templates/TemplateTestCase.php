@@ -19,9 +19,10 @@ class TemplateTestCase extends HuntTestCase
 
     /**
      * Get the result collection for our template test.
+     * @param bool $includeContextLines Whether or not to include context data.
      */
-    protected function getResultCollection(): ResultCollection
+    protected function getResultCollection(bool $includeContextLines = false): ResultCollection
     {
-        return $this->getResultCollectionWithFileConstants();
+        return $this->getResultCollectionWithFileConstants($includeContextLines);
     }
 }

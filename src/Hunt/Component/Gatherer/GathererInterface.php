@@ -27,13 +27,6 @@ interface GathererInterface
     public function gather(Result $result): bool;
 
     /**
-     * Set whether or not we want this gatherer to trim whitespace from the beginning of matching lines.
-     *
-     * @return AbstractGatherer
-     */
-    public function setTrimMatchingLines(bool $trim = true): GathererInterface;
-
-    /**
      * Returns the given string with our search term highlighted.
      *
      * Excluded terms are ignored.
@@ -41,4 +34,20 @@ interface GathererInterface
      * @return mixed
      */
     public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = '');
+
+    /**
+     * Returns whether or not the given line matches.
+     *
+     * @since 1.5.0
+     *
+     * @param string $line A single line from the file we are gathering from.
+     */
+    public function lineMatches(string $line): bool;
+
+    /**
+     * Perform the highlighting of the given line.
+     *
+     * @since 1.5.0
+     */
+    public function highlightLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string;
 }

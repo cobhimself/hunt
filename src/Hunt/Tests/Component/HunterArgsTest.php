@@ -3,6 +3,7 @@
 namespace Hunt\Tests\Component;
 
 use Hunt\Bundle\Command\HuntCommand;
+use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Bundle\Templates\FileListTemplate;
 use Hunt\Component\Hunter;
 use Hunt\Component\HunterArgs;
@@ -24,6 +25,15 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @uses \Hunt\Component\Gatherer\AbstractGatherer
  * @uses \Hunt\Bundle\Templates\TemplateFactory
  * @uses \Hunt\Component\OutputStyler
+ * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Bundle\Templates\ConsoleTemplate
+ * @uses \Hunt\Component\MatchContext\DummyContextCollector
+ * @uses \Hunt\Bundle\Models\ResultCollection
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+ * @uses \Hunt\Bundle\Templates\AbstractTemplate
+ * @uses \Hunt\Component\Gatherer\StringGatherer
+ * @uses \Hunt\Component\MatchContext\ContextCollectorFactory
+ * @uses \Hunt\Bundle\Templates\FileListTemplate
  *
  * @internal
  */
@@ -79,6 +89,19 @@ class HunterArgsTest extends HuntTestCase
     }
 
     /**
+     * @covers ::getTemplate
+     */
+    public function testDefaultTemplateSet()
+    {
+        $this->tester->execute(
+            [
+                HunterArgs::TERM => self::SEARCH_TERM,
+            ]
+        );
+        $this->assertInstanceOf(ConsoleTemplate::class, $this->huntCommand->getHunter()->getTemplate());
+    }
+
+    /**
      * @covers ::validateArguments
      * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
      * @expectedExceptionMessageRegExp /Improperly formatted/
@@ -91,5 +114,29 @@ class HunterArgsTest extends HuntTestCase
                 '--' . HunterArgs::REGEX => true,
             ]
         );
+    }
+
+    /**
+     * @dataProvider dataProviderForTestInvalidNumLines
+     *
+     * @covers ::validateArguments
+     * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
+     * @expectedExceptionMessageRegExp /The number of context lines/
+     */
+    public function testInvalidNumLines(string $input)
+    {
+        $this->tester->execute(
+            [
+                HunterArgs::TERM         => '/bad-regex',
+                '--' . HunterArgs::NUM_CONTEXT_LINES => $input,
+            ]
+        );
+    }
+
+    public function dataProviderForTestInvalidNumLines()
+    {
+        return[
+            [-1], [0], ['a']
+        ];
     }
 }

@@ -2,6 +2,10 @@
 
 namespace Hunt\Tests;
 
+use Hunt\Bundle\Models\MatchContext\MatchContext;
+use Hunt\Bundle\Models\MatchContext\MatchContextCollection;
+use Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory;
+use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Component\Hunter;
@@ -12,7 +16,6 @@ use SplFileObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -48,6 +51,8 @@ class HuntTestCase extends KernelTestCase
         HunterArgs::MATCH_NAME    => 'setMatchName',
         HunterArgs::LIST_ONLY     => 'setListOnly',
         HunterArgs::TEMPLATE      => 'setTemplate',
+        HunterArgs::NUM_CONTEXT_LINES => 'setNumContextLines',
+        HunterArgs::TRIM_MATCHES => 'setTrimMatches',
     ];
 
     const HUNTER_GETTER_MAP = [
@@ -61,6 +66,8 @@ class HuntTestCase extends KernelTestCase
         HunterArgs::MATCH_NAME    => 'getMatchName',
         HunterArgs::LIST_ONLY     => 'isListOnly',
         HunterArgs::TEMPLATE      => 'getTemplate',
+        HunterArgs::NUM_CONTEXT_LINES      => 'getNumContextLines',
+        HunterArgs::TRIM_MATCHES => 'doTrimMatchces',
     ];
 
     /**
@@ -85,6 +92,87 @@ class HuntTestCase extends KernelTestCase
             1   => 'this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
             2   => 'this is line two',
             300 => 'this is line three hundred',
+        ],
+    ];
+
+    /**
+     * Contains data necessary to construct MatchContext objects for each of the result file constants.
+     *
+     * NOTE: We're assuming each of the lines in our resultMatchingLines is a match even though they really aren't
+     * matches based on any search term. Do not try to make sense of them being "matches".
+     */
+    protected $resultContextLines = [
+        self::RESULT_FILE_ONE => [
+            1 => [
+                'before' => [],
+                'after' => [
+                    2 => 'this is line two',
+                    3 => 'line three has the ' . self::SEARCH_TERM
+                ],
+            ],
+            2 => [
+                'before' => [
+                    1 => 'this is line one'
+                ],
+                'after' => [
+                    3 => 'line three has the ' . self::SEARCH_TERM
+                ],
+            ],
+            3 => [
+                'before' => [
+                    1 => 'this is line one',
+                    2 => 'this is line two'
+                ],
+                'after' => [],
+            ],
+        ],
+        self::RESULT_FILE_TWO => [
+            1 => [
+                'before' => [],
+                'after' => [
+                    2 => 'this is line two with the ' . self::SEARCH_TERM,
+                    3 => 'this is line three with ' . self::SEARCH_TERM . 'Ok'
+                ],
+            ],
+            2 => [
+                'before' => [
+                    1 => 'this is line one'
+                ],
+                'after' => [
+                    3 => 'this is line three with ' . self::SEARCH_TERM . 'Ok'
+                ],
+            ],
+            3 => [
+                'before' => [
+                    1 => 'this is line one',
+                    2 => 'this is line two with the ' . self::SEARCH_TERM,
+                ],
+                'after' => [],
+            ],
+        ],
+        self::RESULT_FILE_THREE => [
+            1 => [
+                'before' => [],
+                'after' => [
+                    2 => 'this is line two',
+                    300 => 'this is line three hundred'
+                ],
+            ],
+            2 => [
+                'before' => [
+                    1   => 'this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+                ],
+                'after' => [
+                    300 => 'this is line three hundred'
+                ],
+            ],
+            300 => [
+                'before' => [
+                    1   => 'this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+                    2 => 'this is line two',
+                ],
+                'after' => [],
+            ],
         ],
     ];
 
@@ -127,9 +215,10 @@ class HuntTestCase extends KernelTestCase
     /**
      * Get a result object with matching lines set for the given filename.
      *
-     * @param string $filename one of our RESULT_FILE_* constants
+     * @param string $filename     one of our RESULT_FILE_* constants
+     * @param bool   $contextLines Whether or not to add context line data.
      */
-    protected function getResultForFileConstant(string $filename): Result
+    protected function getResultForFileConstant(string $filename, bool $contextLines = false): Result
     {
         if (!isset($this->resultMatchingLines[$filename])) {
             throw new \InvalidArgumentException('We do not have any resultMatchingLines data for filename ' . $filename);
@@ -138,7 +227,30 @@ class HuntTestCase extends KernelTestCase
         $result = $this->getResultWithFileInfoMock(self::SEARCH_TERM, $filename);
         $result->setMatchingLines($this->resultMatchingLines[$filename]);
 
+        $result->setContextCollection($this->getMatchContextCollectionForFileConstant($filename, $contextLines));
+
         return $result;
+    }
+
+    /**
+     * Return a MatchContextCollection for the given filename constant.
+     *
+     * @param string $fileName one of our RESULT_FILE_* constants
+     */
+    protected function getMatchContextCollectionForFileConstant(string $fileName, bool $real): MatchContextCollectionInterface
+    {
+        if (!isset($this->resultContextLines[$fileName])) {
+            throw new \InvalidArgumentException('We do not have any resultContextLines data for filename ' . $fileName);
+        }
+
+        $collection = MatchContextCollectionFactory::get($real);
+
+        foreach ($this->resultContextLines[$fileName] as $matchingLineNum => $contextLines) {
+            $context = new MatchContext($contextLines['before'], $contextLines['after']);
+            $collection->addContext($matchingLineNum, $context);
+        }
+
+        return $collection;
     }
 
     /**
@@ -197,13 +309,18 @@ class HuntTestCase extends KernelTestCase
 
     /**
      * Return a ResultCollection made up of our default matching line data.
+     *
+     * NOTE: the matching line data doesn't make sense because not each line contains the search term. It's just data
+     * we are forcing to be "matching".
+     *
+     * @param bool $contextLines Whether or not to add context line data.
      */
-    protected function getResultCollectionWithFileConstants(): ResultCollection
+    protected function getResultCollectionWithFileConstants(bool $contextLines = false): ResultCollection
     {
         $results = new ResultCollection();
 
         foreach ($this->resultMatchingLines as $fileName => $lines) {
-            $results->addResult($this->getResultForFileConstant($fileName));
+            $results->addResult($this->getResultForFileConstant($fileName, $contextLines));
         }
 
         return $results;

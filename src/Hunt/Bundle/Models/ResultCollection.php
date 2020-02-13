@@ -81,4 +81,19 @@ class ResultCollection extends ParameterBag
     {
         $this->add([$result->getFileName() => $result]);
     }
+
+    /**
+     * Trim all results in the collection.
+     *
+     * @since 1.5.0
+     */
+    public function trimResults()
+    {
+        array_map(
+            static function (Result $result) {
+                $result->trimResults();
+            },
+            $this->all()
+        );
+    }
 }

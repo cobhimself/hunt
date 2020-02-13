@@ -1,6 +1,5 @@
 <?php /** @noinspection ALL */
 
-
 /**
  * Class FakeTest
  *

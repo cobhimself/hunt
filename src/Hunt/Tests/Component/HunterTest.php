@@ -17,15 +17,20 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @internal
  * @coversDefaultClass \Hunt\Component\Hunter
  * @covers ::__construct
+ * @covers \Hunt\Component\Gatherer\AbstractGatherer
+ * @covers \Hunt\Bundle\Models\Result
+ * @covers \Hunt\Bundle\Models\ResultCollection
  *
  * @uses \Hunt\Component\OutputStyler
- * @uses \Hunt\Bundle\Models\Result
- * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
  * @uses \Hunt\Bundle\Templates\ConsoleTemplate
  * @uses \Hunt\Bundle\Templates\FileListTemplate
- * @uses \Hunt\Component\Gatherer\AbstractGatherer
  * @uses \Hunt\Component\Gatherer\StringGatherer
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
+ * @uses \Hunt\Component\MatchContext\ContextCollectorFactory
+ * @uses \Hunt\Component\MatchContext\DummyContextCollector
+ *
  * @codeCoverageIgnore
  */
 class HunterTest extends HuntTestCase
@@ -142,6 +147,20 @@ class HunterTest extends HuntTestCase
     }
 
     /**
+     * @covers ::setNumContextLines
+     * @covers ::getNumContextLines
+     * @covers ::getTemplate
+     * @covers ::isListOnly
+     *
+     * @uses \Hunt\Bundle\Templates\TemplateFactory::get
+     */
+    public function testSetNumContextLines()
+    {
+        $this->hunter->setNumContextLines(3);
+        $this->assertEquals(3, $this->hunter->getNumContextLines());
+    }
+
+    /**
      * @dataProvider dataProviderForTestHunt
      * @covers ::gatherData
      * @covers ::generateTemplate
@@ -153,6 +172,7 @@ class HunterTest extends HuntTestCase
      * @covers ::getGatherer
      * @covers ::getMatchName
      * @covers ::getMatchPath
+     * @covers ::getNumContextLines
      * @covers ::getTemplate
      * @covers ::getTerm
      * @covers ::hunt
@@ -169,11 +189,20 @@ class HunterTest extends HuntTestCase
      * @covers ::setRecursive
      * @covers ::setTemplate
      * @covers ::setTerm
+     * @covers ::setNumContextLines
+     * @covers ::doTrimMatches
+     * @covers ::setTrimMatches
      * @covers \Hunt\Bundle\Exceptions\InvalidTemplateException
-     * @covers   \Hunt\Component\HunterFileListTraversable
+     * @covers \Hunt\Component\HunterFileListTraversable
+     * @covers \Hunt\Bundle\Templates\TemplateFactory::get
+     * @covers \Hunt\Component\Trimmer
+     * @covers \Hunt\Bundle\Models\MatchContext\MatchContextCollection
      *
+     * @uses \Hunt\Component\HunterArgs
      * @uses \Hunt\Component\HunterArgs::getInvalidArgumentException()
      * @uses \Hunt\Bundle\Templates\TemplateFactory
+     * @uses \Hunt\Component\MatchContext\ContextCollector
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory
      */
     public function testHunt(array $options, array $expectations)
     {
@@ -201,6 +230,10 @@ class HunterTest extends HuntTestCase
         $this->setOptionsOnHunter($options);
 
         $this->hunter->hunt();
+
+        if (isset($expectations['options'])) {
+            $this->checkHunterOptions($expectations['options']);
+        }
 
         $output = $this->getOutputMockDisplay($this->output);
 
@@ -271,10 +304,11 @@ class HunterTest extends HuntTestCase
                     ],
                 ],
             ],
-            'single file, search: @deprecated' => [
+            'single file, search: @deprecated, null context lines ok' => [
                 'options' => [
                     HunterArgs::DIR  => [$testFilesDir . '/FakeClass.php'],
                     HunterArgs::TERM => 'deprecated',
+                    HunterArgs::NUM_CONTEXT_LINES => null,
                 ],
                 'expectations' => [
                     'contains' => [
@@ -308,19 +342,6 @@ class HunterTest extends HuntTestCase
                     'exception' => [
                         'type'    => InvalidTemplateException::class,
                         'message' => '/"bad-template" is not a valid template type./',
-                    ],
-                ],
-            ],
-            'attempt to get template before set' => [
-                'options' => [
-                    HunterArgs::DIR           => [$testFilesDir],
-                    HunterArgs::TERM          => self::SEARCH_TERM,
-                    'get_template_before_set' => true,
-                ],
-                'expectations' => [
-                    'exception' => [
-                        'type'    => \LogicException::class,
-                        'message' => '/Cannot get template because it has not been set/',
                     ],
                 ],
             ],
@@ -491,12 +512,13 @@ class HunterTest extends HuntTestCase
                     ],
                 ],
             ],
-            'list files using list template' => [
+            'list files using list template and force context lines to 0' => [
                 'options' => [
                     HunterArgs::DIR       => [$testFilesDir],
                     HunterArgs::TERM      => 'FakeClass',
                     HunterArgs::RECURSIVE => true,
                     HunterArgs::TEMPLATE  => TemplateFactory::FILE_LIST,
+                    HunterArgs::NUM_CONTEXT_LINES => 1,
                 ],
                 'expectations' => [
                     'contains' => [
@@ -504,6 +526,44 @@ class HunterTest extends HuntTestCase
                     ],
                     'notContains' => [
                         ':',
+                    ],
+                    'options' => [
+                        HunterArgs::NUM_CONTEXT_LINES => 0,
+                    ]
+                ],
+            ],
+            'no context trimmed' => [
+                'options' => [
+                    HunterArgs::DIR       => [$testFilesDir],
+                    HunterArgs::TERM      => 'FakeClass',
+                    HunterArgs::RECURSIVE => true,
+                    HunterArgs::TRIM_MATCHES => true,
+                ],
+                'expectations' => [
+                    'contains' => [
+                        //Actual match which should have leading spaces trimmed as much as possible.
+                        "13: * *FakeClass* constructor.\n",
+                    ],
+                ],
+            ],
+            '3 lines of context trimmed' => [
+                'options' => [
+                    HunterArgs::DIR       => [$testFilesDir],
+                    HunterArgs::TERM      => 'FakeClass',
+                    HunterArgs::RECURSIVE => true,
+                    HunterArgs::NUM_CONTEXT_LINES => 3,
+                    HunterArgs::TRIM_MATCHES => true,
+                ],
+                'expectations' => [
+                    'contains' => [
+                        //A part of the context lines for our first match.
+                        "1: <?php\n",
+                        //Another context line. We need to confirm leading spaces were not removed in this instance.
+                        "6:      * This will be a blah property.\n",
+                        //Context line where leading spaces will be completely removed.
+                        "10: private \$blah;\n",
+                        //Actual match which should have leading spaces trimmed as much as possible.
+                        "13:  * *FakeClass* constructor.\n",
                     ],
                 ],
             ],
@@ -575,5 +635,18 @@ class HunterTest extends HuntTestCase
         }
 
         $this->hunter->setGatherer(new StringGatherer($this->hunter->getTerm(), $this->hunter->getExcludedTerms()));
+    }
+
+    /**
+     * Use the Hunter getters to check for values after a hunter run
+     *
+     * @param $options
+     */
+    private function checkHunterOptions($options)
+    {
+        //Go through each of our options and check they were set correctly them
+        foreach ($options as $option => $value) {
+            $this->assertEquals($value, $this->callHunterGetter($this->hunter, $option));
+        }
     }
 }

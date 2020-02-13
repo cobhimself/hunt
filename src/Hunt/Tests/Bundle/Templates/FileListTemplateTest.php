@@ -15,6 +15,8 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
  * @uses \Hunt\Component\OutputStyler
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
  */
 class FileListTemplateTest extends TemplateTestCase
 {

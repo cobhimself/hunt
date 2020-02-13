@@ -8,9 +8,14 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @coversDefaultClass \Hunt\Component\Gatherer\StringGatherer
  * @codeCoverageIgnore
  *
- * @uses \Hunt\Bundle\Models\Result
  * @covers \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
  * @covers \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
+ * @covers \Hunt\Component\Gatherer\AbstractGatherer::gather
+ *
+ * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Component\MatchContext\ContextCollector
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+ * @uses \Hunt\Component\MatchContext\DummyContextCollector
  *
  * @internal
  */
@@ -18,6 +23,9 @@ class StringGathererTest extends GathererTestCase
 {
     /**
      * @covers ::gather
+     * @covers ::lineMatches
+     * @covers ::getNumContextLines
+     * @covers \Hunt\Component\MatchContext\ContextCollectorFactory::get
      */
     public function testGather()
     {
@@ -33,6 +41,7 @@ class StringGathererTest extends GathererTestCase
      * code. This should never happen because our Results will only have lines matching the search term.
      *
      * @covers ::getHighlightedLine
+     * @covers ::highlightLine
      * @dataProvider dataProviderTestGetHighlightedLine
      *
      * @param string $searchTerm  the search term to highlight

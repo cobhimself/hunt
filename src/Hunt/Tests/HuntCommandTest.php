@@ -50,6 +50,11 @@ class HuntCommandTest extends HuntTestCase
      * @covers ::getHunterArgs()
      *
      * @covers \Hunt\Component\HunterArgs
+     * @covers \Hunt\Bundle\Models\MatchContext\MatchContext
+     * @covers \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+     * @covers \Hunt\Component\MatchContext\ContextCollectorFactory
+     * @covers \Hunt\Component\MatchContext\DummyContextCollector
+     * @covers \Hunt\Component\Trimmer
      *
      * @uses \Hunt\Component\Hunter
      * @uses \Hunt\Bundle\Models\Result
@@ -61,6 +66,9 @@ class HuntCommandTest extends HuntTestCase
      * @uses \Hunt\Component\Gatherer\GathererFactory
      * @uses \Hunt\Component\HunterFileListTraversable
      * @uses \Hunt\Bundle\Templates\TemplateFactory
+     * @uses \Hunt\Component\MatchContext\ContextCollector
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollection
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory
      *
      * @dataProvider dataProviderForExecute
      *
@@ -197,6 +205,7 @@ class HuntCommandTest extends HuntTestCase
                     HunterArgs::TRIM_MATCHES => true,
                     HunterArgs::TERM         => self::SEARCH_TERM,
                     HunterArgs::RECURSIVE    => true,
+                    HunterArgs::NUM_CONTEXT_LINES => 3,
                 ],
                 'expectations' => [
                     'options' => [
@@ -206,6 +215,7 @@ class HuntCommandTest extends HuntTestCase
                         HunterArgs::TRIM_MATCHES => true,
                         HunterArgs::TERM         => self::SEARCH_TERM,
                         HunterArgs::RECURSIVE    => true,
+                        HunterArgs::NUM_CONTEXT_LINES => 3,
                     ],
                 ],
             ],

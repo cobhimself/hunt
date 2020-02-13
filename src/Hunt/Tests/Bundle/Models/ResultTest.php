@@ -2,6 +2,7 @@
 
 namespace Hunt\Tests\Bundle\Models;
 
+use Hunt\Bundle\Models\MatchContext\MatchContextCollection;
 use Hunt\Bundle\Models\Result;
 use Hunt\Tests\HuntTestCase;
 use SplFileObject;
@@ -11,6 +12,8 @@ use Symfony\Component\Finder\SplFileInfo;
  * @internal
  * @coversDefaultClass \Hunt\Bundle\Models\Result
  * @codeCoverageIgnore
+ *
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
  */
 class ResultTest extends HuntTestCase
 {
@@ -54,8 +57,8 @@ class ResultTest extends HuntTestCase
 
     /**
      * @covers ::getLongestLineNumLength
-     *
-     * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
+     * @covers ::getContextCollection
+     * @covers ::setMatchingLines
      */
     public function testGetLongestLineNumLength()
     {
@@ -67,6 +70,25 @@ class ResultTest extends HuntTestCase
         ]);
 
         $this->assertEquals(3, $this->result->getLongestLineNumLength());
+    }
+
+    /**
+     * @covers ::setContextCollection
+     * @covers ::getContextCollection
+     */
+    public function testSetGetContextCollection()
+    {
+        $this->result->setContextCollection(new MatchContextCollection());
+
+        $this->assertInstanceOf(MatchContextCollection::class, $this->result->getContextCollection());
+    }
+
+    /**
+     * @covers ::getLongestLineNumLength
+     */
+    public function testGetLongestLineNumLengthEmptyResult()
+    {
+        $this->assertEquals(0, $this->result->getLongestLineNumLength());
     }
 
     /**
@@ -120,5 +142,16 @@ class ResultTest extends HuntTestCase
     {
         /* @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(SplFileInfo::class, $this->result->getFile());
+    }
+
+    /**
+     * For code coverage
+     * @covers ::trimResults
+     * @covers ::getMatchingLines
+     */
+    public function testDoNotTrimWhenNoMatchesExist()
+    {
+        $this->result->trimResults();
+        $this->assertEmpty($this->result->getMatchingLines());
     }
 }

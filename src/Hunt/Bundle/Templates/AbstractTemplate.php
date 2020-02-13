@@ -62,6 +62,13 @@ abstract class AbstractTemplate implements TemplateInterface
     protected $highlightEnd = '*';
 
     /**
+     * Whether or not to show the context lines.
+     *
+     * @since 1.5.0
+     */
+    protected $showContext;
+
+    /**
      * Perform necessary actions before rendering the template.
      *
      * @codeCoverageIgnore
@@ -93,7 +100,19 @@ abstract class AbstractTemplate implements TemplateInterface
         $term = $result->getTerm();
 
         foreach ($result->getMatchingLines() as $lineNum => $line) {
+            $matchContext = $result->getContextCollection()->getContextForLine($lineNum);
+
+            if ($this->getShowContext()) {
+                $this->getContextSplitBefore($lines);
+                $this->processContextLines($lines, $matchContext->getBefore());
+            }
+
             $lines[] = $this->getResultLine($lineNum, $line, $term);
+
+            if ($this->getShowContext()) {
+                $this->processContextLines($lines, $matchContext->getAfter());
+                $this->getContextSplitAfter($lines);
+            }
         }
 
         return $lines;
@@ -119,6 +138,22 @@ abstract class AbstractTemplate implements TemplateInterface
         $finalLine = str_replace("\n", '', $finalLine);
 
         return $finalLine;
+    }
+
+    /**
+     * Process our context lines to conform to our template.
+     *
+     * @param array $lines        An array of lines we should append our context lines to.
+     * @param array $contextLines An array containing context lines for a match.
+     *
+     * @since 1.5.0
+     */
+    public function processContextLines(array &$lines, array $contextLines)
+    {
+        foreach ($contextLines as $lineNum => $line) {
+            $lines[] = $this->getLineNumber($lineNum) . ': '
+                . str_replace("\n", '', $line);
+        }
     }
 
     /**
@@ -269,5 +304,51 @@ abstract class AbstractTemplate implements TemplateInterface
     public function setHighlightEnd(string $highlightEnd)
     {
         $this->highlightEnd = $highlightEnd;
+    }
+
+    /**
+     * Add lines to be placed before the context lines of a matching result.
+     *
+     * @since 1.5.0
+     *
+     * @param array $lines The array of lines to add to.
+     */
+    public function getContextSplitBefore(array &$lines)
+    {
+        $lines[] = '---';
+    }
+
+    /**
+     * Add lines to be placed before the context lines of a matching result.
+     *
+     * @since 1.5.0
+     *
+     * @param array $lines The array of lines to add to.
+     */
+    public function getContextSplitAfter(array &$lines)
+    {
+        $lines[] = '---';
+    }
+
+    /**
+     * Tells the template whether or not to show context lines.
+     *
+     * @since 1.5.0
+     */
+    public function setShowContext(bool $showContext): TemplateInterface
+    {
+        $this->showContext = $showContext;
+
+        return $this;
+    }
+
+    /**
+     * Get whether or not we should worry about outputting context lines.
+     *
+     * @since 1.5.0
+     */
+    public function getShowContext(): bool
+    {
+        return $this->showContext;
     }
 }
