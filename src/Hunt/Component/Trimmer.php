@@ -5,6 +5,8 @@ namespace Hunt\Component;
 
 /**
  * Helper which trims the same amount of leading strings off the left side of an array of strings.
+ *
+ * @since 1.5.0
  */
 class Trimmer
 {

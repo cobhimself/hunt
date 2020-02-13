@@ -15,6 +15,11 @@ abstract class AbstractGatherer implements GathererInterface
      */
     protected $term;
 
+    /**
+     * @var int
+     *
+     * @since 1.5.0
+     */
     protected $numContextLines = 0;
 
     /**
@@ -56,7 +61,10 @@ abstract class AbstractGatherer implements GathererInterface
     /**
      * Whether or not the given line matches.
      *
+     * @since 1.5.0
+     *
      * @param string $line
+     *
      * @return bool
      */
     abstract public function lineMatches(string $line): bool;
@@ -167,6 +175,8 @@ abstract class AbstractGatherer implements GathererInterface
 
     /**
      * Perform the highlighting of the given line.
+     *
+     * @since 1.5.0
      */
     public function highlightLine(
         string $line,
@@ -179,6 +189,8 @@ abstract class AbstractGatherer implements GathererInterface
     }
 
     /**
+     * @since 1.5.0
+     *
      * @param int $numContextLines The number of lines, before and after, we want to provide alongside our matching lines.
      *
      * @return GathererInterface
@@ -192,6 +204,8 @@ abstract class AbstractGatherer implements GathererInterface
 
     /**
      * Get the number of lines we want to provide before and after our matching line.
+     *
+     * @since 1.5.0
      */
     public function getNumContextLines(): int
     {

@@ -12,6 +12,9 @@ class TemplateFactory
 
     const FILE_LIST = 'file-list';
 
+    /**
+     * @since 1.5.0
+     */
     const DEFAULT = self::CONSOLE;
 
     /**

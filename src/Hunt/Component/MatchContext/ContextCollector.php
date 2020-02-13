@@ -11,7 +11,7 @@ use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 /**
  * Collect before and after context lines for our matching lines.
  *
- * @package Hunt\Bundle\Models
+ * @since 1.5.0
  */
 class ContextCollector implements ContextCollectorInterface
 {

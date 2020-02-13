@@ -63,6 +63,8 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Whether or not to show the context lines.
+     *
+     * @since 1.5.0
      */
     protected $showContext;
 
@@ -143,6 +145,8 @@ abstract class AbstractTemplate implements TemplateInterface
      *
      * @param array $lines An array of lines we should append our context lines to.
      * @param array $contextLines An array containing context lines for a match.
+     *
+     * @since 1.5.0
      */
     public function processContextLines(array &$lines, array $contextLines)
     {
@@ -305,6 +309,8 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * Add lines to be placed before the context lines of a matching result.
      *
+     * @since 1.5.0
+     *
      * @param array $lines The array of lines to add to.
      */
     public function getContextSplitBefore(array &$lines)
@@ -315,6 +321,8 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * Add lines to be placed before the context lines of a matching result.
      *
+     * @since 1.5.0
+     *
      * @param array $lines The array of lines to add to.
      */
     public function getContextSplitAfter(array &$lines)
@@ -324,6 +332,8 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Tells the template whether or not to show context lines.
+     *
+     * @since 1.5.0
      */
     public function setShowContext(bool $showContext): TemplateInterface
     {
@@ -334,6 +344,8 @@ abstract class AbstractTemplate implements TemplateInterface
 
     /**
      * Get whether or not we should worry about outputting context lines.
+     *
+     * @since 1.5.0
      */
     public function getShowContext(): bool
     {

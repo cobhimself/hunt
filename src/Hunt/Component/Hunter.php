@@ -116,6 +116,7 @@ class Hunter
     private $listOnly = false;
 
     /**
+     * @since 1.5.0
      * @var int The number of context lines to show by our matches.
      */
     private $numContextLines = 0;
@@ -537,6 +538,8 @@ class Hunter
     }
 
     /**
+     * @since 1.5.0
+     *
      * @param int|string $numContextLines
      *
      * @return Hunter
@@ -552,6 +555,9 @@ class Hunter
         return $this;
     }
 
+    /**
+     * @since 1.5.0
+     */
     public function getNumContextLines(): int
     {
         //We don't want to perform any context retrieval if we're using a file list template.

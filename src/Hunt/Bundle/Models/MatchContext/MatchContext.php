@@ -6,6 +6,8 @@ namespace Hunt\Bundle\Models\MatchContext;
 
 /**
  * Hold context lines for our results.
+ *
+ * @since 1.5.0
  */
 class MatchContext
 {

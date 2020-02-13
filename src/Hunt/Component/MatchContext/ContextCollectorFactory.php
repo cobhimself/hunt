@@ -8,6 +8,9 @@ use Hunt\Component\MatchContext\ContextCollector;
 use Hunt\Component\MatchContext\ContextCollectorInterface;
 use Hunt\Component\MatchContext\DummyContextCollector;
 
+/**
+ * @since 1.5.0
+ */
 class ContextCollectorFactory
 {
 

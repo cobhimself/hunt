@@ -38,12 +38,16 @@ interface GathererInterface
     /**
      * Returns whether or not the given line matches.
      *
+     * @since 1.5.0
+     *
      * @param string $line A single line from the file we are gathering from.
      */
     public function lineMatches(string $line): bool;
 
     /**
      * Perform the highlighting of the given line.
+     *
+     * @since 1.5.0
      */
     public function highlightLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string;
 }

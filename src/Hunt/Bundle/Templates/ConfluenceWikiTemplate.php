@@ -51,6 +51,7 @@ class ConfluenceWikiTemplate extends AbstractTemplate
     /**
      * Add lines to be placed before the context lines of a matching result.
      *
+     * @since 1.5.0
      * @param array $lines The array of lines to add to.
      */
     public function getContextSplitBefore(array &$lines)
@@ -61,6 +62,7 @@ class ConfluenceWikiTemplate extends AbstractTemplate
     /**
      * Add lines to be placed before the context lines of a matching result.
      *
+     * @since 1.5.0
      * @param array $lines The array of lines to add to.
      */
     public function getContextSplitAfter(array &$lines)

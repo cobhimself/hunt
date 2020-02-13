@@ -6,6 +6,9 @@ namespace Hunt\Component\MatchContext;
 
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 
+/**
+ * @since 1.5.0
+ */
 interface ContextCollectorInterface
 {
     /**
