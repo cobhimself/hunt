@@ -43,6 +43,9 @@ class HunterArgs
 
     const LIST_ONLY = 'list';
 
+    /**
+     * @since 1.5.0
+     */
     const NUM_CONTEXT_LINES = 'context';
 
     /**

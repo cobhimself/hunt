@@ -235,7 +235,7 @@ class HuntTestCase extends KernelTestCase
     /**
      * Return a MatchContextCollection for the given filename constant.
      *
-     * @param string $fileName     one of our RESULT_FILE_* constants
+     * @param string $fileName one of our RESULT_FILE_* constants
      */
     protected function getMatchContextCollectionForFileConstant(string $fileName, bool $real): MatchContextCollectionInterface
     {

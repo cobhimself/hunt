@@ -32,6 +32,7 @@ class Result
 
     /**
      * @var MatchContextCollectionInterface
+     * @since 1.5.0
      */
     private $contextCollection;
 
@@ -90,6 +91,11 @@ class Result
         return $this->term;
     }
 
+    /**
+     * Trim all of the matching lines as well as context lines if applicable.
+     *
+     * @since 1.5.0
+     */
     public function trimResults()
     {
         //Nothing to trim if we don't have matches.
@@ -159,6 +165,8 @@ class Result
 
     /**
      * Set the context collection for this result set.
+     *
+     * @since 1.5.0
      */
     public function setContextCollection(MatchContextCollectionInterface $contextCollection): Result
     {
@@ -169,6 +177,8 @@ class Result
 
     /**
      * Get the context collection for this result set.
+     *
+     * @since 1.5.0
      */
     public function getContextCollection(): MatchContextCollectionInterface
     {

@@ -1,13 +1,13 @@
 <?php
 
-
 namespace Hunt\Bundle\Models\MatchContext;
-
 
 use Hunt\Bundle\Exceptions\MissingMatchContextException;
 
 /**
  * Contains a collection of contexts for our matching lines.
+ *
+ * @since 1.5.0
  */
 class MatchContextCollection implements MatchContextCollectionInterface
 {

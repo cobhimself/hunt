@@ -25,6 +25,15 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @uses \Hunt\Component\Gatherer\AbstractGatherer
  * @uses \Hunt\Bundle\Templates\TemplateFactory
  * @uses \Hunt\Component\OutputStyler
+ * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Bundle\Templates\ConsoleTemplate
+ * @uses \Hunt\Component\MatchContext\DummyContextCollector
+ * @uses \Hunt\Bundle\Models\ResultCollection
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+ * @uses \Hunt\Bundle\Templates\AbstractTemplate
+ * @uses \Hunt\Component\Gatherer\StringGatherer
+ * @uses \Hunt\Component\MatchContext\ContextCollectorFactory
+ * @uses \Hunt\Bundle\Templates\FileListTemplate
  *
  * @internal
  */
@@ -86,7 +95,7 @@ class HunterArgsTest extends HuntTestCase
     {
         $this->tester->execute(
             [
-                HunterArgs::TERM             => self::SEARCH_TERM,
+                HunterArgs::TERM => self::SEARCH_TERM,
             ]
         );
         $this->assertInstanceOf(ConsoleTemplate::class, $this->huntCommand->getHunter()->getTemplate());

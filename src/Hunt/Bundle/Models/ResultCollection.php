@@ -84,6 +84,8 @@ class ResultCollection extends ParameterBag
 
     /**
      * Trim all results in the collection.
+     *
+     * @since 1.5.0
      */
     public function trimResults()
     {

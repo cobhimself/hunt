@@ -1,20 +1,20 @@
 <?php
 
-
 namespace Hunt\Bundle\Models\MatchContext;
-
 
 /**
  * Contains a match context collection which implements necessary methods but the methods are noops.
  *
  * Useful when we need to be able to provide a match collection but we don't want anything to be done with it.
+ *
+ * @since 1.5.0
  */
 class DummyMatchContextCollection implements MatchContextCollectionInterface
 {
     /**
      * @var MatchContext
      */
-    static private $matchContext;
+    private static $matchContext;
 
     public function __construct()
     {

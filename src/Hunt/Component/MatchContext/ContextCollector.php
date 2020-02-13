@@ -2,7 +2,6 @@
 
 namespace Hunt\Component\MatchContext;
 
-
 use Hunt\Bundle\Models\MatchContext\MatchContext;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollection;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory;
@@ -11,7 +10,7 @@ use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 /**
  * Collect before and after context lines for our matching lines.
  *
- * @package Hunt\Bundle\Models
+ * @since 1.5.0
  */
 class ContextCollector implements ContextCollectorInterface
 {
@@ -96,7 +95,7 @@ class ContextCollector implements ContextCollectorInterface
     {
         //It's possible our match has been found before we could move past the amount of 'after' context lines. In this
         //instance, we should finalize the context and continue.
-        if(!empty($this->after) || $this->inMatch) {
+        if (!empty($this->after) || $this->inMatch) {
             $this->finalizeContext();
         }
 

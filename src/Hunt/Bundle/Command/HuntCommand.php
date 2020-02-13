@@ -12,7 +12,7 @@ class HuntCommand extends Command
 {
     const CMD_NAME = 'hunt';
 
-    const CMD_VERSION = '1.2.0';
+    const CMD_VERSION = '1.5.0';
 
     private $hunter;
 

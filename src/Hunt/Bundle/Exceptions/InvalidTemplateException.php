@@ -5,6 +5,9 @@ namespace Hunt\Bundle\Exceptions;
 use Hunt\Bundle\Templates\TemplateFactory;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
+/**
+ * @since 1.5.0
+ */
 class InvalidTemplateException extends InvalidArgumentException
 {
     public function __construct(string $type)

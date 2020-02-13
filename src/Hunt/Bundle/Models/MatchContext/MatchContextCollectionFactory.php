@@ -2,14 +2,16 @@
 
 namespace Hunt\Bundle\Models\MatchContext;
 
-
+/**
+ * @since 1.5.0
+ */
 class MatchContextCollectionFactory
 {
 
     /**
      * @var DummyMatchContextCollection
      */
-    static private $dummyMatchContextCollection;
+    private static $dummyMatchContextCollection;
 
     /**
      * Get a MatchContextCollection object.

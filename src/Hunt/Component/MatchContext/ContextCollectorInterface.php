@@ -1,11 +1,12 @@
 <?php
 
-
 namespace Hunt\Component\MatchContext;
-
 
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 
+/**
+ * @since 1.5.0
+ */
 interface ContextCollectorInterface
 {
     /**
@@ -19,9 +20,9 @@ interface ContextCollectorInterface
      * If the line is a match, we perform some additional processes but we do not include matching lines within
      * our context lines.
      *
-     * @param int $num The line number.
-     * @param string $line The line content.
-     * @param bool $isMatch Whether or not this line is a match.
+     * @param int    $num     The line number.
+     * @param string $line    The line content.
+     * @param bool   $isMatch Whether or not this line is a match.
      */
     public function addLine(int $num, string $line, bool $isMatch);
 

@@ -2,7 +2,9 @@
 
 namespace Hunt\Bundle\Models\MatchContext;
 
-
+/**
+ * @since 1.5.0
+ */
 interface MatchContextCollectionInterface
 {
     public function addContext(int $lineNum, MatchContext $context);
