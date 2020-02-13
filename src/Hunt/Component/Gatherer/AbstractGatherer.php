@@ -3,6 +3,7 @@
 namespace Hunt\Component\Gatherer;
 
 use Hunt\Bundle\Models\Result;
+use Hunt\Component\MatchContext\ContextCollectorFactory;
 use RuntimeException;
 
 abstract class AbstractGatherer implements GathererInterface
@@ -13,6 +14,8 @@ abstract class AbstractGatherer implements GathererInterface
      * @var string
      */
     protected $term;
+
+    protected $numContextLines = 0;
 
     /**
      * A list of exclude terms.
@@ -51,6 +54,14 @@ abstract class AbstractGatherer implements GathererInterface
     }
 
     /**
+     * Whether or not the given line matches.
+     *
+     * @param string $line
+     * @return bool
+     */
+    abstract public function lineMatches(string $line): bool;
+
+    /**
      * Gather a set of matching lines from the Result's file.
      *
      * @throws RuntimeException
@@ -59,40 +70,48 @@ abstract class AbstractGatherer implements GathererInterface
      */
     public function gather(Result $result): bool
     {
-        //replace with custom gather functionality
-        throw new RuntimeException('The gather method must be extended!');
+        $matchingLines = [];
+        $contextCollector = ContextCollectorFactory::get($this->getNumContextLines());
+
+        foreach ($result->getFileIterator() as $num => $line) {
+
+            //Our code starts at line 1, unlike our arrays.
+            $codeLineNum = $num + 1;
+
+            $testLine = $line;
+            if (null !== $this->exclude && is_array($this->exclude)) {
+                foreach ($this->exclude as $excludeTerm) {
+                    $testLine = str_replace($excludeTerm, '', $testLine);
+                }
+            }
+            $lineMatches = $this->lineMatches($testLine);
+
+            if ($lineMatches) {
+                $matchingLines[$codeLineNum] = $line;
+            }
+            $contextCollector->addLine($codeLineNum, $line, $lineMatches);
+        }
+        $contextCollector->finalize();
+
+        $result->setContextCollection($contextCollector->getContextCollection());
+        $result->setMatchingLines($matchingLines);
+
+        return count($matchingLines) > 0;
     }
 
     /**
      * Returns the given line with the term highlighted.
      *
      * Excluded terms are not highlighted.
-     *
-     * @throws RuntimeException
      */
     public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string
     {
-        throw new RuntimeException('The getHighlightedLine method must be extended!');
-    }
+        $this->workingLine = $line;
+        $translateArray = $this->removeExcludedTerms();
 
-    /**
-     * Set whether or not we want this gatherer to trim whitespace from the beginning of matching lines.
-     *
-     * @return AbstractGatherer
-     */
-    public function setTrimMatchingLines(bool $trim = true): GathererInterface
-    {
-        $this->trimMatchingLines = $trim;
+        $this->workingLine = $this->highlightLine($this->workingLine, $highlightStart, $highlightEnd);
 
-        return $this;
-    }
-
-    /**
-     * Get whether or not we want to trim spaces from the beginning of the matching lines.
-     */
-    public function getTrimMatchingLines(): bool
-    {
-        return $this->trimMatchingLines;
+        return $this->addExcludedTermsBack($translateArray);
     }
 
     /**
@@ -144,5 +163,38 @@ abstract class AbstractGatherer implements GathererInterface
         $translate = array_flip($translate);
 
         return strtr($this->workingLine, $translate);
+    }
+
+    /**
+     * Perform the highlighting of the given line.
+     */
+    public function highlightLine(
+        string $line,
+        string $highlightStart = '',
+        string $highlightEnd = ''
+    ): string
+    {
+        throw new RuntimeException('highlightLine method must be overridden!');
+
+    }
+
+    /**
+     * @param int $numContextLines The number of lines, before and after, we want to provide alongside our matching lines.
+     *
+     * @return GathererInterface
+     */
+    public function setNumContextLines(int $numContextLines): GathererInterface
+    {
+        $this->numContextLines = $numContextLines;
+
+        return $this;
+    }
+
+    /**
+     * Get the number of lines we want to provide before and after our matching line.
+     */
+    public function getNumContextLines(): int
+    {
+        return $this->numContextLines;
     }
 }

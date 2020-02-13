@@ -13,10 +13,13 @@ use Hunt\Component\Gatherer\StringGatherer;
  *
  * @uses \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
  * @uses \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
+ * @uses \Hunt\Component\Gatherer\StringGatherer::highlightLine()
  * @uses \Hunt\Bundle\Models\ResultCollection
  * @uses \Hunt\Bundle\Models\Result
  * @uses \Hunt\Bundle\Templates\AbstractTemplate
  * @uses \Hunt\Component\OutputStyler
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
  */
 class ConfluenceWikiTemplateTest extends TemplateTestCase
 {
@@ -42,32 +45,26 @@ class ConfluenceWikiTemplateTest extends TemplateTestCase
      * @covers ::getLineNumber
      * @covers ::getResultLine
      * @covers ::getResultOutput
+     * @covers ::getContextSplitBefore
+     * @covers ::getContextSplitAfter
+     * @covers ::setShowContext
+     * @covers ::getShowContext
      *
      * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
+     * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollection
+     *
+     * @dataProvider dataProviderForTestGetResultOutput
      */
-    public function testGetResultOutput()
+    public function testGetResultOutput(bool $showContext, array $expectations)
     {
-        $expectedOutput = implode(\PHP_EOL, [
-            '|{status:title= |color=red}|this/is/a/file/name/one|{noformat:nopanel=true}',
-            '1: this is line one',
-            '2: this is line two',
-            '3: line three has the ' . self::SEARCH_TERM,
-            '{noformat}|',
-            '|{status:title= |color=red}|this/is/a/file/name/two|{noformat:nopanel=true}',
-            '1: this is line one',
-            '2: this is line two with the ' . self::SEARCH_TERM,
-            '3: this is line three with ' . self::SEARCH_TERM . 'Ok',
-            '{noformat}|',
-            '|{status:title= |color=red}|this/is/a/file/name/three|{noformat:nopanel=true}',
-            '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
-            '2: this is line two',
-            '300: this is line three hundred',
-            '{noformat}|',
-        ]) . \PHP_EOL;
+        $this->template->setShowContext($showContext);
+        $expectedOutput = implode(\PHP_EOL, $expectations) . \PHP_EOL;
 
         $actualOutput = '';
 
-        foreach ($this->getResultCollection() as $result) {
+        foreach ($this->getResultCollection($showContext) as $result) {
             $actualOutput .= $this->template->getResultOutput($result);
         }
 
@@ -84,5 +81,83 @@ class ConfluenceWikiTemplateTest extends TemplateTestCase
         $this->assertEquals('  1', $this->template->getLineNumber('1'));
         $this->assertEquals(' 21', $this->template->getLineNumber('21'));
         $this->assertEquals('321', $this->template->getLineNumber('321'));
+    }
+
+    public function dataProviderForTestGetResultOutput()
+    {
+        return [
+            'without context lines' => [
+                'addContext' => false,
+                'expectations' => [
+                    '|{status:title= |color=red}|this/is/a/file/name/one|{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two',
+                    '3: line three has the ' . self::SEARCH_TERM,
+                    '{noformat}|',
+                    '|{status:title= |color=red}|this/is/a/file/name/two|{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two with the ' . self::SEARCH_TERM,
+                    '3: this is line three with ' . self::SEARCH_TERM . 'Ok',
+                    '{noformat}|',
+                    '|{status:title= |color=red}|this/is/a/file/name/three|{noformat:nopanel=true}',
+                    '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+                    '2: this is line two',
+                    '300: this is line three hundred',
+                    '{noformat}|',
+                ]
+            ],
+            //This is a bit convoluted but, since we're pretending each of the lines in our result lis is a match,
+            //our context lines are basically the same for each line.
+            'with context lines' => [
+                'addContext' => true,
+                'expectations' => [
+                    '|{status:title= |color=red}|this/is/a/file/name/one|{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two',
+                    '3: line three has the ' . self::SEARCH_TERM,
+                    '{noformat}',
+                    '{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two',
+                    '3: line three has the ' . self::SEARCH_TERM,
+                    '{noformat}',
+                    '{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two',
+                    '3: line three has the ' . self::SEARCH_TERM,
+                    '{noformat}|',
+                    '|{status:title= |color=red}|this/is/a/file/name/two|{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two with the ' . self::SEARCH_TERM,
+                    '3: this is line three with ' . self::SEARCH_TERM . 'Ok',
+                    '{noformat}',
+                    '{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two with the ' . self::SEARCH_TERM,
+                    '3: this is line three with ' . self::SEARCH_TERM . 'Ok',
+                    '{noformat}',
+                    '{noformat:nopanel=true}',
+                    '1: this is line one',
+                    '2: this is line two with the ' . self::SEARCH_TERM,
+                    '3: this is line three with ' . self::SEARCH_TERM . 'Ok',
+                    '{noformat}|',
+                    '|{status:title= |color=red}|this/is/a/file/name/three|{noformat:nopanel=true}',
+                    '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+                    '2: this is line two',
+                    '300: this is line three hundred',
+                    '{noformat}',
+                    '{noformat:nopanel=true}',
+                    '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+                    '2: this is line two',
+                    '300: this is line three hundred',
+                    '{noformat}',
+                    '{noformat:nopanel=true}',
+                    '1: this is line one and it has the ' . self::SEARCH_TERM . ' as well as ' . self::EXCLUDE_TERM,
+                    '2: this is line two',
+                    '300: this is line three hundred',
+                    '{noformat}|',
+                ]
+            ],
+        ];
     }
 }

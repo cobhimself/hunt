@@ -116,6 +116,11 @@ class Hunter
     private $listOnly = false;
 
     /**
+     * @var int The number of context lines to show by our matches.
+     */
+    private $numContextLines = 0;
+
+    /**
      * Hunter constructor.
      */
     public function __construct(OutputInterface $output = null, ProgressBar $progressBar = null)
@@ -268,6 +273,8 @@ class Hunter
         $this->progressBar->setMessage('...', 'filename');
         $this->progressBar->start(count($this->found));
 
+        $gatherer = $this->getGatherer()->setNumContextLines($this->getNumContextLines());
+
         //Sort our result collection
         $this->found->sortByFilename();
 
@@ -277,7 +284,7 @@ class Hunter
             $this->progressBar->advance();
 
             //Filter our result set. If no matches exist afterwards, we'll squash it.
-            $containsResults = $this->getGatherer()->gather($result);
+            $containsResults = $gatherer->gather($result);
 
             if (!$containsResults) {
                 $this->progressBar->advance(-1);
@@ -287,6 +294,11 @@ class Hunter
         //Remove any results from our list which are empty.
         $this->found->squashEmptyResults();
 
+        //Trim our result and context lines if necessary
+        if ($this->doTrimMatches()) {
+            $this->found->trimResults();
+        }
+
         $this->progressBar->finish();
         $this->progressBar->clear();
     }
@@ -295,7 +307,8 @@ class Hunter
     {
         $template = $this->getTemplate();
         $template->init($this->found, $this->output)
-            ->setGatherer($this->gatherer);
+            ->setGatherer($this->gatherer)
+            ->setShowContext($this->getNumContextLines() > 0);
 
         $this->progressBar->start(count($this->found));
         $this->progressBar->setMessage('Rendering template');
@@ -417,7 +430,8 @@ class Hunter
         }
 
         if (null === $this->template) {
-            throw new \LogicException('Cannot get template because it has not been set!');
+            //Use the default template
+            $this->template = TemplateFactory::get(TemplateFactory::DEFAULT);
         }
 
         return $this->template;
@@ -520,5 +534,31 @@ class Hunter
     public function isListOnly(): bool
     {
         return $this->listOnly;
+    }
+
+    /**
+     * @param int|string $numContextLines
+     *
+     * @return Hunter
+     */
+    public function setNumContextLines($numContextLines): Hunter
+    {
+        if ($numContextLines === null) {
+            $numContextLines = 0;
+        }
+
+        $this->numContextLines = $numContextLines;
+
+        return $this;
+    }
+
+    public function getNumContextLines(): int
+    {
+        //We don't want to perform any context retrieval if we're using a file list template.
+        if ($this->numContextLines !== 0 && $this->getTemplate() instanceof FileListTemplate) {
+            $this->setNumContextLines(0);
+        }
+
+        return $this->numContextLines;
     }
 }

@@ -9,6 +9,10 @@ use Hunt\Component\Gatherer\RegexGatherer;
  * @codeCoverageIgnore
  *
  * @uses \Hunt\Bundle\Models\Result
+ * @uses \Hunt\Component\MatchContext\ContextCollector
+ * @uses \Hunt\Component\MatchContext\ContextCollectorFactory
+ * @uses \Hunt\Component\MatchContext\DummyContextCollector
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
  * @covers \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
  * @covers \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
  *
@@ -25,6 +29,13 @@ class RegexGathererTest extends GathererTestCase
 
     /**
      * @covers ::gather
+     * @covers ::lineMatches
+     * @covers ::getNumContextLines
+     * @covers \Hunt\Component\MatchContext\ContextCollectorFactory
+     * @covers \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+     * @covers \Hunt\Component\MatchContext\DummyContextCollector
+     *
+     * @uses \Hunt\Bundle\Models\Result
      */
     public function testGather()
     {
@@ -40,6 +51,7 @@ class RegexGathererTest extends GathererTestCase
      * code. This should never happen because our Results will only have lines matching the search term.
      *
      * @covers ::getHighlightedLine
+     * @covers ::highlightLine
      * @dataProvider dataProviderTestGetHighlightedLine
      *
      * @param string $searchTerm  the search term to highlight

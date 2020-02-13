@@ -15,7 +15,10 @@ use Hunt\Component\Gatherer\StringGatherer;
  * @uses \Hunt\Component\Gatherer\AbstractGatherer::removeExcludedTerms()
  * @uses \Hunt\Component\Gatherer\AbstractGatherer::addExcludedTermsBack()
  * @uses \Hunt\Component\Gatherer\StringGatherer::getHighlightedLine()
+ * @uses \Hunt\Component\Gatherer\StringGatherer::highlightLine()
  * @uses \Hunt\Component\OutputStyler
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
  * @covers ::setGatherer
  */
 class AbstractTemplateTest extends TemplateTestCase
@@ -98,21 +101,28 @@ class AbstractTemplateTest extends TemplateTestCase
      * @covers ::getLineNumber
      * @covers ::getResultLine
      * @covers ::getTermResults
+     * @covers ::processContextLines
+     * @covers ::getContextSplitAfter
+     * @covers ::getContextSplitBefore
+     * @covers ::setShowContext
+     * @covers ::getShowContext
      *
      * @uses \Hunt\Bundle\Models\Result::getMatchingLines()
      * @uses \Hunt\Bundle\Models\Result::getTerm()
      * @uses \Hunt\Bundle\Models\Result::getFileName()
+     * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
+     * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollection
+     *
+     * @dataProvider dataProviderForTestGetTermResults
      */
-    public function testGetTermResults()
+    public function testGetTermResults(bool $addContext, array $expectation)
     {
-        $result = $this->getResultForFileConstant(self::RESULT_FILE_ONE);
+        $result = $this->getResultForFileConstant(self::RESULT_FILE_ONE, $addContext);
+        $this->template->setShowContext($addContext);
 
         $this->assertEquals(
-            [
-                '1: this is line one',
-                '2: this is line two',
-                '3: line three has the ' . self::SEARCH_TERM,
-            ],
+            $expectation,
             $this->template->getTermResults($result)
         );
     }
@@ -148,5 +158,39 @@ class AbstractTemplateTest extends TemplateTestCase
     {
         $this->template->setFooter('bleh');
         $this->assertEquals('bleh', $this->template->getFooter());
+    }
+
+    public function dataProviderForTestGetTermResults(): array
+    {
+        return [
+            'no context lines' => [
+                'addContext' => false,
+                'expectation' => [
+                    '1: this is line one',
+                    '2: this is line two',
+                    '3: line three has the ' . self::SEARCH_TERM,
+                ],
+            ],
+            'with context lines' => [
+                'addContext' => true,
+                'expectation' => [
+                    '---',
+                    '1: this is line one', //match
+                    '2: this is line two', //context
+                    '3: line three has the ' . self::SEARCH_TERM, //context
+                    '---',
+                    '---',
+                    '1: this is line one', //context
+                    '2: this is line two', //match
+                    '3: line three has the ' . self::SEARCH_TERM, //context
+                    '---',
+                    '---',
+                    '1: this is line one', //context
+                    '2: this is line two', //context
+                    '3: line three has the ' . self::SEARCH_TERM, //match
+                    '---',
+                ],
+            ],
+        ];
     }
 }

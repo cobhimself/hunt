@@ -12,6 +12,8 @@ class TemplateFactory
 
     const FILE_LIST = 'file-list';
 
+    const DEFAULT = self::CONSOLE;
+
     /**
      * @var array An array of available templates
      */

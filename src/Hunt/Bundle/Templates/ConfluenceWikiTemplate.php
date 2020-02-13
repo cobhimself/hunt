@@ -22,8 +22,20 @@ class ConfluenceWikiTemplate extends AbstractTemplate
     {
         $statusText = '{status:title= |color=red}';
         $filename = $this->getFileName($result);
+        $matchingLines = '';
         $resultLines = implode(\PHP_EOL, $this->getTermResults($result));
-        $matchingLines = '{noformat:nopanel=true}' . \PHP_EOL . $resultLines . \PHP_EOL . '{noformat}';
+
+        //If we aren't showing context lines, we'll put everything in a single panel.
+        if (!$this->getShowContext()) {
+            $matchingLines = '{noformat:nopanel=true}' . \PHP_EOL;
+        }
+
+        $matchingLines .= $resultLines;
+
+        //If we're not showing context lines, we'll close the panel we created
+        if (!$this->getShowContext()) {
+            $matchingLines .= \PHP_EOL . '{noformat}';
+        }
 
         return '|' . $statusText . '|' . $filename . '|' . $matchingLines . '|' . \PHP_EOL;
     }
@@ -36,5 +48,25 @@ class ConfluenceWikiTemplate extends AbstractTemplate
         $line = parent::getResultLine($lineNum, $line, $term);
 
         return str_replace('|', '\|', $line);
+    }
+
+    /**
+     * Add lines to be placed before the context lines of a matching result.
+     *
+     * @param array $lines The array of lines to add to.
+     */
+    public function getContextSplitBefore(array &$lines)
+    {
+        $lines[] = '{noformat:nopanel=true}';
+    }
+
+    /**
+     * Add lines to be placed before the context lines of a matching result.
+     *
+     * @param array $lines The array of lines to add to.
+     */
+    public function getContextSplitAfter(array &$lines)
+    {
+        $lines[] = '{noformat}';
     }
 }

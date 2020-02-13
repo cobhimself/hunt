@@ -43,6 +43,8 @@ class HunterArgs
 
     const LIST_ONLY = 'list';
 
+    const NUM_CONTEXT_LINES = 'context';
+
     /**
      * @var InputInterface
      */
@@ -151,6 +153,12 @@ class HunterArgs
                 . 'times to require multiple matches',
                 []
             )
+            ->addOption(
+                self::NUM_CONTEXT_LINES,
+                '-C',
+                InputOption::VALUE_OPTIONAL,
+                'The number of context lines before and after to provide for each match.'
+            )
             ->addArgument(
                 self::TERM,
                 InputArgument::REQUIRED,
@@ -192,7 +200,8 @@ class HunterArgs
             ->setExcludeFileNames($this->get(self::EXCLUDE_NAMES))
             ->setMatchPath($this->get(self::MATCH_PATH))
             ->setMatchName($this->get(self::MATCH_NAME))
-            ->setGatherer($this->getGatherer());
+            ->setGatherer($this->getGatherer())
+            ->setNumContextLines($this->get(self::NUM_CONTEXT_LINES));
     }
 
     /**
@@ -268,10 +277,7 @@ class HunterArgs
             ? GathererFactory::GATHERER_REGEX
             : GathererFactory::GATHERER_STRING;
 
-        $gatherer = GathererFactory::getByType($gathererType, $term, $exclude);
-        $gatherer->setTrimMatchingLines($this->get(self::TRIM_MATCHES));
-
-        return $gatherer;
+        return GathererFactory::getByType($gathererType, $term, $exclude);
     }
 
     public static function getInvalidArgumentException(string $argument, string $extraInfo = ''): InvalidCommandArgumentException
@@ -285,6 +291,7 @@ class HunterArgs
             self::TERM      => 'A term must be specified',
             self::LIST_ONLY => 'The list option cannot be provided if a template has been specified.',
             self::REGEX     => 'Improperly formatted regex: ' . $extraInfo,
+            self::NUM_CONTEXT_LINES => 'The number of context lines specified is invalid. It must be a number and greater than 0.',
         ];
 
         $message = sprintf('Error with argument (%s): %s', $argument, $messages[$argument]);
@@ -314,6 +321,13 @@ class HunterArgs
             && $this->get(self::REGEX)
         ) {
             throw self::getInvalidArgumentException(self::REGEX, $term . ' does not appear to be a valid regex string. Make sure you start and end with /.');
+        }
+
+        $numContextLines = $this->get(self::NUM_CONTEXT_LINES);
+        if (
+            $numContextLines !== null && (!is_numeric($numContextLines) || $numContextLines <= 0)
+        ) {
+            throw self::getInvalidArgumentException(self::NUM_CONTEXT_LINES);
         }
     }
 

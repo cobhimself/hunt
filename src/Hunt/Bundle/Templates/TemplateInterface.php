@@ -103,4 +103,36 @@ interface TemplateInterface
      * NOTE: You should render the body of the template using renderResult before attempting to get the output.
      */
     public function getOutput(): string;
+
+    /**
+     * Process our context lines to conform to our template.
+     *
+     * @param array $lines An array of lines we should append our context lines to.
+     * @param array $contextLines An array containing context lines for a match.
+     */
+    public function processContextLines(array &$lines, array $contextLines);
+
+    /**
+     * Add lines to be placed before the context lines of a matching result.
+     *
+     * @param array $lines The array of lines to add to.
+     */
+    public function getContextSplitBefore(array &$lines);
+
+    /**
+     * Add lines to be placed before the context lines of a matching result.
+     *
+     * @param array $lines The array of lines to add to.
+     */
+    public function getContextSplitAfter(array &$lines);
+
+    /**
+     * Tells the template whether or not to show context lines.
+     */
+    public function setShowContext(bool $showContext): TemplateInterface;
+
+    /**
+     * Get whether or not we should worry about outputting context lines.
+     */
+    public function getShowContext(): bool;
 }

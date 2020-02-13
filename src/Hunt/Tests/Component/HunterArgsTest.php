@@ -3,6 +3,7 @@
 namespace Hunt\Tests\Component;
 
 use Hunt\Bundle\Command\HuntCommand;
+use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Bundle\Templates\FileListTemplate;
 use Hunt\Component\Hunter;
 use Hunt\Component\HunterArgs;
@@ -79,6 +80,19 @@ class HunterArgsTest extends HuntTestCase
     }
 
     /**
+     * @covers ::getTemplate
+     */
+    public function testDefaultTemplateSet()
+    {
+        $this->tester->execute(
+            [
+                HunterArgs::TERM             => self::SEARCH_TERM,
+            ]
+        );
+        $this->assertInstanceOf(ConsoleTemplate::class, $this->huntCommand->getHunter()->getTemplate());
+    }
+
+    /**
      * @covers ::validateArguments
      * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
      * @expectedExceptionMessageRegExp /Improperly formatted/
@@ -91,5 +105,29 @@ class HunterArgsTest extends HuntTestCase
                 '--' . HunterArgs::REGEX => true,
             ]
         );
+    }
+
+    /**
+     * @dataProvider dataProviderForTestInvalidNumLines
+     *
+     * @covers ::validateArguments
+     * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
+     * @expectedExceptionMessageRegExp /The number of context lines/
+     */
+    public function testInvalidNumLines(string $input)
+    {
+        $this->tester->execute(
+            [
+                HunterArgs::TERM         => '/bad-regex',
+                '--' . HunterArgs::NUM_CONTEXT_LINES => $input,
+            ]
+        );
+    }
+
+    public function dataProviderForTestInvalidNumLines()
+    {
+        return[
+            [-1], [0], ['a']
+        ];
     }
 }

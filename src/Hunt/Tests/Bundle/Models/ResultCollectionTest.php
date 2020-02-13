@@ -9,9 +9,13 @@ use Hunt\Tests\HuntTestCase;
  * @internal
  * @coversDefaultClass \Hunt\Bundle\Models\ResultCollection
  * @covers ::addResult
+ * @covers \Hunt\Bundle\Models\Result::setContextCollection
  *
  * @uses \Hunt\Bundle\Models\Result::setMatchingLines()
  * @uses \Hunt\Bundle\Models\Result::getFileName()
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContext
+ * @uses \Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection
+ * @uses \Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory
  *
  * @codeCoverageIgnore
  */
@@ -42,6 +46,7 @@ class ResultCollectionTest extends HuntTestCase
      * @covers ::getLongestLineNumInResults
      *
      * @uses \Hunt\Bundle\Models\Result::getLongestLineNumLength()
+     * @uses \Hunt\Bundle\Models\Result::getContextCollection()
      */
     public function testGetLongestLineNumInResults()
     {
