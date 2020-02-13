@@ -6,9 +6,7 @@ use Hunt\Bundle\Models\Result;
 
 class ConfluenceWikiTemplate extends AbstractTemplate
 {
-    protected $highlightStart = '';
-
-    protected $highlightEnd = '';
+    protected $doHighlight = true;
 
     /**
      * Returns the rendered term Result.
