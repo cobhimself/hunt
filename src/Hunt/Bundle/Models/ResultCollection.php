@@ -4,6 +4,10 @@ namespace Hunt\Bundle\Models;
 
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use const SORT_ASC;
+use const SORT_DESC;
+use const SORT_FLAG_CASE;
+use const SORT_NATURAL;
 
 /**
  * Class ResultCollection.
@@ -42,14 +46,14 @@ class ResultCollection extends ParameterBag
      *
      * @param int $flags See sort flags https://www.php.net/manual/en/function.sort.php
      */
-    public function sortByFilename(int $flags = \SORT_DESC)
+    public function sortByFilename(int $flags = SORT_DESC)
     {
         switch ($flags) {
-            case \SORT_DESC:
+            case SORT_DESC:
                 $sortMethod = 'krsort';
 
                 break;
-            case \SORT_ASC:
+            case SORT_ASC:
                 $sortMethod = 'ksort';
 
                 break;
@@ -57,7 +61,7 @@ class ResultCollection extends ParameterBag
                 throw new InvalidArgumentException('The provided sort flag is not valid!');
         }
 
-        $sortMethod($this->parameters, \SORT_FLAG_CASE | \SORT_NATURAL);
+        $sortMethod($this->parameters, SORT_FLAG_CASE | SORT_NATURAL);
     }
 
     /**

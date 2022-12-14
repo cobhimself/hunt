@@ -4,6 +4,7 @@ namespace Hunt\Tests\Bundle\Templates;
 
 use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Component\Gatherer\StringGatherer;
+use const PHP_EOL;
 
 /**
  * @internal
@@ -58,7 +59,7 @@ class ConsoleTemplateTest extends TemplateTestCase
     {
         $this->template->setShowContext($addContext);
 
-        $expectedOutput = implode(\PHP_EOL, $expectations) . \PHP_EOL;
+        $expectedOutput = implode(PHP_EOL, $expectations) . PHP_EOL;
 
         $actualOutput = '';
 

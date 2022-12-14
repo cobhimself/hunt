@@ -2,8 +2,13 @@
 
 namespace Hunt\Tests;
 
+use Hunt\Bundle\Models\Element\Line\Line;
+use Hunt\Bundle\Models\Element\Line\LineFactory;
+use Hunt\Bundle\Models\Element\Line\Parts\Excluded;
+use Hunt\Bundle\Models\Element\Line\Parts\Match;
+use Hunt\Bundle\Models\Element\Line\Parts\Normal;
+use Hunt\Bundle\Models\Element\Line\Parts\PartsCollection;
 use Hunt\Bundle\Models\MatchContext\MatchContext;
-use Hunt\Bundle\Models\MatchContext\MatchContextCollection;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 use Hunt\Bundle\Models\Result;
@@ -11,6 +16,8 @@ use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Component\Hunter;
 use Hunt\Component\HunterArgs;
 use Hunt\Component\OutputStyler;
+use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use SplFileObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -18,6 +25,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\SplFileInfo;
+use const PHP_EOL;
 
 /**
  * @internal
@@ -94,6 +102,13 @@ class HuntTestCase extends KernelTestCase
             300 => 'this is line three hundred',
         ],
     ];
+
+    /**
+     * An array of Line elements generated based on our $resultMatchingLines property.
+     *
+     * @var Line[]
+     */
+    protected $finalResultMatchingLines;
 
     /**
      * Contains data necessary to construct MatchContext objects for each of the result file constants.
@@ -221,15 +236,48 @@ class HuntTestCase extends KernelTestCase
     protected function getResultForFileConstant(string $filename, bool $contextLines = false): Result
     {
         if (!isset($this->resultMatchingLines[$filename])) {
-            throw new \InvalidArgumentException('We do not have any resultMatchingLines data for filename ' . $filename);
+            throw new InvalidArgumentException('We do not have any resultMatchingLines data for filename ' . $filename);
         }
 
         $result = $this->getResultWithFileInfoMock(self::SEARCH_TERM, $filename);
-        $result->setMatchingLines($this->resultMatchingLines[$filename]);
+        $result->setMatchingLines($this->getResultMatchingLines($filename));
 
         $result->setContextCollection($this->getMatchContextCollectionForFileConstant($filename, $contextLines));
 
         return $result;
+    }
+
+    /**
+     * Clear our final result matching lines cache.
+     */
+    protected function resetFinalResultMatchingLines()
+    {
+        $this->finalResultMatchingLines = [];
+    }
+
+    /**
+     * Get an array of matching lines associated with the given filename constant.
+     *
+     * @param string $filename
+     * @return Line[]
+     */
+    protected function getResultMatchingLines(string $filename): array
+    {
+        $this->finalResultMatchingLines = $this->finalResultMatchingLines ?? [];
+
+        if (!array_key_exists($filename, $this->finalResultMatchingLines)) {
+            $lines = $this->resultMatchingLines[$filename];
+
+            $finalLines = [];
+
+            foreach ($lines as $lineNum => $lineContent) {
+                $finalLines[$lineNum] = $this->getLine($lineNum, $lineContent);
+            }
+
+            $this->finalResultMatchingLines[$filename] = $finalLines;
+        }
+
+        return $this->finalResultMatchingLines[$filename];
     }
 
     /**
@@ -240,7 +288,7 @@ class HuntTestCase extends KernelTestCase
     protected function getMatchContextCollectionForFileConstant(string $fileName, bool $real): MatchContextCollectionInterface
     {
         if (!isset($this->resultContextLines[$fileName])) {
-            throw new \InvalidArgumentException('We do not have any resultContextLines data for filename ' . $fileName);
+            throw new InvalidArgumentException('We do not have any resultContextLines data for filename ' . $fileName);
         }
 
         $collection = MatchContextCollectionFactory::get($real);
@@ -279,7 +327,7 @@ class HuntTestCase extends KernelTestCase
         rewind($output->getStream());
 
         $display = stream_get_contents($output->getStream());
-        $display = str_replace(\PHP_EOL, "\n", $display);
+        $display = str_replace(PHP_EOL, "\n", $display);
 
         return $display;
     }
@@ -293,7 +341,7 @@ class HuntTestCase extends KernelTestCase
     {
         //We've got to be able to get the name of the command.
         if (!isset($input['command']) && null === $command) {
-            throw new \LogicException('HuntTestCase::getInputObject MUST have either a Command parameter' . " or 'command' key in the input parameter");
+            throw new LogicException('HuntTestCase::getInputObject MUST have either a Command parameter' . " or 'command' key in the input parameter");
         }
 
         // set the command name automatically if the input was not given the application requires
@@ -363,5 +411,76 @@ class HuntTestCase extends KernelTestCase
     protected function callHunterFunc(Hunter $hunter, string $func, array $args = [])
     {
         call_user_func_array([$hunter, $func], $args);
+    }
+
+    /**
+     * Return a parts collection for our test purposes.
+     *
+     * @param array $parts An array of parts with character identifiers for the type alongside a number.
+     *
+     * @example We can create a parts collection of a Match, Normal, and Excluded parts like so:
+     *
+     * $this->generateLineParts([
+     *     'm1' => 'this will be the content for our Match part',
+     *     'n1' => 'this will be a normal part',
+     *     'e1' => 'this will be an excluded part,
+     *     'n2' => 'another normal part but with a 2 so it can be indexed in the array'
+     *     'm2' => 'look, another match!',
+     *     'e2' => 'maybe exclude something else'
+     * ]);
+     *
+     * This would be similar to the following:
+     *
+     * $parts = new PartsCollection();
+     * $parts[] = new Match('this will be the content for our Match part');
+     * $parts[] = new Normal('this will be a normal part');
+     * $parts[] = new Excluded('this will be an excluded part');
+     * $parts[] = new Normal('another normal part but with a 2 so it can be indexed in the array');
+     * $parts[] = new Match('look, another match!');
+     * $parts[] = new Excluded('maybe exclude something else');
+     *
+     */
+    protected function getLinePartsForTest(array $parts): PartsCollection
+    {
+        $finalParts = new PartsCollection();
+
+        foreach ($parts as $type => $content) {
+            $firstLetter = $type[0];
+            if ($firstLetter === 'n') {
+                $finalParts[] = new Normal($content);
+            } else if ($firstLetter === 'm') {
+                $finalParts[] = new Match($content);
+            } else if ($firstLetter === 'e') {
+                $finalParts[] = new Excluded($content);
+            }
+        }
+
+        return $finalParts;
+    }
+
+    /**
+     * Quickly get a line element.
+     */
+    protected function getLine(int $lineNumber, string $content): Line
+    {
+        return LineFactory::getLine($lineNumber, $content);
+    }
+
+    /**
+     * Quickly create an array of Line elements.
+     *
+     * @param int $numLines The number of lines to create.
+     *
+     * @return Line[]
+     */
+    protected function buildLineArray(int $numLines): array
+    {
+        $lines = [];
+
+        for ($i =0; $i < $numLines; $i += 1) {
+            $lines[$i] = LineFactory::getLine($i, 'line ' . $i);
+        }
+
+        return $lines;
     }
 }

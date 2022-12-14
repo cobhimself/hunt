@@ -2,6 +2,7 @@
 
 namespace Hunt\Bundle\Models;
 
+use Hunt\Bundle\Models\Element\Line\Line;
 use Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 use Hunt\Component\Trimmer;
@@ -155,10 +156,27 @@ class Result
 
     /**
      * Set the matching lines for this result.
+     * @param Line[] $matchingLines
+     *
+     * @return Result
      */
     public function setMatchingLines(array $matchingLines): Result
     {
         $this->matchingLines = $matchingLines;
+
+        return $this;
+    }
+
+    /**
+     * Add a line which contains a match with our term.
+     *
+     * @param Line $line
+     *
+     * @return Result
+     */
+    public function addMatchingLine(Line $line): Result
+    {
+        $this->matchingLines[$line->getLineNumber()] = $line;
 
         return $this;
     }

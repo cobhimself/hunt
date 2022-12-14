@@ -62,12 +62,13 @@ class ResultTest extends HuntTestCase
      */
     public function testGetLongestLineNumLength()
     {
-        $this->result->setMatchingLines([
-            0   => 'line 1',
-            1   => 'line 2',
-            20  => 'line 20', //2 digits
-            400 => 'line 400', //3 digits is the expectation
-        ]);
+        $this->result
+            ->addMatchingLine($this->getLine(1, 'line 1'))
+            ->addMatchingLine($this->getLine(2, 'line 2'))
+            //2 digits
+            ->addMatchingLine($this->getLine(20, 'line 20'))
+            //3 digits is the expectation
+            ->addMatchingLine($this->getLine(400, 'line 400'));
 
         $this->assertEquals(3, $this->result->getLongestLineNumLength());
     }
@@ -108,11 +109,7 @@ class ResultTest extends HuntTestCase
      */
     public function testGetNumMatches()
     {
-        $this->result->setMatchingLines([
-            'line 1',
-            'line 2',
-            'line 3',
-        ]);
+        $this->result->setMatchingLines($this->buildLineArray(3));
 
         $this->assertEquals(3, $this->result->getNumMatches());
     }
@@ -123,12 +120,8 @@ class ResultTest extends HuntTestCase
      */
     public function testGetMatchingLines()
     {
-        $lines = [
-            'line 1',
-            'line 2',
-            'line 3',
-            'line 4',
-        ];
+
+        $lines = $this->buildLineArray(4);
 
         $this->result->setMatchingLines($lines);
 

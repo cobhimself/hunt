@@ -2,6 +2,8 @@
 
 namespace Hunt\Tests\Bundle\Templates;
 
+use Hunt\Bundle\Models\Element\Formatter\ConsoleFormatter;
+use Hunt\Bundle\Models\Element\Line\LineFactory;
 use Hunt\Bundle\Templates\AbstractTemplate;
 use Hunt\Component\Gatherer\StringGatherer;
 
@@ -27,8 +29,7 @@ class AbstractTemplateTest extends TemplateTestCase
     {
         $this->template = $this->getMockForAbstractClass(AbstractTemplate::class);
         $this->template
-            ->init($this->getResultCollection(), $this->getOutputMock())
-            ->setGatherer(new StringGatherer(self::SEARCH_TERM));
+            ->init($this->getResultCollection(), $this->getOutputMock());
 
         $this->template->method('getResultOutput')
             ->willReturn('test result output');
@@ -53,17 +54,12 @@ class AbstractTemplateTest extends TemplateTestCase
         string $highlightStart = null,
         string $highlightEnd = null
     ) {
-        if (null !== $highlightStart) {
-            $this->template->setHighlightStart($highlightStart);
-        }
 
-        if (null !== $highlightEnd) {
-            $this->template->setHighlightEnd($highlightEnd);
-        }
+        $line = LineFactory::getLine($lineNum, $line);
 
         $this->template->highlight($highlight);
 
-        $resultLine = $this->template->getResultLine($lineNum, $line, self::SEARCH_TERM);
+        $resultLine = $this->template->getResultLine($line);
 
         $this->assertEquals($expectation, $resultLine);
     }

@@ -2,8 +2,11 @@
 
 namespace Hunt\Tests\Component\Gatherer;
 
+use Hunt\Bundle\Models\Element\Line\Line;
+use Hunt\Bundle\Models\Element\Line\LineFactory;
+use Hunt\Bundle\Models\Element\Line\Parts\Match;
+use Hunt\Bundle\Models\Element\Line\Parts\Normal;
 use Hunt\Component\Gatherer\RegexGatherer;
-
 /**
  * @coversDefaultClass \Hunt\Component\Gatherer\RegexGatherer
  * @codeCoverageIgnore
@@ -56,17 +59,18 @@ class RegexGathererTest extends GathererTestCase
      *
      * @param string $searchTerm  the search term to highlight
      * @param array  $excludeTerm an array of terms to exclude in highlighting
-     * @param string $line        the line to perform highlighting on
+     * @param Line   $line        the line to perform highlighting on
      * @param string $expectation the final line we expect after highlighting
      */
-    public function testGetHighlightedLine(string $searchTerm, array $excludeTerm, string $line, string $expectation)
+    public function testGetHighlightedLine(string $searchTerm, array $excludeTerm, Line $line, string $expectation)
     {
         $this->gatherer = new RegexGatherer($searchTerm, $excludeTerm);
+        $this->gatherer->lineMatches($line->getLineNumber(), $line->getLineContent());
         $result = $this->gatherer->getHighlightedLine($line, self::HIGHLIGHT_START, self::HIGHLIGHT_END);
         $this->assertEquals(
             $expectation,
-            $result,
-            sprintf('Expected (%s) to become (%s)', $line, $expectation)
+            $result->getLineContent(),
+            sprintf('Expected (%s) to become (%s)', $result->getLineContent(), $expectation)
         );
     }
 
@@ -76,43 +80,43 @@ class RegexGathererTest extends GathererTestCase
             'simple regex' => [
                 'term'     => '/search/',
                 'excluded' => [],
-                'line'     => 'this will include our search term',
+                'line'     => LineFactory::getLine(1, 'this will include our search term'),
                 'expected' => 'this will include our *search# term',
             ],
             'simple regex with capturing group' => [
                 'term'     => '/(search)/',
                 'excluded' => [],
-                'line'     => 'this will include our search term',
+                'line'     => LineFactory::getLine(1, 'this will include our search term'),
                 'expected' => 'this will include our *search# term',
             ],
             'simple regex with capturing group and two results' => [
                 'term'     => '/(search)/',
                 'excluded' => [],
-                'line'     => 'this search will include our search term',
+                'line'     => LineFactory::getLine(1, 'this search will include our search term'),
                 'expected' => 'this *search# will include our *search# term',
             ],
             'digit test' => [
                 'term'     => '/\d{3}/',
                 'excluded' => ['111'],
-                'line'     => 'This is 1, but this is 11, and this is 111. What about 1234?',
+                'line'     => LineFactory::getLine(1, 'This is 1, but this is 11, and this is 111. What about 1234?'),
                 'expected' => 'This is 1, but this is 11, and this is 111. What about *123#4?',
             ],
             'digit test with group' => [
                 'term'     => '/(\d{3})/',
                 'excluded' => ['111'],
-                'line'     => 'This is 1, but this is 11, and this is 111. What about 1234?',
+                'line'     => LineFactory::getLine(1, 'This is 1, but this is 11, and this is 111. What about 1234?'),
                 'expected' => 'This is 1, but this is 11, and this is 111. What about *123#4?',
             ],
             'matching middle' => [
                 'term'     => '/PHPUnit_(.*)_MockObject/',
                 'excluded' => [],
-                'line'     => 'PHPUnit_Framework_MockObjects_MockObject phpunitframeworkmockobjects',
+                'line'     => LineFactory::getLine(1, 'PHPUnit_Framework_MockObjects_MockObject phpunitframeworkmockobjects'),
                 'expected' => 'PHPUnit_*Framework_MockObjects#_MockObject phpunitframeworkmockobjects',
             ],
-            'matching middle, nongreedy' => [
+            'matching middle, non-greedy' => [
                 'term'     => '/PHPUnit_(.*?)_MockObject/',
                 'excluded' => [],
-                'line'     => 'PHPUnit_Framework_MockObjects_MockObject PHPUnit_Framework_MockObjects_MockObject',
+                'line'     => LineFactory::getLine(1, 'PHPUnit_Framework_MockObjects_MockObject phpunitframeworkmockobjects'),
                 'expected' => 'PHPUnit_*Framework#_MockObjects_MockObject PHPUnit_*Framework#_MockObjects_MockObject',
             ],
         ];

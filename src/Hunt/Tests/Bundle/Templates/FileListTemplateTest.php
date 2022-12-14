@@ -4,6 +4,7 @@ namespace Hunt\Tests\Bundle\Templates;
 
 use Hunt\Bundle\Templates\FileListTemplate;
 use Hunt\Component\Gatherer\StringGatherer;
+use const PHP_EOL;
 
 /**
  * @internal
@@ -41,11 +42,11 @@ class FileListTemplateTest extends TemplateTestCase
      */
     public function testGetResultOutput()
     {
-        $expectedOutput = implode(\PHP_EOL, [
+        $expectedOutput = implode(PHP_EOL, [
             'this/is/a/file/name/one',
             'this/is/a/file/name/two',
             'this/is/a/file/name/three',
-        ]) . \PHP_EOL;
+        ]) . PHP_EOL;
 
         $actualOutput = '';
 

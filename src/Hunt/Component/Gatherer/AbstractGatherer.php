@@ -2,8 +2,14 @@
 
 namespace Hunt\Component\Gatherer;
 
+use Hunt\Bundle\Models\Element\Line\Line;
+use Hunt\Bundle\Models\Element\Line\LineFactory;
+use Hunt\Bundle\Models\Element\Line\ParsedLine;
 use Hunt\Bundle\Models\Result;
 use Hunt\Component\MatchContext\ContextCollectorFactory;
+
+use Hunt\Component\Trimmer;
+use InvalidArgumentException;
 use RuntimeException;
 
 abstract class AbstractGatherer implements GathererInterface
@@ -41,7 +47,7 @@ abstract class AbstractGatherer implements GathererInterface
      *
      * @since 1.4.0
      *
-     * @var string
+     * @var Line|ParsedLine
      */
     protected $workingLine = '';
 
@@ -51,7 +57,7 @@ abstract class AbstractGatherer implements GathererInterface
     public function __construct(string $term, array $exclude = null)
     {
         if (empty($term)) {
-            throw new \InvalidArgumentException('You must specify a term!');
+            throw new InvalidArgumentException('You must specify a term!');
         }
 
         $this->term = $term;
@@ -67,7 +73,16 @@ abstract class AbstractGatherer implements GathererInterface
      *
      * @return bool
      */
-    abstract public function lineMatches(string $line): bool;
+    abstract public function lineMatches(int $lineNum, string $line): bool;
+
+    /**
+     * Take our line and split it up into parts.
+     *
+     * @param Line $line The line we want to parse.
+     *
+     * @return ParsedLine
+     */
+    abstract public function getParsedLine(Line $line): ParsedLine;
 
     /**
      * Gather a set of matching lines from the Result's file.
@@ -81,111 +96,54 @@ abstract class AbstractGatherer implements GathererInterface
         $matchingLines = [];
         $contextCollector = ContextCollectorFactory::get($this->getNumContextLines());
 
-        foreach ($result->getFileIterator() as $num => $line) {
+        foreach ($result->getFileIterator() as $num => $lineStr) {
 
             //Our code starts at line 1, unlike our arrays.
             $codeLineNum = $num + 1;
+            $testLine    = $lineStr;
 
-            $testLine = $line;
             if (null !== $this->exclude && is_array($this->exclude)) {
                 foreach ($this->exclude as $excludeTerm) {
                     $testLine = str_replace($excludeTerm, '', $testLine);
                 }
             }
-            $lineMatches = $this->lineMatches($testLine);
+
+            $lineMatches = $this->lineMatches($codeLineNum, $testLine);
+
+            if ($this->doTrimMatchingLines()) {
+                $lineStr = trim($lineStr);
+            }
+
+            $line = LineFactory::getLine($codeLineNum, $lineStr);
 
             if ($lineMatches) {
-                $matchingLines[$codeLineNum] = $line;
+                $result->addMatchingLine($line);
             }
-            $contextCollector->addLine($codeLineNum, $line, $lineMatches);
+
+            $contextCollector->addLine($line, $lineMatches);
         }
+
         $contextCollector->finalize();
 
         $result->setContextCollection($contextCollector->getContextCollection());
-        $result->setMatchingLines($matchingLines);
 
-        return count($matchingLines) > 0;
+        return $result->getNumMatches() > 0;
     }
 
     /**
-     * Returns the given line with the term highlighted.
+     * For each result line, parse them into their final parts.
      *
-     * Excluded terms are not highlighted.
+     * @param Result $result
      */
-    public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string
+    public function parseResultLines(Result $result)
     {
-        $this->workingLine = $line;
-        $translateArray = $this->removeExcludedTerms();
+        $parsedLines = [];
 
-        $this->workingLine = $this->highlightLine($this->workingLine, $highlightStart, $highlightEnd);
-
-        return $this->addExcludedTermsBack($translateArray);
-    }
-
-    /**
-     * We replace our excluded words with placeholders so our highlight matches ignore them.
-     *
-     * @since 1.4.0
-     *
-     * @return array an array of translations we used with our placeholders
-     */
-    protected function removeExcludedTerms(): array
-    {
-        //Exit early if we can.
-        if (0 === count($this->exclude)) {
-            return [];
+        foreach($result->getMatchingLines() as $lineNum => $line) {
+            $parsedLines[$lineNum] = $this->getParsedLine($line);
         }
 
-        //We could use regex but it's possible the complexity would cause the search to take a long time. Therefore,
-        //we are going to replace our exclude terms with placeholders, highlight our original term, and then put our
-        //exclude terms back.
-        static $placeholder = "\u{731f}\u{5e2b}";
-        $counter = 0;
-
-        //We need to build a translation between our exclude terms and the placeholders
-        $translate = [];
-        foreach ($this->exclude as $exclude) {
-            ++$counter;
-            $translate[$exclude] = str_repeat($placeholder, $counter);
-        }
-        $this->workingLine = strtr($this->workingLine, $translate);
-
-        return $translate;
-    }
-
-    /**
-     * Add our excluded terms back based on the given translation array.
-     *
-     * @since 1.4.0
-     *
-     * @param array $translate we flip this translation array since we assume it was generated by removeExcludedTerms
-     */
-    protected function addExcludedTermsBack(array $translate): string
-    {
-        //Exit early if we can
-        if (0 === count($this->exclude)) {
-            return $this->workingLine;
-        }
-
-        //Reverse our placeholder translation
-        $translate = array_flip($translate);
-
-        return strtr($this->workingLine, $translate);
-    }
-
-    /**
-     * Perform the highlighting of the given line.
-     *
-     * @since 1.5.0
-     */
-    public function highlightLine(
-        string $line,
-        string $highlightStart = '',
-        string $highlightEnd = ''
-    ): string
-    {
-        throw new RuntimeException('highlightLine method must be overridden!');
-
+        $result->setMatchingLines($parsedLines);
     }
 
     /**
@@ -210,5 +168,23 @@ abstract class AbstractGatherer implements GathererInterface
     public function getNumContextLines(): int
     {
         return $this->numContextLines;
+    }
+
+    /**
+     * Set whether or not we should trim the whitespace around our matching lines.
+     */
+    public function setTrimMatchingLines(bool $trimMatchingLines): GathererInterface
+    {
+        $this->trimMatchingLines = $trimMatchingLines;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function doTrimMatchingLines(): bool
+    {
+        return $this->trimMatchingLines;
     }
 }

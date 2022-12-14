@@ -2,7 +2,9 @@
 
 namespace Hunt\Tests\Component\Gatherer;
 
+use Hunt\Bundle\Models\Element\Line\ParsedLine;
 use Hunt\Component\Gatherer\AbstractGatherer;
+use RuntimeException;
 
 /**
  * @internal
@@ -17,14 +19,34 @@ class AbstractGathererTest extends GathererTestCase
             AbstractGatherer::class,
             [self::SEARCH_TERM, [self::EXCLUDE_TERM]]
         );
+        $this->gatherer
+            ->method('getParsedLine')
+            ->willReturn(new ParsedLine());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @covers ::highlightLine
-     */
-    public function testHighlightLine()
+
+    public function testGather()
     {
-        $this->gatherer->highlightLine('test line', self::HIGHLIGHT_START, self::HIGHLIGHT_END);
+
+    }
+
+    public function testSetAndGetNumContextLines()
+    {
+        $this->gatherer->setNumContextLines(1);
+        $this->assertTrue($this->gatherer->getNumContextLines());
+    }
+
+    public function testSetAndDoTrimMatchingLines()
+    {
+        $this->gatherer->setTrimMatchingLines(true);
+        $this->assertTrue($this->gatherer->doTrimMatchingLines());
+
+        $this->gatherer->setTrimMatchingLines(false);
+        $this->assertFalse($this->gatherer->doTrimMatchingLines());
+    }
+
+    public function testParseResultLines()
+    {
+        $result = $this->getResultForFileConstant(self::RESULT_FILE_ONE);
     }
 }

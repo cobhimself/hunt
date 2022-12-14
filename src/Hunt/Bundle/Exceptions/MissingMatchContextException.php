@@ -2,12 +2,13 @@
 
 namespace Hunt\Bundle\Exceptions;
 
+use Exception;
 use Throwable;
 
 /**
  * @since 1.5.0
  */
-class MissingMatchContextException extends \Exception
+class MissingMatchContextException extends Exception
 {
     public function __construct(int $lineNumber, $code = 0, Throwable $previous = null)
     {

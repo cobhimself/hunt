@@ -2,6 +2,9 @@
 
 namespace Hunt\Component\MatchContext;
 
+use Hunt\Bundle\Models\Element\Line\ContextLine;
+use Hunt\Bundle\Models\Element\Line\Line;
+use Hunt\Bundle\Models\Element\Line\LineFactory;
 use Hunt\Bundle\Models\MatchContext\MatchContext;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollection;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionFactory;
@@ -52,9 +55,17 @@ class ContextCollector implements ContextCollectorInterface
 
     /**
      * Add a line to our collection.
+     *
+     * If the line is a match, we perform some additional processes but we do not include matching lines within
+     * our context lines.
+     *
+     * @param Line $line The line to add. Modified to be a ContextLine instance within.
+     * @param bool $isMatch Whether or not this line is a match.
      */
-    public function addLine(int $num, string $line, bool $isMatch)
+    public function addLine(Line $line, bool $isMatch)
     {
+        $line = LineFactory::getContextLineFromLine($line);
+
         //Do we even have anything to do?
         if ($this->numContextLines <= 0) {
             return;
@@ -66,15 +77,15 @@ class ContextCollector implements ContextCollectorInterface
         }
 
         if ($isMatch) {
-            $this->matchFound($num);
+            $this->matchFound($line->getLineNumber());
             //Nothing to record if the current line is a match.
             return;
         }
 
         if (!$this->inMatch) {
-            $this->advanceLineCollection($this->before, $num, $line);
+            $this->advanceLineCollection($this->before, $line);
         } else {
-            $this->advanceLineCollection($this->after, $num, $line);
+            $this->advanceLineCollection($this->after, $line);
         }
     }
 
@@ -83,12 +94,12 @@ class ContextCollector implements ContextCollectorInterface
      *
      * @param array $contextLineArray One of $this->before or $this->after.
      */
-    private function advanceLineCollection(array &$contextLineArray, int $num, string $line)
+    private function advanceLineCollection(array &$contextLineArray, ContextLine $line)
     {
         if (count($contextLineArray) === $this->numContextLines) {
             $contextLineArray = array_slice($contextLineArray, 1, NULL, true);
         }
-        $contextLineArray[$num] = $line;
+        $contextLineArray[$line->getLineNumber()] = $line;
     }
 
     public function matchFound(int $num)

@@ -3,6 +3,7 @@
 namespace Hunt\Tests\Component;
 
 use Hunt\Bundle\Command\HuntCommand;
+use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
 use Hunt\Bundle\Templates\ConsoleTemplate;
 use Hunt\Bundle\Templates\FileListTemplate;
 use Hunt\Component\Hunter;
@@ -103,7 +104,7 @@ class HunterArgsTest extends HuntTestCase
 
     /**
      * @covers ::validateArguments
-     * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
+     * @expectedException InvalidCommandArgumentException
      * @expectedExceptionMessageRegExp /Improperly formatted/
      */
     public function testMalformedRegex()
@@ -120,7 +121,7 @@ class HunterArgsTest extends HuntTestCase
      * @dataProvider dataProviderForTestInvalidNumLines
      *
      * @covers ::validateArguments
-     * @expectedException \Hunt\Bundle\Exceptions\InvalidCommandArgumentException
+     * @expectedException InvalidCommandArgumentException
      * @expectedExceptionMessageRegExp /The number of context lines/
      */
     public function testInvalidNumLines(string $input)

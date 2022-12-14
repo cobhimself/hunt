@@ -2,6 +2,7 @@
 
 namespace Hunt\Bundle\Templates;
 
+use Hunt\Bundle\Models\Element\Line\LineInterface;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,7 +33,7 @@ interface TemplateInterface
      *
      * Override this method if you'd like to modify how each individual term result appears in the result list.
      */
-    public function getResultLine(string $lineNum, string $line, string $term): string;
+    public function getResultLine(LineInterface $line): string;
 
     /**
      * Return whether or not we are going to highlight our search term.
@@ -42,7 +43,7 @@ interface TemplateInterface
     /**
      * Return the line number formatted.
      */
-    public function getLineNumber(string $lineNum): string;
+    public function getLineNumber(LineInterface $line): string;
 
     /**
      * Returns the rendered filename.

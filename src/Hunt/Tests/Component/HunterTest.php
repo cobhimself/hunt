@@ -9,6 +9,7 @@ use Hunt\Component\Gatherer\StringGatherer;
 use Hunt\Component\Hunter;
 use Hunt\Component\HunterArgs;
 use Hunt\Tests\HuntTestCase;
+use InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,7 +67,7 @@ class HunterTest extends HuntTestCase
     public function testSetBaseDir(array $directories, bool $throwsException = false)
     {
         if ($throwsException) {
-            $this->expectException(\InvalidArgumentException::class);
+            $this->expectException(InvalidArgumentException::class);
         }
 
         $this->hunter->setBaseDir($directories);
@@ -265,7 +266,7 @@ class HunterTest extends HuntTestCase
                 ],
                 'expectations' => [
                     'exception' => [
-                        'type'    => \InvalidArgumentException::class,
+                        'type'    => InvalidArgumentException::class,
                         'message' => '/A term must be specified/',
                     ],
                 ],
@@ -276,7 +277,7 @@ class HunterTest extends HuntTestCase
                 ],
                 'expectations' => [
                     'exception' => [
-                        'type'    => \InvalidArgumentException::class,
+                        'type'    => InvalidArgumentException::class,
                         'message' => '/A valid directory or file to search through must/',
                     ],
                 ],
@@ -299,7 +300,7 @@ class HunterTest extends HuntTestCase
                 ],
                 'expectations' => [
                     'exception' => [
-                        'type'    => \InvalidArgumentException::class,
+                        'type'    => InvalidArgumentException::class,
                         'message' => '/Term cannot be empty/',
                     ],
                 ],

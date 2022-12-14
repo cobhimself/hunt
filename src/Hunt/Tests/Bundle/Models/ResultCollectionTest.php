@@ -4,6 +4,9 @@ namespace Hunt\Tests\Bundle\Models;
 
 use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Tests\HuntTestCase;
+use InvalidArgumentException;
+use const SORT_ASC;
+use const SORT_DESC;
 
 /**
  * @internal
@@ -69,7 +72,7 @@ class ResultCollectionTest extends HuntTestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException InvalidArgumentException
      * @covers ::sortByFilename
      */
     public function testSortByFilenameInvalidSortArgument()
@@ -86,6 +89,7 @@ class ResultCollectionTest extends HuntTestCase
     {
         //Lets remove all matching lines from our second file so we can confirm the second file is squashed
         $this->resultMatchingLines[self::RESULT_FILE_TWO] = [];
+        $this->resetFinalResultMatchingLines();
         $this->resultCollection = $this->getResultCollectionWithFileConstants();
 
         $this->resultCollection->squashEmptyResults();
@@ -103,7 +107,7 @@ class ResultCollectionTest extends HuntTestCase
     {
         return [
             'test ascending' => [
-                \SORT_ASC,
+                SORT_ASC,
                 [
                     'this/is/a/file/name/one',
                     'this/is/a/file/name/three',
@@ -111,7 +115,7 @@ class ResultCollectionTest extends HuntTestCase
                 ],
             ],
             'test descending' => [
-                \SORT_DESC,
+                SORT_DESC,
                 [
                     'this/is/a/file/name/two',
                     'this/is/a/file/name/three',

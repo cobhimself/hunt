@@ -2,6 +2,7 @@
 
 namespace Hunt\Component\MatchContext;
 
+use Hunt\Bundle\Models\Element\Line\Line;
 use Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection;
 use Hunt\Bundle\Models\MatchContext\MatchContextCollectionInterface;
 
@@ -31,11 +32,10 @@ class DummyContextCollector implements ContextCollectorInterface
      * If the line is a match, we perform some additional processes but we do not include matching lines within
      * our context lines.
      *
-     * @param int    $num     The line number.
-     * @param string $line    The line content.
-     * @param bool   $isMatch Whether or not this line is a match.
+     * @param Line $line The line content.
+     * @param bool $isMatch Whether or not this line is a match.
      */
-    public function addLine(int $num, string $line, bool $isMatch) { }
+    public function addLine(Line $line, bool $isMatch) { }
 
     /**
      * Perform processes required when a match is found.
@@ -55,8 +55,5 @@ class DummyContextCollector implements ContextCollectorInterface
     /**
      * Must be called after running the ContextCollector to make sure the final context is set.
      */
-    public function finalize()
-    {
-        return;
-    }
+    public function finalize() { }
 }

@@ -4,12 +4,15 @@
 
 namespace Hunt\Component;
 
+use Hunt\Bundle\Exceptions\InvalidCommandArgumentException;
+use Hunt\Bundle\Exceptions\InvalidTemplateException;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
 use Hunt\Bundle\Templates\FileListTemplate;
 use Hunt\Bundle\Templates\TemplateFactory;
 use Hunt\Bundle\Templates\TemplateInterface;
 use Hunt\Component\Gatherer\GathererInterface;
+use InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -163,7 +166,7 @@ class Hunter
     {
         foreach ($baseDir as $dir) {
             if (!file_exists($dir)) {
-                throw new \InvalidArgumentException('The given base directory cannot be found: ' . $dir);
+                throw new InvalidArgumentException('The given base directory cannot be found: ' . $dir);
             }
         }
 
@@ -190,7 +193,7 @@ class Hunter
     public function setTerm(string $term): Hunter
     {
         if (empty($term)) {
-            throw new \InvalidArgumentException('Term cannot be empty');
+            throw new InvalidArgumentException('Term cannot be empty');
         }
 
         $this->term = $term;
@@ -213,6 +216,7 @@ class Hunter
         //No need to continue if we didn't find anything.
         if (count($this->found) > 0) {
             $this->gatherData();
+            $this->parseResultLines();
             $this->generateTemplate();
         }
     }
@@ -295,20 +299,38 @@ class Hunter
         //Remove any results from our list which are empty.
         $this->found->squashEmptyResults();
 
-        //Trim our result and context lines if necessary
-        if ($this->doTrimMatches()) {
-            $this->found->trimResults();
-        }
-
         $this->progressBar->finish();
         $this->progressBar->clear();
+    }
+
+    private function parseResultLines()
+    {
+        //No need to parse result lines if we aren't going to show them.
+        if ($this->getTemplate() instanceof FileListTemplate) {
+            return;
+        }
+
+        //Trim our result and context lines if necessary
+        $this->getGatherer()->setTrimMatchingLines($this->doTrimMatches());
+
+        $this->progressBar->start(count($this->found));
+        $this->progressBar->setMessage('Processing matches');
+        $this->progressBar->setMessage('...', 'filename');
+
+        foreach ($this->found as $result) {
+            $this->progressBar->setMessage($result->getFilename(), 'filename');
+            $this->progressBar->advance();
+            $this->getGatherer()->parseResultLines($result);
+        }
+
+        $this->progressBar->setMessage('Done', 'filename');
+        $this->progressBar->finish();
     }
 
     private function generateTemplate()
     {
         $template = $this->getTemplate();
         $template->init($this->found, $this->output)
-            ->setGatherer($this->gatherer)
             ->setShowContext($this->getNumContextLines() > 0);
 
         $this->progressBar->start(count($this->found));
@@ -348,6 +370,9 @@ class Hunter
         return $this;
     }
 
+    /**
+     * @throws InvalidCommandArgumentException
+     */
     public function getBaseDir(): array
     {
         if (empty($this->baseDir)) {
@@ -362,6 +387,9 @@ class Hunter
         return $this->recurse;
     }
 
+    /**
+     * @throws InvalidCommandArgumentException
+     */
     public function getTerm(): string
     {
         if (empty($this->term)) {
@@ -405,6 +433,7 @@ class Hunter
      * Set the template associated with this hunter.
      *
      * NOTE: If $this->listOnly is true, this method is a noop since file-list is forced.
+     * @throws InvalidTemplateException
      */
     public function setTemplate(TemplateInterface $template): Hunter
     {
@@ -422,6 +451,8 @@ class Hunter
      * Get the template associated with this hunter.
      *
      * If we've been told this is a list only hunt, force the template to be a file-list.
+     *
+     * @throws InvalidTemplateException
      */
     public function getTemplate(): TemplateInterface
     {

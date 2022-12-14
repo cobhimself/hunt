@@ -6,6 +6,7 @@ use Hunt\Component\Gatherer\GathererFactory;
 use Hunt\Component\Gatherer\RegexGatherer;
 use Hunt\Component\Gatherer\StringGatherer;
 use Hunt\Tests\HuntTestCase;
+use InvalidArgumentException;
 
 /**
  * @codeCoverageIgnore
@@ -21,7 +22,7 @@ class GathererFactoryTest extends HuntTestCase
     public function testGetByType(int $type, string $className)
     {
         if (-1 === $type) {
-            $this->expectException(\InvalidArgumentException::class);
+            $this->expectException(InvalidArgumentException::class);
             $this->expectExceptionMessage('Unknown gatherer type: -1');
         }
 

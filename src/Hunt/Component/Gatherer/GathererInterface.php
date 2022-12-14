@@ -2,6 +2,8 @@
 
 namespace Hunt\Component\Gatherer;
 
+use Hunt\Bundle\Models\Element\Line\Line;
+use Hunt\Bundle\Models\Element\Line\ParsedLine;
 use Hunt\Bundle\Models\Result;
 
 /**
@@ -27,27 +29,31 @@ interface GathererInterface
     public function gather(Result $result): bool;
 
     /**
-     * Returns the given string with our search term highlighted.
+     * Take our line and split it up into parts.
      *
-     * Excluded terms are ignored.
+     * @param Line $line The line we want to parse.
      *
-     * @return mixed
+     * @return ParsedLine
      */
-    public function getHighlightedLine(string $line, string $highlightStart = '', string $highlightEnd = '');
+    public function getParsedLine(Line $line): ParsedLine;
 
     /**
      * Returns whether or not the given line matches.
      *
      * @since 1.5.0
      *
+     * @param int $lineNum The line number associated with the line.
      * @param string $line A single line from the file we are gathering from.
      */
-    public function lineMatches(string $line): bool;
+    public function lineMatches(int $lineNum, string $line): bool;
 
     /**
-     * Perform the highlighting of the given line.
-     *
-     * @since 1.5.0
+     * Set whether or not we should trim the whitespace around our matching lines.
      */
-    public function highlightLine(string $line, string $highlightStart = '', string $highlightEnd = ''): string;
+    public function setTrimMatchingLines(bool $trimMatchingLines): GathererInterface;
+
+    /**
+     * Whether or not we should trim matching lines.
+     */
+    public function doTrimMatchingLines(): bool;
 }

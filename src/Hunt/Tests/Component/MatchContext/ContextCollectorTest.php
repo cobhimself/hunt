@@ -2,6 +2,7 @@
 
 namespace Hunt\Tests\Component\MatchContext;
 
+use Hunt\Bundle\Models\Element\Line\LineFactory;
 use Hunt\Bundle\Models\MatchContext\DummyMatchContextCollection;
 use Hunt\Component\MatchContext\ContextCollector;
 use Hunt\Component\MatchContext\ContextCollectorFactory;
@@ -60,7 +61,7 @@ class ContextCollectorTest extends TestCase
 
         foreach ($lines as $i => $line) {
             $isMatch = (strpos($line, '*') !== false);
-            $collector->addLine($i, $line, $isMatch);
+            $collector->addLine($line, $isMatch);
         }
 
         $collector->finalize();
@@ -126,9 +127,9 @@ class ContextCollectorTest extends TestCase
     public function testNoContextLines()
     {
         $collector = new ContextCollector(0);
-        $collector->addLine(1, 'blah', false);
-        $collector->addLine(2, 'match', true);
-        $collector->addLine(3, 'bleh', false);
+        $collector->addLine(LineFactory::getLine(1, 'blah'), false);
+        $collector->addLine(LineFactory::getLine(2, 'match'), true);
+        $collector->addLine(LineFactory::getLine(3, 'bleh'), false);
         $collector->finalize();
         $this->assertEquals(0, $collector->getContextCollection()->getCollectionSize());
     }

@@ -2,9 +2,16 @@
 
 namespace Hunt\Bundle\Templates;
 
+use Hunt\Bundle\Models\Element\Line\ContextLineNumber;
+use Hunt\Bundle\Models\Element\ContextSplit;
+use Hunt\Bundle\Models\Element\Formatter\DummyFormatter;
+use Hunt\Bundle\Models\Element\Formatter\FormatterInterface;
+use Hunt\Bundle\Models\Element\Line\LineNumber;
+use Hunt\Bundle\Models\Element\ResultFilePath;
+use Hunt\Bundle\Models\Element\Line\Line;
+use Hunt\Bundle\Models\Element\Line\LineInterface;
 use Hunt\Bundle\Models\Result;
 use Hunt\Bundle\Models\ResultCollection;
-use Hunt\Component\Gatherer\GathererInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractTemplate implements TemplateInterface
@@ -15,13 +22,6 @@ abstract class AbstractTemplate implements TemplateInterface
      * @var ResultCollection
      */
     protected $resultCollection;
-
-    /**
-     * Whether or not to highlight the term in the rendered output.
-     *
-     * @var bool
-     */
-    protected $doHighlight = false;
 
     /**
      * @var OutputInterface|null
@@ -43,23 +43,9 @@ abstract class AbstractTemplate implements TemplateInterface
     private $footer = '';
 
     /**
-     * The gatherer used to obtain our original results.
-     *
-     * We will use this to highlight the result terms.
-     *
-     * @var GathererInterface
+     * @var FormatterInterface
      */
-    private $gatherer;
-
-    /**
-     * @var string
-     */
-    protected $highlightStart = '*';
-
-    /**
-     * @var string
-     */
-    protected $highlightEnd = '*';
+    private $formatter;
 
     /**
      * Whether or not to show the context lines.
@@ -67,6 +53,13 @@ abstract class AbstractTemplate implements TemplateInterface
      * @since 1.5.0
      */
     protected $showContext;
+
+    /**
+     * Whether or not we want to highlight the matching term.
+     *
+     * @var bool
+     */
+    private $highlightMatch = false;
 
     /**
      * Perform necessary actions before rendering the template.
@@ -81,12 +74,20 @@ abstract class AbstractTemplate implements TemplateInterface
         return $this;
     }
 
-    /**
-     * Whether or not to highlight the term within the results.
-     */
-    public function highlight(bool $highlight = true)
+    public function setFormatter(FormatterInterface $formatter): TemplateInterface
     {
-        $this->doHighlight = $highlight;
+        $this->formatter = $formatter;
+
+        return $this;
+    }
+
+    public function getFormatter(): FormatterInterface
+    {
+        if (null === $this->formatter) {
+            $this->formatter = new DummyFormatter();
+        }
+
+        return $this->formatter;
     }
 
     /**
@@ -97,7 +98,6 @@ abstract class AbstractTemplate implements TemplateInterface
     public function getTermResults(Result $result): array
     {
         $lines = [];
-        $term = $result->getTerm();
 
         foreach ($result->getMatchingLines() as $lineNum => $line) {
             $matchContext = $result->getContextCollection()->getContextForLine($lineNum);
@@ -107,7 +107,7 @@ abstract class AbstractTemplate implements TemplateInterface
                 $this->processContextLines($lines, $matchContext->getBefore());
             }
 
-            $lines[] = $this->getResultLine($lineNum, $line, $term);
+            $lines[] = $this->getResultLine($line);
 
             if ($this->getShowContext()) {
                 $this->processContextLines($lines, $matchContext->getAfter());
@@ -123,21 +123,18 @@ abstract class AbstractTemplate implements TemplateInterface
      *
      * Override this method if you'd like to modify how each individual term result appears in the result list.
      */
-    public function getResultLine(string $lineNum, string $line, string $term): string
+    public function getResultLine(LineInterface $line): string
     {
-        $finalLine = $this->getLineNumber($lineNum) . ': ';
-        if ($this->doHighlight()) {
-            $finalLine .= $this->gatherer->getHighlightedLine(
-                $line,
-                $this->getHighlightStart(),
-                $this->getHighlightEnd()
-            );
-        } else {
-            $finalLine .= $line;
-        }
+        $finalLine = $this->getLineNumber($line);
+        $finalLine .= $this->getFormatter()->getFormattedLine($line);
         $finalLine = str_replace("\n", '', $finalLine);
 
         return $finalLine;
+    }
+
+    public function getLineNumber(LineInterface $line): string
+    {
+        return $this->getFormatter()->format(new LineNumber($line->getLineNumber()));
     }
 
     /**
@@ -150,26 +147,14 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function processContextLines(array &$lines, array $contextLines)
     {
+        /**
+         * @var Line $line
+         */
         foreach ($contextLines as $lineNum => $line) {
-            $lines[] = $this->getLineNumber($lineNum) . ': '
-                . str_replace("\n", '', $line);
+            $finalLine = $this->getFormatter()->format(new ContextLineNumber($lineNum));
+            $finalLine .= str_replace("\n", '', $this->getFormatter()->getFormattedLine($line));
+            $lines[] = $finalLine;
         }
-    }
-
-    /**
-     * Return whether or not we are going to highlight our search term.
-     */
-    public function doHighlight(): bool
-    {
-        return $this->doHighlight;
-    }
-
-    /**
-     * Return the line number formatted.
-     */
-    public function getLineNumber(string $lineNum): string
-    {
-        return $lineNum;
     }
 
     /**
@@ -179,7 +164,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function getFilename(Result $result): string
     {
-        return $result->getFileName();
+        return $this->getFormatter()->format(new ResultFilePath($result->getFileName()));
     }
 
     /**
@@ -265,48 +250,6 @@ abstract class AbstractTemplate implements TemplateInterface
     }
 
     /**
-     * Set the Gatherer we should use when highlighting our results.
-     */
-    public function setGatherer(GathererInterface $gatherer): TemplateInterface
-    {
-        $this->gatherer = $gatherer;
-
-        return $this;
-    }
-
-    /**
-     * Get the start string used when we want to begin highlighting.
-     */
-    public function getHighlightStart(): string
-    {
-        return $this->highlightStart;
-    }
-
-    /**
-     * Set the string to use when we want to begin highlighting.
-     */
-    public function setHighlightStart(string $highlightStart)
-    {
-        $this->highlightStart = $highlightStart;
-    }
-
-    /**
-     * Get the string to use when we are done highlighting.
-     */
-    public function getHighlightEnd(): string
-    {
-        return $this->highlightEnd;
-    }
-
-    /**
-     * Set the string to use when we are done highlighting.
-     */
-    public function setHighlightEnd(string $highlightEnd)
-    {
-        $this->highlightEnd = $highlightEnd;
-    }
-
-    /**
      * Add lines to be placed before the context lines of a matching result.
      *
      * @since 1.5.0
@@ -315,7 +258,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function getContextSplitBefore(array &$lines)
     {
-        $lines[] = '---';
+        $lines[] = $this->getFormatter()->format(new ContextSplit('---'));
     }
 
     /**
@@ -327,7 +270,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function getContextSplitAfter(array &$lines)
     {
-        $lines[] = '---';
+        $lines[] = $this->getFormatter()->format(new ContextSplit('---'));
     }
 
     /**
@@ -350,5 +293,23 @@ abstract class AbstractTemplate implements TemplateInterface
     public function getShowContext(): bool
     {
         return $this->showContext;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function highlight(bool $highlight = true): TemplateInterface
+    {
+        $this->highlightMatch = $highlight;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function doHighlight(): bool
+    {
+        return $this->highlightMatch;
     }
 }

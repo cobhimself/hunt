@@ -4,6 +4,7 @@ namespace Hunt\Component;
 
 use Generator;
 use Hunt\Bundle\Models\Result;
+use InvalidArgumentException;
 use IteratorAggregate;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -34,7 +35,7 @@ class HunterFileListTraversable implements IteratorAggregate
             } elseif (is_file($path)) {
                 $files[] = new \SplFileInfo($path);
             } else {
-                throw new \InvalidArgumentException($path . ' is not a valid directory or file path');
+                throw new InvalidArgumentException($path . ' is not a valid directory or file path');
             }
         }
 

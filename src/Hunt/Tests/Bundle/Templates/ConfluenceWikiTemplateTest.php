@@ -4,6 +4,7 @@ namespace Hunt\Tests\Bundle\Templates;
 
 use Hunt\Bundle\Templates\ConfluenceWikiTemplate;
 use Hunt\Component\Gatherer\StringGatherer;
+use const PHP_EOL;
 
 /**
  * @internal
@@ -60,7 +61,7 @@ class ConfluenceWikiTemplateTest extends TemplateTestCase
     public function testGetResultOutput(bool $showContext, array $expectations)
     {
         $this->template->setShowContext($showContext);
-        $expectedOutput = implode(\PHP_EOL, $expectations) . \PHP_EOL;
+        $expectedOutput = implode(PHP_EOL, $expectations) . PHP_EOL;
 
         $actualOutput = '';
 
